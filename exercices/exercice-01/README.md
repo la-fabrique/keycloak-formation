@@ -275,7 +275,7 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 | Realm | Province de l'empire |
 | Realm `master` | Le Château de l'empereur (super-admin) |
 | Client applicatif | Échoppe (point de service métier) |
-| Rôle (Realm role) | Profil métier (paysan, chambellan, forgeron) |
+| Rôle (Realm role) | Profil métier (sujet, artisan, marchand, gouverneur) |
 | Groupe | Guilde (ex : guilde des forgerons) |
 | Utilisateur | Sujet de l'empire |
 | Client Scope / Mapper | Parchemin officiel |

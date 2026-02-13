@@ -101,7 +101,7 @@ Ces valeurs proviennent des variables `KC_BOOTSTRAP_ADMIN_USERNAME` et `KC_BOOTS
 **Points à observer :**
 - **General** : le nom du realm est `master` — ce champ ne peut pas être modifié
 - **Login** : par défaut, l'auto-inscription (« User registration ») est désactivée
-- **Email** : aucun serveur SMTP n'est configuré pour `master` (ce sera fait dans l'exercice 2 pour le realm `autheria`)
+- **Email** : aucun serveur SMTP n'est configuré pour `master` (ce sera fait dans l'exercice 2 pour le realm `valdoria`)
 - **Themes** : le thème par défaut est `keycloak` pour toutes les pages
 - **Sessions** : SSO Session Idle = 30 minutes, SSO Session Max = 10 heures (valeurs par défaut)
 - **Tokens** : Access Token Lifespan = 5 minutes (valeur par défaut)
@@ -188,6 +188,6 @@ Sujets à aborder avec les participants après l'exercice :
 
 ## Transition vers l'exercice 2
 
-> Maintenant que la capitale est fondée et le Château de l'empereur découvert, les architectes vont créer la **Province d'Authéria** — un realm dédié où seront configurés les utilisateurs, clients et rôles de la formation.
+> Maintenant que la capitale est fondée et le Château de l'empereur découvert, les architectes vont créer la **Province de Valdoria** — un realm dédié où seront configurés les utilisateurs, clients et rôles de la formation.
 >
-> Dans l'exercice suivant, vous créerez le realm `autheria`, configurerez son thème et brancherez le serveur de courrier (Mailhog) pour les notifications de la province.
+> Dans l'exercice suivant, vous créerez le realm `valdoria`, établirez les profils métier de la province (rôles) et brancherez le serveur de courrier (Mailhog) pour les notifications officielles.
