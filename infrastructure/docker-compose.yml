@@ -1,4 +1,4 @@
-# Environnement de formation Keycloak — Royaume d'Authéria
+# Environnement de formation Keycloak — Empire d'Authéria
 # Usage : docker compose up -d
 
 services:
@@ -23,7 +23,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- Keycloak 26.1 (La Couronne) ---
+  # --- Keycloak 26.1 (Le Château de l'empereur) ---
   keycloak:
     image: quay.io/keycloak/keycloak:26.5
     container_name: autheria-keycloak
@@ -63,12 +63,12 @@ services:
     networks:
       - autheria-network
 
-  # --- OpenLDAP (Royaume allié — utilisé au Jour 2) ---
+  # --- OpenLDAP (Province alliée — utilisé au Jour 2) ---
   openldap:
     image: osixia/openldap:1.5.0
     container_name: autheria-openldap
     environment:
-      LDAP_ORGANISATION: "Royaume Voisin"
+      LDAP_ORGANISATION: "Province Voisine"
       LDAP_DOMAIN: "voisin.autheria.local"
       LDAP_BASE_DN: "dc=voisin,dc=autheria,dc=local"
       LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-admin}

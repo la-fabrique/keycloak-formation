@@ -13,7 +13,7 @@ Formation de 2 jours (14 h) couvrant l'architecture, la configuration et l'explo
 - Introduction à Keycloak : IAM, Identity Provider (IDP)
 - Version 26.1 et écosystème open-source
 - Installation et lancement via Docker ou Podman
-- Realms : rôle du royaume « Master », segmentation par organisation
+- Realms : rôle de la province « Master » (le Château de l'empereur), segmentation par organisation
 - Introduction aux protocoles OAuth 2.0 et OpenID Connect (OIDC)
 - Configuration des rôles de royaume (Realm roles)
 
@@ -74,8 +74,8 @@ Formation de 2 jours (14 h) couvrant l'architecture, la configuration et l'explo
 | 09h30 – 09h45 | Présentation de la version 26.1 et de l'écosystème open-source |
 | 09h45 – 10h15 | **Pratique** : Installation et lancement de Keycloak via Docker ou Podman |
 | 10h15 – 10h30 | *Pause* |
-| 10h30 – 10h45 | Division par Royaume (Realms) : Le rôle crucial du royaume "Master" |
-| 10h45 – 11h15 | **Pratique** : Création d'un royaume, segmentation et isolation par organisation |
+| 10h30 – 10h45 | Division par Province (Realms) : Le rôle crucial du Château de l'empereur (realm "Master") |
+| 10h45 – 11h15 | **Pratique** : Création d'une province, segmentation et isolation par organisation |
 | 11h15 – 11h45 | **Théorie** : Introduction aux protocoles OAuth 2.0 et OpenID Connect (OIDC) |
 | 11h45 – 12h15 | **Pratique** : Configuration des rôles de royaume (Realm roles) |
 | 12h15 – 12h30 | Synthèse de la matinée et questions/réponses |

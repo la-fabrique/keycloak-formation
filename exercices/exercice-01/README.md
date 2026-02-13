@@ -11,8 +11,8 @@ A l'issue de cet exercice, vous serez capable de :
 
 - Installer et lancer Keycloak 26.1 via Docker
 - Naviguer dans la console d'administration
-- Comprendre le rôle du realm `master` (la Couronne)
-- Observer l'isolation entre realms (royaumes)
+- Comprendre le rôle du realm `master` (le Château de l'empereur)
+- Observer l'isolation entre realms (provinces)
 
 ---
 
@@ -36,19 +36,19 @@ A l'issue de cet exercice, vous serez capable de :
 
 ## Contexte narratif
 
-> Vous êtes un **Architecte de la Sécurité** du Royaume d'Authéria.
+> Vous êtes un **Architecte de la Sécurité** de l'Empire d'Authéria.
 >
-> Avant de gouverner, il faut bâtir la capitale. Votre première mission : déployer le **château central** — le serveur Keycloak — et découvrir **la Couronne**, siège du pouvoir absolu qui contrôle l'ensemble du royaume.
+> Avant de gouverner, il faut bâtir la capitale. Votre première mission : déployer le **château central** — le serveur Keycloak — et découvrir **le Château de l'empereur**, siège du pouvoir absolu qui contrôle l'ensemble de l'empire.
 >
-> La Couronne (realm `master`) est le centre nerveux de l'administration. Aucune application ne doit jamais y être rattachée directement : elle est réservée aux super-administrateurs.
+> Le Château de l'empereur (realm `master`) est le centre nerveux de l'administration. Aucune application ne doit jamais y être rattachée directement : il est réservé aux super-administrateurs.
 
-### Lexique du royaume
+### Lexique de l'Empire
 
 | Concept Keycloak | Métaphore Authéria |
 | --- | --- |
-| Realm | Royaume / Province |
-| Realm `master` | La Couronne (super-admin) |
-| Utilisateur | Sujet du royaume |
+| Realm | Province de l'empire |
+| Realm `master` | Le Château de l'empereur (super-admin) |
+| Utilisateur | Sujet de l'empire |
 
 ---
 
@@ -93,7 +93,7 @@ autheria-openldap     running
 | `autheria-keycloak` | Le serveur Keycloak 26.1 — le château central |
 | `autheria-postgres` | La base de données PostgreSQL qui stocke la configuration de Keycloak |
 | `autheria-mailhog` | Un serveur SMTP de test pour capturer les emails (vérification, réinitialisation) |
-| `autheria-openldap` | Un annuaire LDAP — le registre du royaume voisin (utilisé au Jour 2) |
+| `autheria-openldap` | Un annuaire LDAP — le registre de la province voisine (utilisé au Jour 2) |
 
 > **Checkpoint :** La commande `docker compose ps` affiche 4 conteneurs avec le statut `running`. Le conteneur `autheria-keycloak` est au statut `healthy`.
 
@@ -114,11 +114,11 @@ Vous arrivez sur le tableau de bord de la console d'administration. En haut à g
 
 ---
 
-### Étape 3 — Explorer le realm `master` (la Couronne)
+### Étape 3 — Explorer le realm `master` (le Château de l'empereur)
 
-Le realm `master` est le siège de la Couronne. Explorons ses différentes composantes.
+Le realm `master` est le siège du Château de l'empereur. Explorons ses différentes composantes.
 
-#### 3a. Les sujets de la Couronne (Utilisateurs)
+#### 3a. Les sujets du Château de l'empereur (Utilisateurs)
 
 1. Dans le **menu latéral gauche**, cliquez sur **« Users »**
 2. Cliquez sur **« View all users »** (ou cherchez avec un filtre vide)
@@ -133,7 +133,7 @@ Le realm `master` est le siège de la Couronne. Explorons ses différentes compo
    - **Sessions** — sessions actives de cet utilisateur
    - **Events** — événements liés à cet utilisateur
 
-#### 3b. Les paramètres du royaume (Realm Settings)
+#### 3b. Les paramètres de la province (Realm Settings)
 
 1. Dans le menu latéral gauche, cliquez sur **« Realm Settings »**
 2. Explorez les onglets principaux :
@@ -157,7 +157,7 @@ Le realm `master` est le siège de la Couronne. Explorons ses différentes compo
 2. Votre session administrateur actuelle devrait être visible
 3. Observez les informations affichées : adresse IP, heure de début, dernier accès
 
-> **Checkpoint :** Vous avez identifié l'utilisateur `admin` comme seul sujet de la Couronne. Vous avez parcouru les onglets Realm Settings et observé votre propre session active.
+> **Checkpoint :** Vous avez identifié l'utilisateur `admin` comme seul sujet du Château de l'empereur. Vous avez parcouru les onglets Realm Settings et observé votre propre session active.
 
 ---
 
@@ -196,7 +196,7 @@ Chaque realm est un **univers complètement isolé**. Les utilisateurs, clients,
 
 ## Point clé
 
-> **Le realm `master` est la Couronne du royaume.**
+> **Le realm `master` est le Château de l'empereur.**
 >
 > Il est réservé **exclusivement** à l'administration globale de Keycloak. Les applications et les utilisateurs finaux ne doivent **jamais** être rattachés au realm `master`. Chaque application ou organisation doit disposer de son propre realm dédié.
 
@@ -237,18 +237,18 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 
 ---
 
-## Lexique complet du Royaume d'Authéria
+## Lexique complet de l'Empire d'Authéria
 
 | Concept Keycloak | Métaphore Authéria |
 | --- | --- |
-| Realm | Royaume / Province |
-| Realm `master` | La Couronne (super-admin) |
-| Client applicatif | Porte du château (point d'accès) |
-| Rôle (Realm role) | Titre de noblesse |
-| Groupe | Guilde |
-| Utilisateur | Sujet du royaume |
+| Realm | Province de l'empire |
+| Realm `master` | Le Château de l'empereur (super-admin) |
+| Client applicatif | Échoppe (point de service métier) |
+| Rôle (Realm role) | Profil métier (paysan, chambellan, forgeron) |
+| Groupe | Guilde (ex : guilde des forgerons) |
+| Utilisateur | Sujet de l'empire |
 | Client Scope / Mapper | Parchemin officiel |
-| Service Account (M2M) | Armée automatisée |
-| Annuaire LDAP | Royaume allié |
+| Service Account (M2M) | Automate impérial |
+| Annuaire LDAP | Province alliée |
 | IDP externe (SSO) | Ambassade étrangère |
 | Politique de sécurité | Fortification |

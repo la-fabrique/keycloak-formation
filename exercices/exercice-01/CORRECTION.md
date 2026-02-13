@@ -188,6 +188,6 @@ Sujets à aborder avec les participants après l'exercice :
 
 ## Transition vers l'exercice 2
 
-> Maintenant que la capitale est fondée et la Couronne découverte, les architectes vont créer le **Royaume d'Authéria** — un realm dédié où seront configurés les utilisateurs, clients et rôles de la formation.
+> Maintenant que la capitale est fondée et le Château de l'empereur découvert, les architectes vont créer la **Province d'Authéria** — un realm dédié où seront configurés les utilisateurs, clients et rôles de la formation.
 >
-> Dans l'exercice suivant, vous créerez le realm `autheria`, configurerez son thème et brancherez le serveur de courrier (Mailhog) pour les notifications du royaume.
+> Dans l'exercice suivant, vous créerez le realm `autheria`, configurerez son thème et brancherez le serveur de courrier (Mailhog) pour les notifications de la province.
