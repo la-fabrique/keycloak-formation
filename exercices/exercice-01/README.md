@@ -123,12 +123,15 @@ Le realm `master` est le siège de la Couronne. Explorons ses différentes compo
 1. Dans le **menu latéral gauche**, cliquez sur **« Users »**
 2. Cliquez sur **« View all users »** (ou cherchez avec un filtre vide)
 3. Observez : il n'existe qu'**un seul utilisateur** — `admin`
-4. Cliquez sur cet utilisateur et parcourez les onglets :
+4. Cliquez sur cet utilisateur et parcourez les onglets principaux :
    - **Details** — informations de base (nom, email, statut)
-   - **Attributes** — attributs personnalisés (vide pour l'instant)
    - **Credentials** — gestion du mot de passe
    - **Role mappings** — rôles attribués à cet utilisateur
+   - **Groups** — groupes auxquels appartient l'utilisateur
+   - **Consents** — consentements accordés par l'utilisateur
+   - **Identity provider links** — liens avec des fournisseurs d'identité externes
    - **Sessions** — sessions actives de cet utilisateur
+   - **Events** — événements liés à cet utilisateur
 
 #### 3b. Les paramètres du royaume (Realm Settings)
 
@@ -138,8 +141,15 @@ Le realm `master` est le siège de la Couronne. Explorons ses différentes compo
    - **Login** — options de la page de connexion (inscription, mot de passe oublié, etc.)
    - **Email** — configuration du serveur SMTP (vide pour `master`)
    - **Themes** — personnalisation visuelle des pages de connexion et de la console
+   - **Keys** — clés cryptographiques utilisées pour signer les jetons
+   - **Events** — configuration de la journalisation des événements de sécurité
+   - **Localization** — traductions et langues disponibles pour l'interface
+   - **Security defenses** — protection contre les attaques (brute force, clickjacking, etc.)
    - **Sessions** — durée de vie des sessions (SSO Session Idle, SSO Session Max)
    - **Tokens** — durée de vie des jetons d'accès
+   - **Client policies** — politiques de sécurité pour les clients
+   - **User profile** — configuration des attributs et champs utilisateur
+   - **User registration** — configuration de l'auto-enregistrement des utilisateurs
 
 #### 3c. Les sessions actives
 
@@ -157,7 +167,7 @@ L'objectif de cette étape est de constater par vous-même l'**isolation totale*
 
 #### Créer un nouveau realm
 
-1. Cliquez sur le **menu déroulant du realm** en haut à gauche (qui affiche `master`)
+1. Cliquez sur **Manage realms** en haut à gauche
 2. Cliquez sur **« Create realm »**
 3. Dans le champ **« Realm name »**, saisissez : `test-isolation`
 4. Cliquez sur **« Create »**
@@ -209,7 +219,7 @@ Chaque realm est un **univers complètement isolé**. Les utilisateurs, clients,
 Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 
 - **Server Info** — dans la console d'administration, cliquez sur votre nom d'utilisateur (en haut à droite) puis sur « Server info ». Observez la version de Keycloak, les providers disponibles et les thèmes installés.
-- **Endpoint de santé** — dans votre navigateur, accédez à `http://localhost:8080/health/ready`. Vous devriez voir `{"status":"UP"}`.
+- **Endpoint de santé** — dans votre navigateur, accédez à `http://localhost:9000/health/ready`. Vous devriez voir `{"status":"UP"}`. Ce endpoint est exposé sur le port de management (9000), distinct du port HTTP principal (8080).
 - **Interface Mailhog** — accédez à `http://localhost:8025`. L'interface est vide pour l'instant (aucun email envoyé), mais elle sera utilisée dans les exercices suivants.
 - **Logs Keycloak** — dans votre terminal, lancez `docker compose logs -f keycloak` pour suivre les logs en temps réel. Identifiez le message indiquant que Keycloak est prêt.
 

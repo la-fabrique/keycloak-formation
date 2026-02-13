@@ -25,7 +25,7 @@ services:
 
   # --- Keycloak 26.1 (La Couronne) ---
   keycloak:
-    image: quay.io/keycloak/keycloak:26.1
+    image: quay.io/keycloak/keycloak:26.5
     container_name: autheria-keycloak
     command: start-dev
     environment:
@@ -40,6 +40,7 @@ services:
       KC_HEALTH_ENABLED: "true"
     ports:
       - "8080:8080"
+      - "9000:9000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -77,7 +78,8 @@ services:
     volumes:
       - openldap_data:/var/lib/ldap
       - openldap_config:/etc/ldap/slapd.d
-      - ./openldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
+      # Note: Le bootstrap.ldif doit être injecté après le démarrage avec :
+      # docker exec -i autheria-openldap ldapadd -x -D "cn=admin,dc=voisin,dc=autheria,dc=local" -w admin < openldap/bootstrap.ldif
     networks:
       - autheria-network
 
