@@ -157,13 +157,24 @@ Le realm `master` est le siège du Château de l'empereur. Explorons ses différ
 2. Votre session administrateur actuelle devrait être visible
 3. Observez les informations affichées : adresse IP, heure de début, dernier accès
 
-> **Checkpoint :** Vous avez identifié l'utilisateur `admin` comme seul sujet du Château de l'empereur. Vous avez parcouru les onglets Realm Settings et observé votre propre session active.
+#### 3d. Les clients du realm `master`
+
+1. Dans le menu latéral gauche, cliquez sur **« Clients »**
+2. Observez la liste des clients présents par défaut :
+   - `admin-cli` — client en ligne de commande pour l'administration
+   - `security-admin-console` — la console d'administration elle-même
+   - `broker` — utilisé pour la fédération d'identité
+   - Et d'autres clients système...
+
+**Notez bien cette liste initiale.** Nous allons observer un comportement important dans l'étape suivante.
+
+> **Checkpoint :** Vous avez identifié l'utilisateur `admin` comme seul sujet du Château de l'empereur. Vous avez parcouru les onglets Realm Settings, observé votre propre session active et listé les clients du realm `master`.
 
 ---
 
 ### Étape 4 — Créer puis supprimer un realm de test
 
-L'objectif de cette étape est de constater par vous-même l'**isolation totale** entre les realms.
+L'objectif de cette étape est de constater par vous-même l'**isolation totale** entre les realms et de découvrir comment le realm `master` gère les autres realms.
 
 #### Créer un nouveau realm
 
@@ -174,23 +185,43 @@ L'objectif de cette étape est de constater par vous-même l'**isolation totale*
 
 La console bascule automatiquement sur le nouveau realm `test-isolation`.
 
-#### Constater l'isolation
+#### Constater l'isolation entre realms
 
 5. Naviguez vers **« Users »** et cliquez sur **« View all users »**
    - **Observation :** la liste est **vide** — aucun utilisateur du realm `master` n'apparaît ici
 6. Naviguez vers **« Clients »**
-   - **Observation :** seuls les clients par défaut sont présents (`account`, `admin-cli`, etc.) — aucun client personnalisé de `master`
+   - **Observation :** seuls les clients par défaut sont présents (`account`, `admin-cli`, `realm-management`, etc.) — aucun client personnalisé de `master`
 
 Chaque realm est un **univers complètement isolé**. Les utilisateurs, clients, rôles et paramètres sont indépendants d'un realm à l'autre.
 
+#### Observer le client `realm-management`
+
+7. Toujours dans le realm `test-isolation`, dans la liste des **« Clients »**, cliquez sur le client **`realm-management`**
+8. Naviguez vers l'onglet **« Roles »**
+9. Observez les rôles disponibles : `view-users`, `manage-users`, `view-clients`, `manage-clients`, `view-realm`, `manage-realm`, etc.
+
+**Point d'observation :** Le client `realm-management` est un client **interne** créé automatiquement dans chaque realm. Il contient tous les rôles nécessaires pour administrer ce realm spécifique. Ces rôles permettent de **déléguer finement les droits d'administration** d'un realm sans donner accès au realm `master`.
+
+Par exemple, vous pourriez créer un utilisateur dans `test-isolation` et lui attribuer uniquement le rôle `view-users` du client `realm-management` : cet utilisateur pourrait alors consulter la liste des utilisateurs du realm, mais sans pouvoir les modifier.
+
+#### Observer la relation entre realms et le realm `master`
+
+10. Rebasculez sur le realm **`master`** via le menu déroulant en haut à gauche
+11. Naviguez vers **« Clients »**
+12. **Observation importante :** un nouveau client nommé **`test-isolation`** est apparu dans la liste !
+
+**Point d'observation :** Chaque fois qu'un nouveau realm est créé, Keycloak crée automatiquement un **client portant le nom de ce realm** dans le realm `master`. Ce client permet au realm `master` de gérer administrativement le nouveau realm. C'est ainsi que le Château de l'empereur maintient le contrôle sur toutes les provinces de l'empire.
+
+En d'autres termes : **chaque nouveau realm créé est automatiquement enregistré comme un client (application) du realm `master`**.
+
 #### Supprimer le realm de test
 
-7. Rebasculez sur le realm `master` via le menu déroulant en haut à gauche
-8. Ouvrez à nouveau le menu déroulant des realms
-9. A côté du realm `test-isolation`, cliquez sur les **trois points** (menu contextuel) puis sur **« Delete »**
-10. Confirmez la suppression dans la boîte de dialogue
+13. Ouvrez le menu déroulant des realms en haut à gauche
+14. A côté du realm `test-isolation`, cliquez sur les **trois points** (menu contextuel) puis sur **« Delete »**
+15. Confirmez la suppression dans la boîte de dialogue
+16. Retournez dans la liste des **« Clients »** du realm `master` et constatez que le client `test-isolation` a également été supprimé
 
-> **Checkpoint :** Le realm `test-isolation` a été créé, vous avez constaté qu'il ne contient aucun utilisateur. Après suppression, seul le realm `master` subsiste dans le menu déroulant.
+> **Checkpoint :** Le realm `test-isolation` a été créé, vous avez constaté qu'il ne contient aucun utilisateur et qu'il dispose de son propre client `realm-management`. Vous avez observé qu'un client `test-isolation` a été créé automatiquement dans le realm `master`. Après suppression du realm, ce client a également disparu du realm `master`.
 
 ---
 
@@ -222,8 +253,6 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 - **Endpoint de santé** — dans votre navigateur, accédez à `http://localhost:9000/health/ready`. Vous devriez voir `{"status":"UP"}`. Ce endpoint est exposé sur le port de management (9000), distinct du port HTTP principal (8080).
 - **Interface Mailhog** — accédez à `http://localhost:8025`. L'interface est vide pour l'instant (aucun email envoyé), mais elle sera utilisée dans les exercices suivants.
 - **Logs Keycloak** — dans votre terminal, lancez `docker compose logs -f keycloak` pour suivre les logs en temps réel. Identifiez le message indiquant que Keycloak est prêt.
-- **Chaque nouveau realm est un client du realm master** — dans le realm `master`, naviguez vers **« Clients »** et observez la liste. Créez un nouveau realm (par exemple `test-realm`) puis revenez dans la liste des clients du realm `master`. Vous constaterez qu'un nouveau client portant le nom de votre realm (`test-realm`) a été automatiquement créé. Ce client permet au realm `master` de gérer administrativement le nouveau realm. C'est ainsi que Keycloak maintient la hiérarchie d'administration entre le Château de l'empereur et les provinces.
-- **Le client `realm-management` d'un realm** — basculez sur un realm autre que `master` (créez-en un si nécessaire, par exemple `test-realm`). Naviguez vers **« Clients »** et identifiez le client nommé `realm-management`. Ce client interne est utilisé par Keycloak pour gérer les permissions d'administration au sein de ce realm spécifique. Cliquez dessus et explorez l'onglet **« Roles »** : vous y trouverez des rôles comme `view-users`, `manage-users`, `view-clients`, `manage-clients`, etc. Ces rôles permettent de déléguer finement les droits d'administration d'un realm sans donner accès au realm `master`.
 
 ---
 
