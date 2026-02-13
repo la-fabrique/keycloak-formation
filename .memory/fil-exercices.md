@@ -3,7 +3,7 @@
 ## Présentation du scénario
 
 Les stagiaires incarnent les **Architectes de la Sécurité** de l'Empire d'Authéria.
-Leur mission : bâtir, étape par étape, le système de gestion des identités et des accès (IAM) qui protégera l'ensemble de l'empire.
+Leur mission : bâtir, étape par étape, le système de gestion des identités et des accès (IAM) qui protégera l'ensemble de l'empire, en commençant par sa province principale : **Valdoria**.
 
 Chaque exercice correspond à une étape de construction de cet IAM impérial, depuis la fondation de la capitale jusqu'à la fortification des murailles.
 
@@ -67,52 +67,65 @@ Avant de gouverner, il faut bâtir la capitale. Les architectes déploient le ch
 
 ---
 
-### Exercice 2 — Fonder la Province d'Authéria
+### Exercice 2 — Fonder la Province de Valdoria
 
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-Le Château de l'empereur accorde une charte pour fonder la Province d'Authéria. Les architectes créent cette nouvelle province et configurent ses premières institutions.
+Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria, joyau de l'Empire d'Authéria. Les architectes créent cette nouvelle province et établissent ses institutions fondamentales : les profils métier qui structureront toute la société valdorienne.
 
 **Objectifs pédagogiques**
 
-- Créer et configurer un realm dédié
-- Comprendre la segmentation et l'isolation entre realms
-- Découvrir les paramètres de base d'un realm (thème, email, sessions)
+- Créer et configurer un realm dédié pour une organisation
+- Comprendre l'isolation complète entre realms (utilisateurs, rôles, clients)
+- Créer les rôles de royaume (Realm roles) qui serviront de fondation à l'autorisation
+- Configurer les paramètres de session et de tokens
+- Paramétrer les notifications par email
 
 **Étapes**
 
-1. Créer le realm `autheria`
-2. Configurer le thème de connexion (personnalisation visuelle)
-3. Paramétrer le serveur SMTP vers Mailhog pour les emails de vérification
-4. Vérifier l'isolation : constater qu'un utilisateur du realm `master` n'existe pas dans `autheria`
+1. Créer le realm `valdoria` depuis la console d'administration
+2. Vérifier l'isolation : observer que les utilisateurs et rôles du realm `master` n'existent pas dans `valdoria`
+3. Créer trois rôles de royaume fondamentaux :
+   - `chambellan` (administrateur de la province)
+   - `forgeron` (artisan avec accès aux ressources de production)
+   - `paysan` (citoyen avec accès de base)
+4. Configurer les paramètres de session : durées de vie des sessions SSO et des tokens
+5. Paramétrer le serveur SMTP vers Mailhog pour les emails de vérification (préparation pour la gestion des utilisateurs)
+6. Explorer les paramètres de tokens : observer les options d'Access Token et Refresh Token
 
-**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants.
+**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants. Les Realm roles créés ici constituent la base du système d'autorisation et seront utilisés dans tous les exercices suivants.
 
 ---
 
-### Exercice 3 — Attribuer les profils métier
+### Exercice 3 — Peupler Valdoria et attribuer les profils métier
 
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-Tout empire a besoin d'une organisation des métiers. Les architectes établissent les profils métier qui détermineront les droits de chaque sujet.
+La province de Valdoria possède désormais ses institutions. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs profils métier. Les architectes créent les premiers habitants et observent comment leurs droits sont matérialisés dans leurs laissez-passer numériques.
 
 **Objectifs pédagogiques**
 
-- Créer et attribuer des rôles de royaume (Realm roles)
-- Créer des utilisateurs et leur assigner des rôles
-- Observer les rôles dans un jeton JWT
+- Créer des utilisateurs dans le realm
+- Attribuer des rôles de royaume aux utilisateurs
+- Observer les rôles dans un jeton JWT (Access Token)
+- Comprendre comment les applications exploiteront ces rôles
 
 **Étapes**
 
-1. Créer trois rôles de royaume : `chambellan`, `forgeron`, `paysan`
-2. Créer trois utilisateurs de test et leur attribuer chacun un rôle différent
-3. Se connecter avec un utilisateur via la Account Console
-4. Récupérer le jeton JWT et le décoder sur [jwt.io](https://jwt.io)
-5. Identifier où apparaissent les rôles dans les claims du jeton
+1. Créer trois utilisateurs de test dans le realm `valdoria` :
+   - `alaric` (chambellan)
+   - `brunhild` (forgeron)
+   - `cedric` (paysan)
+2. Attribuer à chaque utilisateur son rôle correspondant
+3. Se connecter avec l'utilisateur `alaric` via la Account Console
+4. Récupérer le jeton JWT (depuis les outils développeur du navigateur ou via un client de test)
+5. Décoder le jeton sur [jwt.io](https://jwt.io)
+6. Identifier où apparaissent les rôles dans les claims du jeton (section `realm_access.roles`)
+7. Comparer avec un jeton obtenu par `cedric` : observer les différences de rôles
 
-**Point clé** — Les rôles de royaume sont le mécanisme central d'autorisation dans Keycloak. Ils sont transportés dans le jeton et exploitables par les applications.
+**Point clé** — Les rôles de royaume sont le mécanisme central d'autorisation dans Keycloak. Ils sont transportés dans le jeton JWT et exploitables par les applications pour contrôler l'accès aux ressources.
 
 ---
 
@@ -131,7 +144,7 @@ La province a besoin d'un point de service pour accueillir ses sujets. Les archi
 
 **Étapes**
 
-1. Créer le client `echoppe-principale` (type : public, redirect URI vers l'application locale)
+1. Créer le client `echoppe-principale` dans le realm `valdoria` (type : public, redirect URI vers l'application locale)
 2. Lancer la mini-application front-end
 3. Tester la connexion : l'utilisateur est redirigé vers Keycloak, puis revient authentifié
 4. Afficher le nom et les rôles de l'utilisateur connecté
@@ -278,7 +291,7 @@ Le service de renseignement impérial a besoin de voir la province à travers le
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-La province voisine dispose de son propre registre de population. Plutôt que de recréer tous ces comptes, Authéria établit une alliance : les sujets de la province voisine sont reconnus automatiquement.
+La province voisine dispose de son propre registre de population. Plutôt que de recréer tous ces comptes, Valdoria établit une alliance : les sujets de la province voisine sont reconnus automatiquement.
 
 **Objectifs pédagogiques**
 
@@ -289,7 +302,7 @@ La province voisine dispose de son propre registre de population. Plutôt que de
 **Étapes**
 
 1. Vérifier que le conteneur OpenLDAP est actif dans l'environnement Docker
-2. Configurer une fédération d'utilisateurs LDAP dans le realm `autheria`
+2. Configurer une fédération d'utilisateurs LDAP dans le realm `valdoria`
 3. Mapper les attributs : `uid` → `username`, `mail` → `email`
 4. Lancer une synchronisation complète
 5. Vérifier qu'un utilisateur LDAP apparaît dans Keycloak
@@ -304,7 +317,7 @@ La province voisine dispose de son propre registre de population. Plutôt que de
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-Authéria ouvre une ambassade avec un empire lointain. Grâce au traité diplomatique (SSO), les sujets de cet empire peuvent entrer dans Authéria avec leur propre identité.
+Valdoria ouvre une ambassade avec un empire lointain. Grâce au traité diplomatique (SSO), les sujets de cet empire peuvent entrer dans Valdoria avec leur propre identité.
 
 **Objectifs pédagogiques**
 
@@ -314,9 +327,9 @@ Authéria ouvre une ambassade avec un empire lointain. Grâce au traité diploma
 
 **Étapes**
 
-1. Configurer Google comme IDP externe dans le realm `autheria` (ou, en alternative, configurer un second realm Keycloak comme IDP)
+1. Configurer Google comme IDP externe dans le realm `valdoria` (ou, en alternative, configurer un second realm Keycloak comme IDP)
 2. Activer le bouton « Se connecter avec Google » sur la page de login
-3. Tester la connexion : un utilisateur s'authentifie via Google et obtient un compte dans Authéria
+3. Tester la connexion : un utilisateur s'authentifie via Google et obtient un compte dans Valdoria
 4. Observer le profil créé automatiquement (first login flow)
 5. Vérifier les attributs mappés depuis l'IDP externe
 
