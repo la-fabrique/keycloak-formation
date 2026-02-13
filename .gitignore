@@ -1,0 +1,10 @@
+# Environment variables
+infrastructure/.env
+
+# Docker volumes
+infrastructure/postgres_data/
+infrastructure/openldap_data/
+
+# OS files
+.DS_Store
+Thumbs.db
