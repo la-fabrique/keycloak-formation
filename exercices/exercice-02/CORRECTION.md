@@ -84,10 +84,10 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 | Role name | Description |
 | --- | --- |
-| `sujet` | Citoyen de base de Valdoria — accès minimal aux services publics |
-| `artisan` | Artisan de Valdoria — accès aux ateliers et ressources de production |
-| `marchand` | Marchand de Valdoria — accès aux places de marché et registres commerciaux |
-| `scribe` | Scribe de Valdoria — accès en lecture aux archives de la province |
+| `sujet` | Sujet du royaume de Valdoria — accès minimal aux services du royaume |
+| `artisan` | Artisan du royaume de Valdoria — accès aux ateliers et ressources de production |
+| `marchand` | Marchand du royaume de Valdoria — accès aux places de marché et registres commerciaux |
+| `scribe` | Scribe du royaume de Valdoria — accès en lecture aux archives de la province |
 
 **Résultat attendu :**
 - 4 nouveaux rôles apparaissent dans la liste des **« Realm roles »**
@@ -105,7 +105,7 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 1. **« Create role »**
 2. Role name : `maitre-forgeron`
-3. Description : `Maître artisan de Valdoria — droits étendus sur les ateliers et la formation des apprentis`
+3. Description : `Maître artisan du royaume de Valdoria — droits étendus sur les ateliers et la formation des apprentis`
 4. **« Save »**
 5. Onglet **« Associated roles »** > **« Assign role »**
 6. Cocher : `artisan` et `sujet`
@@ -121,7 +121,7 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 1. **« Create role »**
 2. Role name : `gouverneur`
-3. Description : `Gouverneur de Valdoria — administrateur suprême de la province avec tous les droits`
+3. Description : `Gouverneur du royaume de Valdoria — administrateur suprême de la province avec tous les droits`
 4. **« Save »**
 5. Onglet **« Associated roles »** > **« Assign role »**
 6. Cocher : `sujet`, `artisan`, `marchand`, `scribe`
@@ -198,8 +198,11 @@ maitre-forgeron (composite)
 - **Login action timeout :** 5 minutes
 - **User-Initiated Action Lifespan :** 5 minutes
 - **Default Admin-Initiated Action Lifespan :** 12 heures
+- **Revoke Refresh Token :** OFF (les refresh tokens ne sont pas révoqués après usage)
 
 **Note formateur :** Les participants peuvent être tentés de modifier les durées de tokens. Expliquez que les valeurs par défaut sont adaptées à la production. Un Access Token de 5 minutes est un bon compromis entre sécurité (courte durée) et performance (moins de rafraîchissements).
+
+Le paramètre **Revoke Refresh Token** (OFF par défaut) permet de réutiliser un refresh token plusieurs fois jusqu'à son expiration. En mode ON, chaque rafraîchissement génère un nouveau refresh token (rotation), ce qui augmente la sécurité mais nécessite plus d'appels au serveur.
 
 **Point de discussion :**
 - **Session SSO** : combien de temps l'utilisateur reste connecté dans Keycloak
@@ -235,13 +238,21 @@ Ces 3 mécanismes sont distincts mais complémentaires.
 
 #### Test de connexion
 
-**Procédure :**
+**Procédure complète :**
 
 1. Après sauvegarde, le bouton **« Test connection »** apparaît en haut de la page
 2. Clic sur **« Test connection »**
-3. Boîte de dialogue : saisir `test@valdoria.local` (ou n'importe quelle adresse)
-4. Clic sur **« Send test email »**
-5. Message de succès : *« Success! E-mail sent. »*
+3. Boîte de dialogue affiche : *« You need to configure your e-mail address first »*
+4. Clic sur **« Configure e-mail address »**
+5. **Redirection automatique vers le realm `master`** (profil de l'utilisateur `admin`)
+6. Dans le champ **« Email »**, saisir : `admin@empire.local`
+7. Clic sur **« Save »**
+8. **Retour sur le realm `valdoria`** via le menu déroulant en haut à gauche
+9. Navigation vers **« Realm settings »** > onglet **« Email »**
+10. Clic sur **« Test connection »**
+11. Boîte de dialogue affiche maintenant : `admin@empire.local`
+12. Clic sur **« Send test email »**
+13. Message de succès : *« Success! E-mail sent. »*
 
 **Vérification dans Mailhog :**
 
@@ -249,7 +260,7 @@ Ces 3 mécanismes sont distincts mais complémentaires.
 2. Interface Mailhog affiche 1 email
 3. Détails de l'email :
    - **From :** `Province de Valdoria <noreply@valdoria.empire>`
-   - **To :** `test@valdoria.local`
+   - **To :** `admin@empire.local`
    - **Subject :** `Test message`
    - **Body :** `This is a test message`
 
@@ -277,12 +288,15 @@ Ces 3 mécanismes sont distincts mais complémentaires.
 | Confondre « Assign role » (pour les rôles composites) et « Assign users » (pour attribuer un rôle à un utilisateur) | Clarifier la différence : « Assign role » = créer un rôle composite ; « Assign users » sera vu à l'exercice 3 |
 | Utiliser `localhost` ou `mailhog` comme nom d'hôte SMTP | Le nom d'hôte Docker correct est `autheria-mailhog` (nom du service dans docker-compose.yml) |
 | Utiliser le port `8025` pour SMTP | `8025` est le port web de Mailhog. Le port SMTP est `1025` |
+| Oublier de retourner sur le realm `valdoria` après avoir configuré l'email de l'admin | Après avoir configuré l'email dans le realm `master`, il faut impérativement revenir sur `valdoria` pour tester le SMTP |
+| Tenter de se connecter à la console de compte `valdoria` avec `admin/admin` | L'utilisateur `admin` n'existe que dans le realm `master`. Aucun utilisateur n'existe encore dans `valdoria` |
 
 ### Gestion du timing
 
 - Si la session prend du retard, la section « Pour aller plus loin » peut être sautée
-- L'étape 7 (SMTP) peut être abrégée : configuration uniquement, sans test (le test sera fait naturellement dans l'exercice 3 lors de la création d'utilisateurs)
+- L'étape 7 (SMTP) peut être abrégée : configuration uniquement, sans test complet (le SMTP sera naturellement testé dans l'exercice 3 lors de l'envoi d'emails de vérification)
 - Les étapes 3 et 4 (création des rôles) sont essentielles — ne pas les sauter
+- Durée estimée : 30 minutes (25 minutes pour les étapes principales + 5 minutes pour « Pour aller plus loin »)
 
 ---
 

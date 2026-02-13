@@ -1,7 +1,7 @@
 # Exercice 2 — Fonder la Province de Valdoria
 
 > **Module 1 — Fondations et environnement**
-> Durée estimée : 40 minutes | Difficulté : ★★☆☆☆ (débutant-intermédiaire)
+> Durée estimée : 30 minutes | Difficulté : ★★☆☆☆ (débutant-intermédiaire)
 
 ---
 
@@ -117,7 +117,7 @@ Les institutions de Valdoria nécessitent 4 profils métier de base. Créons-les
 2. Cliquez sur **« Create role »**
 3. Remplissez les champs :
    - **Role name :** `sujet`
-   - **Description :** `Citoyen de base de Valdoria — accès minimal aux services publics`
+   - **Description :** `Sujet du royaume de Valdoria — accès minimal aux services du royaume`
 4. Cliquez sur **« Save »**
 
 #### Créer le rôle `artisan`
@@ -126,7 +126,7 @@ Les institutions de Valdoria nécessitent 4 profils métier de base. Créons-les
 6. Cliquez sur **« Create role »**
 7. Remplissez les champs :
    - **Role name :** `artisan`
-   - **Description :** `Artisan de Valdoria — accès aux ateliers et ressources de production`
+   - **Description :** `Artisan du royaume de Valdoria — accès aux ateliers et ressources de production`
 8. Cliquez sur **« Save »**
 
 #### Créer le rôle `marchand`
@@ -135,7 +135,7 @@ Les institutions de Valdoria nécessitent 4 profils métier de base. Créons-les
 10. Cliquez sur **« Create role »**
 11. Remplissez les champs :
     - **Role name :** `marchand`
-    - **Description :** `Marchand de Valdoria — accès aux places de marché et registres commerciaux`
+    - **Description :** `Marchand du royaume de Valdoria — accès aux places de marché et registres commerciaux`
 12. Cliquez sur **« Save »**
 
 #### Créer le rôle `scribe`
@@ -144,7 +144,7 @@ Les institutions de Valdoria nécessitent 4 profils métier de base. Créons-les
 14. Cliquez sur **« Create role »**
 15. Remplissez les champs :
     - **Role name :** `scribe`
-    - **Description :** `Scribe de Valdoria — accès en lecture aux archives de la province`
+    - **Description :** `Scribe du royaume de Valdoria — accès en lecture aux archives de la province`
 16. Cliquez sur **« Save »**
 
 > **Checkpoint :** Vous avez créé 4 rôles de base : `sujet`, `artisan`, `marchand`, `scribe`. Ces rôles apparaissent dans la liste des Realm roles.
@@ -162,7 +162,7 @@ Un maître-forgeron est un artisan expérimenté. Il hérite de tous les droits 
 1. Dans la liste des **« Realm roles »**, cliquez sur **« Create role »**
 2. Remplissez les champs :
    - **Role name :** `maitre-forgeron`
-   - **Description :** `Maître artisan de Valdoria — droits étendus sur les ateliers et la formation des apprentis`
+   - **Description :** `Maître artisan du royaume de Valdoria — droits étendus sur les ateliers et la formation des apprentis`
 3. Cliquez sur **« Save »**
 4. Une fois le rôle créé, vous êtes redirigé vers la page de détails du rôle
 5. Cliquez sur l'onglet **« Associated roles »** (ou **« Rôles associés »**)
@@ -182,7 +182,7 @@ Le gouverneur est l'administrateur suprême de la province. Il possède tous les
 10. Cliquez sur **« Create role »**
 11. Remplissez les champs :
     - **Role name :** `gouverneur`
-    - **Description :** `Gouverneur de Valdoria — administrateur suprême de la province avec tous les droits`
+    - **Description :** `Gouverneur du royaume de Valdoria — administrateur suprême de la province avec tous les droits`
 12. Cliquez sur **« Save »**
 13. Cliquez sur l'onglet **« Associated roles »**
 14. Cliquez sur **« Assign role »**
@@ -254,9 +254,11 @@ Valdoria doit définir combien de temps un sujet peut rester connecté et combie
    - **Access Token Lifespan :** 5 minutes
    - **Access Token Lifespan For Implicit Flow :** 15 minutes
    - **Client login timeout :** 1 minute
-   - **Refresh Token Max Reuse :** 0 (pas de réutilisation)
+   - **Revoke Refresh Token :** OFF (les refresh tokens ne sont pas révoqués après usage)
 
 **Pour cet exercice, gardons les valeurs par défaut.** Ces paramètres sont adaptés à un environnement de production.
+
+**Note :** Le paramètre **Revoke Refresh Token** contrôle si un refresh token peut être réutilisé plusieurs fois ou s'il est révoqué après un seul usage. En mode OFF (par défaut), le refresh token reste valide jusqu'à son expiration, ce qui améliore les performances. En mode ON, chaque rafraîchissement génère un nouveau refresh token, ce qui augmente la sécurité mais nécessite plus d'appels au serveur.
 
 **Point d'observation :** Les sessions SSO (Single Sign-On) contrôlent combien de temps un utilisateur reste connecté dans Keycloak. Les tokens contrôlent combien de temps une application peut utiliser un jeton d'accès avant de devoir le rafraîchir. Ce sont deux mécanismes distincts mais complémentaires.
 
@@ -287,19 +289,29 @@ Valdoria doit pouvoir envoyer des messages officiels à ses sujets : vérificati
 
 #### Tester la configuration SMTP
 
+Avant de pouvoir tester l'envoi d'email, l'utilisateur administrateur doit avoir une adresse email configurée.
+
 4. Après avoir sauvegardé, un bouton **« Test connection »** apparaît en haut de la page
 5. Cliquez sur **« Test connection »**
-6. Une boîte de dialogue apparaît : saisissez une adresse email de test, par exemple : `test@valdoria.local`
-7. Cliquez sur **« Send test email »**
-8. Un message de confirmation devrait apparaître : *« Success! E-mail sent. »*
+6. Une boîte de dialogue apparaît avec le message : *« You need to configure your e-mail address first »*
+7. Cliquez sur **« Configure e-mail address »**
+8. **Attention :** vous êtes redirigé vers le profil de l'utilisateur `admin` **dans le realm `master`**
+9. Dans le champ **« Email »**, saisissez : `admin@empire.local`
+10. Cliquez sur **« Save »**
+11. **Important :** Retournez sur le realm **`valdoria`** via le menu déroulant en haut à gauche
+12. Naviguez à nouveau vers **« Realm settings »** > onglet **« Email »**
+13. Cliquez sur **« Test connection »**
+14. La boîte de dialogue affiche maintenant l'adresse email de l'admin : `admin@empire.local`
+15. Cliquez sur **« Send test email »**
+16. Un message de confirmation devrait apparaître : *« Success! E-mail sent. »*
 
 #### Vérifier la réception dans Mailhog
 
-9. Ouvrez un nouvel onglet de navigateur et accédez à : **http://localhost:8025**
-10. L'interface de Mailhog s'affiche
-11. **Observation :** un email de test est arrivé avec :
+17. Ouvrez un nouvel onglet de navigateur et accédez à : **http://localhost:8025**
+18. L'interface de Mailhog s'affiche
+19. **Observation :** un email de test est arrivé avec :
     - **From :** `Province de Valdoria <noreply@valdoria.empire>`
-    - **To :** `test@valdoria.local`
+    - **To :** `admin@empire.local`
     - **Subject :** `Test message`
 
 **Point d'observation :** Mailhog est un serveur SMTP de test. Il capture tous les emails envoyés par Keycloak sans les transmettre réellement. C'est l'outil idéal pour tester les notifications en environnement de développement.
@@ -344,20 +356,16 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
    - **Access Token** — jeton d'accès aux ressources (courte durée : 5 min)
    - **Refresh Token** — jeton pour renouveler l'access token (longue durée)
    - **ID Token** — jeton d'identité OIDC (contient les informations utilisateur)
-2. Modifiez temporairement l'**Access Token Lifespan** à `1 minute` et observez l'impact dans les exercices suivants
-3. Remettez la valeur à `5 minutes` après le test
+2. Notez les valeurs par défaut : elles seront utilisées dans les exercices suivants pour comprendre le cycle de vie des jetons
 
-### Observer les événements du realm
+### Activer la journalisation des événements
 
-1. Dans **« Realm settings »** > **« Events »**, activez l'onglet **« User events settings »**
+1. Dans **« Realm settings »** > **« Events »**, cliquez sur l'onglet **« User events settings »**
 2. Activez **« Save events »** (toggle ON)
-3. Dans **« Saved types »**, cochez quelques événements : `LOGIN`, `LOGOUT`, `REGISTER`, `UPDATE_EMAIL`
+3. Dans **« Saved types »**, cochez quelques événements : `LOGIN`, `LOGOUT`, `UPDATE_EMAIL`, `UPDATE_PROFILE`
 4. Cliquez sur **« Save »**
-5. Effectuez une action (par exemple, retournez tester l'envoi d'email SMTP)
-6. Allez dans l'onglet **« Events »** du menu latéral gauche
-7. Observez les événements enregistrés (type, date, IP, utilisateur)
 
-**Point d'observation :** Les événements sont essentiels pour l'audit de sécurité et le debug. En production, ils sont souvent exportés vers un SIEM (Security Information and Event Management).
+**Point d'observation :** Les événements sont essentiels pour l'audit de sécurité et le debug. En production, ils sont souvent exportés vers un SIEM (Security Information and Event Management). Vous pourrez observer ces événements en action dans l'exercice suivant, lors de la création et de la connexion des premiers utilisateurs.
 
 ### Tester la page de connexion du realm
 
@@ -365,10 +373,10 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 2. Accédez à : **http://localhost:8080/realms/valdoria/account**
 3. Vous arrivez sur la page de connexion de Valdoria
 4. **Observation :** le thème est encore celui par défaut de Keycloak
-5. Tentez de vous connecter avec `admin` / `admin` — cela échouera (l'utilisateur `admin` n'existe que dans le realm `master`)
+5. **Important :** Ne tentez pas de vous connecter — aucun utilisateur n'existe encore dans le realm `valdoria` (l'utilisateur `admin` existe uniquement dans le realm `master`, pas dans `valdoria`)
 6. Fermez l'onglet incognito
 
-**Note :** La personnalisation du thème de connexion sera abordée dans un exercice ultérieur.
+**Note :** Les premiers utilisateurs de Valdoria seront créés dans l'exercice suivant. La personnalisation du thème de connexion sera abordée dans un exercice ultérieur.
 
 ---
 
