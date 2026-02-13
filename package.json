@@ -1,0 +1,10 @@
+{
+  "name": "keycloak-formation",
+  "version": "1.0.0",
+  "description": "Formation pratique Keycloak — L'Empire d'Authéria",
+  "private": true,
+  "scripts": {
+    "docker:up": "cd infrastructure && docker compose up -d",
+    "docker:down": "cd infrastructure && docker compose down"
+  }
+}

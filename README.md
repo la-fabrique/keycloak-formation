@@ -2,6 +2,11 @@
 
 Formation pratique de 2 jours pour maîtriser Keycloak 26.1 avec OAuth 2.0 et OpenID Connect.
 
+## Prérequis
+
+- **Docker** et **Docker Compose** — pour lancer l'environnement de formation
+- **Node.js** et **npm** — pour exécuter les scripts de gestion de l'environnement
+
 ## Démarrage rapide
 
 ```bash
@@ -9,12 +14,20 @@ Formation pratique de 2 jours pour maîtriser Keycloak 26.1 avec OAuth 2.0 et Op
 cp infrastructure/.env.example infrastructure/.env
 
 # 2. Lancer l'environnement
-cd infrastructure
-docker compose up -d
+npm run docker:up
 
 # 3. Accéder à Keycloak
 # http://localhost:8080 (admin / admin)
 ```
+
+Pour arrêter les services :
+
+```bash
+npm run docker:down
+```
+
+> **Alternative (sans Node.js)** : vous pouvez lancer l'environnement manuellement avec  
+> `cd infrastructure && docker compose up -d` et l'arrêter avec `docker compose down`.
 
 ## Structure du dépôt
 
