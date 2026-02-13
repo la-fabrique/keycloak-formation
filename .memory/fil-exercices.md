@@ -1,27 +1,27 @@
-# Fil rouge des exercices — Le Royaume d'Authéria
+# Fil rouge des exercices — L'Empire d'Authéria
 
 ## Présentation du scénario
 
-Les stagiaires incarnent les **Architectes de la Sécurité** du royaume d'Authéria.
-Leur mission : bâtir, étape par étape, le système de gestion des identités et des accès (IAM) qui protégera l'ensemble du royaume.
+Les stagiaires incarnent les **Architectes de la Sécurité** de l'Empire d'Authéria.
+Leur mission : bâtir, étape par étape, le système de gestion des identités et des accès (IAM) qui protégera l'ensemble de l'empire.
 
-Chaque exercice correspond à une étape de construction de cet IAM royal, depuis la fondation de la capitale jusqu'à la fortification des murailles.
+Chaque exercice correspond à une étape de construction de cet IAM impérial, depuis la fondation de la capitale jusqu'à la fortification des murailles.
 
-### Lexique du royaume
+### Lexique de l'Empire
 
-| Concept Keycloak        | Métaphore Authéria              |
-| ----------------------- | ------------------------------- |
-| Realm                   | Royaume / Province              |
-| Realm `master`          | La Couronne (super-admin)       |
-| Client applicatif       | Porte du château (point d'accès)|
-| Rôle (Realm role)       | Titre de noblesse               |
-| Groupe                  | Guilde                          |
-| Utilisateur             | Sujet du royaume                |
-| Client Scope / Mapper   | Parchemin officiel              |
-| Service Account (M2M)   | Armée automatisée               |
-| Annuaire LDAP           | Royaume allié                   |
-| IDP externe (SSO)       | Ambassade étrangère             |
-| Politique de sécurité   | Fortification                   |
+| Concept Keycloak        | Métaphore Authéria                        |
+| ----------------------- | ----------------------------------------- |
+| Realm                   | Province de l'empire                      |
+| Realm `master`          | Le Château de l'empereur (super-admin)    |
+| Client applicatif       | Échoppe (point de service métier)         |
+| Rôle (Realm role)       | Profil métier (paysan, chambellan, forgeron) |
+| Groupe                  | Guilde (ex : guilde des forgerons)        |
+| Utilisateur             | Sujet de l'empire                         |
+| Client Scope / Mapper   | Parchemin officiel                        |
+| Service Account (M2M)   | Automate impérial                         |
+| Annuaire LDAP           | Province alliée                           |
+| IDP externe (SSO)       | Ambassade étrangère                       |
+| Politique de sécurité   | Fortification                             |
 
 ### Environnement technique
 
@@ -30,14 +30,14 @@ Un `docker-compose.yml` pré-configuré fournit :
 - **Keycloak 26.1** + PostgreSQL
 - **Mailhog** (serveur SMTP de test)
 - **OpenLDAP** (utilisé au Jour 2)
-- Une **mini-application front** (portail du royaume)
+- Une **mini-application front** (échoppe principale de la province)
 - Une **API back-end** protégée (salle du trésor)
 
 > Les stagiaires lancent l'environnement une seule fois en début de formation.
 
 ---
 
-## Jour 1 — Construction du Royaume
+## Jour 1 — Construction de l'Empire
 
 *Modules 1 et 2 du plan de formation.*
 
@@ -48,31 +48,31 @@ Un `docker-compose.yml` pré-configuré fournit :
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-Avant de gouverner, il faut bâtir la capitale. Les architectes déploient le château central et découvrent la Couronne, siège du pouvoir absolu.
+Avant de gouverner, il faut bâtir la capitale. Les architectes déploient le château central et découvrent le Château de l'empereur, siège du pouvoir absolu.
 
 **Objectifs pédagogiques**
 
 - Installer et lancer Keycloak 26.1 via Docker
 - Naviguer dans la console d'administration
-- Comprendre le rôle du realm `master` (la Couronne)
+- Comprendre le rôle du realm `master` (le Château de l'empereur)
 
 **Étapes**
 
 1. Lancer l'environnement Docker (`docker compose up`)
 2. Accéder à la console d'administration de Keycloak
 3. Explorer le realm `master` : utilisateurs, paramètres, sessions
-4. Créer puis supprimer un realm de test pour observer l'isolation entre royaumes
+4. Créer puis supprimer un realm de test pour observer l'isolation entre provinces
 
 **Point clé** — Le realm `master` est réservé à l'administration globale ; les applications ne doivent jamais y être rattachées.
 
 ---
 
-### Exercice 2 — Créer le Royaume d'Authéria
+### Exercice 2 — Fonder la Province d'Authéria
 
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-La Couronne accorde une charte pour fonder le Royaume d'Authéria. Les architectes créent cette nouvelle province et configurent ses premières institutions.
+Le Château de l'empereur accorde une charte pour fonder la Province d'Authéria. Les architectes créent cette nouvelle province et configurent ses premières institutions.
 
 **Objectifs pédagogiques**
 
@@ -91,12 +91,12 @@ La Couronne accorde une charte pour fonder le Royaume d'Authéria. Les architect
 
 ---
 
-### Exercice 3 — Définir les titres de noblesse
+### Exercice 3 — Attribuer les profils métier
 
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-Tout royaume a besoin d'une hiérarchie. Les architectes établissent les titres de noblesse qui détermineront les droits de chaque sujet.
+Tout empire a besoin d'une organisation des métiers. Les architectes établissent les profils métier qui détermineront les droits de chaque sujet.
 
 **Objectifs pédagogiques**
 
@@ -106,7 +106,7 @@ Tout royaume a besoin d'une hiérarchie. Les architectes établissent les titres
 
 **Étapes**
 
-1. Créer trois rôles de royaume : `roi`, `garde`, `citoyen`
+1. Créer trois rôles de royaume : `chambellan`, `forgeron`, `paysan`
 2. Créer trois utilisateurs de test et leur attribuer chacun un rôle différent
 3. Se connecter avec un utilisateur via la Account Console
 4. Récupérer le jeton JWT et le décoder sur [jwt.io](https://jwt.io)
@@ -116,12 +116,12 @@ Tout royaume a besoin d'une hiérarchie. Les architectes établissent les titres
 
 ---
 
-### Exercice 4 — Ouvrir les portes du château
+### Exercice 4 — Ouvrir la première échoppe
 
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-Le royaume a besoin d'un portail officiel pour accueillir ses sujets. Les architectes installent la première porte d'accès au château : une application web sécurisée.
+La province a besoin d'un point de service pour accueillir ses sujets. Les architectes ouvrent la première échoppe : une application web sécurisée.
 
 **Objectifs pédagogiques**
 
@@ -131,22 +131,22 @@ Le royaume a besoin d'un portail officiel pour accueillir ses sujets. Les archit
 
 **Étapes**
 
-1. Créer le client `portail-royal` (type : public, redirect URI vers l'application locale)
+1. Créer le client `echoppe-principale` (type : public, redirect URI vers l'application locale)
 2. Lancer la mini-application front-end
 3. Tester la connexion : l'utilisateur est redirigé vers Keycloak, puis revient authentifié
 4. Afficher le nom et les rôles de l'utilisateur connecté
-5. Vérifier que seul un utilisateur avec le rôle `roi` accède à la page d'administration
+5. Vérifier que seul un utilisateur avec le rôle `chambellan` accède à la page d'administration
 
 **Point clé** — Le flux Authorization Code est le flux recommandé pour les applications web. Le navigateur ne voit jamais le secret ; seul un code temporaire est échangé.
 
 ---
 
-### Exercice 5 — Explorer les routes d'accès
+### Exercice 5 — Explorer les voies de commerce
 
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-Le château possède plusieurs portes, chacune adaptée à un type de visiteur. Les architectes testent les différentes voies d'accès pour en comprendre les usages et les limites.
+La province possède plusieurs voies de commerce, chacune adaptée à un type de marchand. Les architectes testent les différentes voies d'accès pour en comprendre les usages et les limites.
 
 **Objectifs pédagogiques**
 
@@ -166,12 +166,12 @@ Le château possède plusieurs portes, chacune adaptée à un type de visiteur. 
 
 ---
 
-### Exercice 6 — Déployer l'armée automatisée
+### Exercice 6 — Déployer l'automate impérial
 
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-Certaines missions ne nécessitent aucun humain. L'armée automatisée du royaume exécute des tâches de manière autonome, sans l'intervention d'un sujet.
+Certaines missions ne nécessitent aucun humain. L'automate impérial exécute des tâches de manière autonome, sans l'intervention d'un sujet.
 
 **Objectifs pédagogiques**
 
@@ -181,10 +181,10 @@ Certaines missions ne nécessitent aucun humain. L'armée automatisée du royaum
 
 **Étapes**
 
-1. Créer le client `armee-automatique` (type : confidential, service account activé)
-2. Attribuer le rôle `garde` au compte de service
+1. Créer le client `automate-imperial` (type : confidential, service account activé)
+2. Attribuer le rôle `forgeron` au compte de service
 3. Depuis Postman, obtenir un jeton via le flux **Client Credentials**
-4. Vérifier que le rôle `garde` est bien présent dans le jeton
+4. Vérifier que le rôle `forgeron` est bien présent dans le jeton
 5. Appeler l'API back-end protégée avec ce jeton et constater l'accès autorisé
 
 **Point clé** — Le flux Client Credentials ne fait intervenir aucun utilisateur. Le client s'authentifie directement avec son secret et reçoit un jeton portant ses propres rôles.
@@ -202,7 +202,7 @@ Certaines missions ne nécessitent aucun humain. L'armée automatisée du royaum
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-Le royaume grandit. Pour gérer efficacement des centaines de sujets, les architectes créent des guildes et organisent la population en une structure hiérarchique.
+La province grandit. Pour gérer efficacement des centaines de sujets, les architectes créent des guildes et organisent la population en une structure hiérarchique.
 
 **Objectifs pédagogiques**
 
@@ -213,8 +213,8 @@ Le royaume grandit. Pour gérer efficacement des centaines de sujets, les archit
 
 **Étapes**
 
-1. Créer les groupes : `guilde-militaires`, `guilde-civils`, `conseil-royal` (sous-groupe de `guilde-militaires`)
-2. Attribuer le rôle `garde` au groupe `guilde-militaires` et `citoyen` au groupe `guilde-civils`
+1. Créer les groupes : `guilde-forgerons`, `guilde-paysans`, `conseil-des-maitres` (sous-groupe de `guilde-forgerons`)
+2. Attribuer le rôle `forgeron` au groupe `guilde-forgerons` et `paysan` au groupe `guilde-paysans`
 3. Importer une dizaine d'utilisateurs (import JSON ou création manuelle)
 4. Affecter les utilisateurs aux groupes
 5. Se connecter avec un utilisateur d'une guilde et vérifier qu'il hérite du rôle du groupe
@@ -242,7 +242,7 @@ Les parchemins officiels déterminent quelles informations figurent sur le laiss
 1. Ajouter un attribut personnalisé `rang` (ex. : `capitaine`) à un utilisateur
 2. Créer un Client Scope `profil-avance`
 3. Ajouter un mapper de type « User Attribute » pour projeter `rang` dans le jeton
-4. Associer le scope `profil-avance` au client `portail-royal`
+4. Associer le scope `profil-avance` au client `echoppe-principale`
 5. Se connecter et comparer le jeton **avant** et **après** l'ajout du scope
 
 **Point clé** — Les Client Scopes et les Mappers contrôlent finement le contenu des jetons. C'est le mécanisme qui permet d'adapter les informations transmises à chaque application.
@@ -254,7 +254,7 @@ Les parchemins officiels déterminent quelles informations figurent sur le laiss
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-Le service de renseignement royal a besoin de voir le royaume à travers les yeux d'un sujet ordinaire, sans connaître son mot de passe. C'est la fonction d'impersonation.
+Le service de renseignement impérial a besoin de voir la province à travers les yeux d'un sujet ordinaire, sans connaître son mot de passe. C'est la fonction d'impersonation.
 
 **Objectifs pédagogiques**
 
@@ -264,21 +264,21 @@ Le service de renseignement royal a besoin de voir le royaume à travers les yeu
 
 **Étapes**
 
-1. Créer un utilisateur `support-royal` avec les droits d'impersonation
+1. Créer un utilisateur `support-imperial` avec les droits d'impersonation
 2. Depuis la console d'administration, impersonner un utilisateur standard
 3. Observer la session créée : vérifier qu'elle est distincte de la session admin
-4. Provoquer volontairement une erreur de rôle (ex. : un `citoyen` tente d'accéder à une ressource réservée au `roi`) et la diagnostiquer via le jeton
+4. Provoquer volontairement une erreur de rôle (ex. : un `paysan` tente d'accéder à une ressource réservée au `chambellan`) et la diagnostiquer via le jeton
 
 **Point clé** — L'impersonation est un outil puissant de support. Elle crée une session réelle au nom de l'utilisateur cible, permettant de reproduire exactement son expérience.
 
 ---
 
-### Exercice 10 — Forger une alliance avec un Royaume voisin
+### Exercice 10 — Forger une alliance avec une Province voisine
 
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-Le royaume voisin dispose de son propre registre de population. Plutôt que de recréer tous ces comptes, Authéria établit une alliance : les sujets du royaume voisin sont reconnus automatiquement.
+La province voisine dispose de son propre registre de population. Plutôt que de recréer tous ces comptes, Authéria établit une alliance : les sujets de la province voisine sont reconnus automatiquement.
 
 **Objectifs pédagogiques**
 
@@ -304,7 +304,7 @@ Le royaume voisin dispose de son propre registre de population. Plutôt que de r
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-Authéria ouvre une ambassade avec un royaume lointain. Grâce au traité diplomatique (SSO), les sujets de ce royaume peuvent entrer dans Authéria avec leur propre identité.
+Authéria ouvre une ambassade avec un empire lointain. Grâce au traité diplomatique (SSO), les sujets de cet empire peuvent entrer dans Authéria avec leur propre identité.
 
 **Objectifs pédagogiques**
 
@@ -329,7 +329,7 @@ Authéria ouvre une ambassade avec un royaume lointain. Grâce au traité diplom
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-Le royaume est fonctionnel, mais vulnérable. Les architectes renforcent les défenses : mots de passe robustes, authentification multi-facteurs et détection des intrusions.
+L'empire est fonctionnel, mais vulnérable. Les architectes renforcent les défenses : mots de passe robustes, authentification multi-facteurs et détection des intrusions.
 
 **Objectifs pédagogiques**
 
@@ -354,8 +354,8 @@ Le royaume est fonctionnel, mais vulnérable. Les architectes renforcent les dé
 
 | Jour | Module | Exercices | Thème narratif |
 | ---- | ------ | --------- | -------------- |
-| J1 matin | Module 1 — Fondations | Ex. 1 à 3 | Fonder le royaume, établir la hiérarchie |
-| J1 après-midi | Module 2 — Clients | Ex. 4 à 6 | Ouvrir les portes, sécuriser les accès |
+| J1 matin | Module 1 — Fondations | Ex. 1 à 3 | Fonder l'empire, organiser les métiers |
+| J1 après-midi | Module 2 — Clients | Ex. 4 à 6 | Ouvrir les échoppes, sécuriser les accès |
 | J2 matin | Module 3 — Identités | Ex. 7 à 9 | Organiser la population, enrichir les laissez-passer |
 | J2 après-midi | Module 4 — Intégrations | Ex. 10 à 12 | Alliances, diplomatie et fortification |
 
@@ -363,9 +363,9 @@ Le royaume est fonctionnel, mais vulnérable. Les architectes renforcent les dé
 
 ## Idées de gamification
 
-- **Cartes de rôle** : distribuer des cartes physiques (roi, garde, citoyen) à chaque stagiaire pour matérialiser les attributions de rôles.
-- **Incident royal** : injecter un problème de configuration à résoudre en équipe.
-  > *« Un garde accède à la salle du trône. Trouvez la faille et corrigez-la. »*
+- **Cartes de rôle** : distribuer des cartes physiques (chambellan, forgeron, paysan) à chaque stagiaire pour matérialiser les attributions de profils métier.
+- **Incident impérial** : injecter un problème de configuration à résoudre en équipe.
+  > *« Un paysan accède à l'échoppe du chambellan. Trouvez la faille et corrigez-la. »*
 - **Défi chronométré** : lancer un mini-challenge en fin de module.
-  > *« Bloquez l'accès admin aux civils en moins de 10 minutes. »*
+  > *« Bloquez l'accès aux échoppes réservées aux paysans en moins de 10 minutes. »*
 - **Parchemin récapitulatif** : chaque stagiaire maintient un journal de bord avec les commandes et configurations clés réalisées.
