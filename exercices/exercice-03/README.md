@@ -50,6 +50,7 @@ A l'issue de cet exercice, vous serez capable de :
 | Jeton JWT (Access Token) | Laissez-passer numérique |
 | Claim JWT | Information inscrite sur le laissez-passer |
 | Account Console | Bureau des affaires civiles |
+| Outil Evaluate | Atelier de prévisualisation des laissez-passer |
 
 ---
 
@@ -231,9 +232,132 @@ Répétez les étapes 1 à 7 pour enrichir les profils des autres utilisateurs :
 
 ---
 
-### Étape 4 — Se connecter à la console de gestion du compte
+### Étape 4 — Prévisualiser le laissez-passer avec l'outil Evaluate de Keycloak
 
-Chaque sujet de Valdoria peut accéder à son propre bureau des affaires civiles pour consulter son profil.
+Avant même de se connecter en tant qu'utilisateur, Keycloak offre un outil puissant pour **prévisualiser** le contenu du jeton JWT qui sera généré. C'est l'outil **Evaluate** disponible dans la configuration des clients.
+
+#### Accéder à l'outil Evaluate
+
+1. Dans la console d'administration, assurez-vous d'être dans le realm **`valdoria`**
+2. Dans le menu latéral gauche, cliquez sur **« Clients »**
+3. Cliquez sur le client **`account-console`** (c'est le client utilisé par la console de gestion du compte)
+4. Cliquez sur l'onglet **« Client scopes »**
+5. Cliquez sur le sous-onglet **« Evaluate »**
+
+Vous accédez à l'interface d'évaluation des jetons. Cette interface permet de simuler la génération d'un jeton pour un utilisateur donné, sans avoir à se connecter réellement.
+
+#### Générer un jeton de prévisualisation pour Alaric
+
+6. Dans le champ **« Users »**, commencez à taper `alaric` puis sélectionnez **`alaric`** dans la liste déroulante
+7. Laissez les autres champs par défaut (les scopes par défaut du client seront utilisés)
+8. Cliquez sur **« Generated access token »** (ou **« Jeton d'accès généré »**)
+
+**Observation :** Un jeton JWT complet s'affiche dans la zone de texte. Ce jeton est **déjà décodé** et lisible directement !
+
+#### Analyser le contenu du jeton
+
+9. Faites défiler le contenu du jeton généré et identifiez les sections clés :
+
+**Informations d'identité :**
+
+```json
+{
+  "exp": 1234567890,
+  "iat": 1234567890,
+  "iss": "http://localhost:8080/realms/valdoria",
+  "sub": "...",
+  "preferred_username": "alaric",
+  "email": "alaric@valdoria.empire",
+  "given_name": "Alaric",
+  "family_name": "le gouverneur",
+  "name": "Alaric le gouverneur"
+}
+```
+
+**Les rôles de royaume (realm_access) :**
+
+```json
+{
+  "realm_access": {
+    "roles": [
+      "gouverneur",
+      "sujet",
+      "artisan",
+      "marchand",
+      "scribe",
+      "default-roles-valdoria",
+      "offline_access",
+      "uma_authorization"
+    ]
+  }
+}
+```
+
+**Points d'observation importants :**
+
+- **`preferred_username`** : le nom d'utilisateur (`alaric`)
+- **`email`** : l'adresse email de l'utilisateur
+- **`given_name`** et **`family_name`** : le prénom ("Alaric") et le nom de famille ("le gouverneur")
+- **`name`** : le nom complet ("Alaric le gouverneur")
+- **`realm_access.roles`** : **C'EST ICI QUE SE TROUVENT LES RÔLES !**
+  - Le rôle `gouverneur` est présent
+  - Les rôles hérités (`sujet`, `artisan`, `marchand`, `scribe`) sont également présents grâce au rôle composite
+  - Les rôles par défaut du realm sont aussi inclus
+
+**Point clé :** Les applications utilisent le claim `realm_access.roles` pour contrôler l'accès aux ressources. Par exemple, une application peut vérifier si le jeton contient le rôle `gouverneur` avant d'afficher la page d'administration.
+
+#### Comparer avec d'autres utilisateurs
+
+10. Changez l'utilisateur sélectionné pour **`cedric`**
+11. Cliquez à nouveau sur **« Generated access token »**
+12. **Observation :** Le claim `realm_access.roles` ne contient que le rôle `artisan` (plus les rôles par défaut)
+
+```json
+{
+  "realm_access": {
+    "roles": [
+      "artisan",
+      "default-roles-valdoria",
+      "offline_access",
+      "uma_authorization"
+    ]
+  }
+}
+```
+
+13. Testez également avec **`brunhild`** pour observer les rôles du composite `maitre-forgeron` :
+
+```json
+{
+  "realm_access": {
+    "roles": [
+      "maitre-forgeron",
+      "artisan",
+      "sujet",
+      "default-roles-valdoria",
+      "offline_access",
+      "uma_authorization"
+    ]
+  }
+}
+```
+
+**Point d'observation :** L'outil Evaluate est extrêmement pratique pour le debug et la vérification des configurations. Il permet de voir exactement ce que contiendra le jeton **avant** de déployer une application, sans avoir à se connecter manuellement avec chaque utilisateur.
+
+#### Observer les autres types de jetons
+
+14. Cliquez sur **« Generated ID token »** pour voir le jeton d'identité (ID Token)
+15. Cliquez sur **« Generated user info »** pour voir les informations utilisateur telles qu'elles seraient retournées par l'endpoint `/userinfo`
+
+**Note importante :** Les attributs personnalisés (`rang`, `ville_origine`) **n'apparaissent pas encore** dans le jeton. Pour les inclure, il faudra configurer des **mappers** (ce sera abordé dans un exercice ultérieur).
+
+> **Checkpoint :** Vous avez utilisé l'outil Evaluate pour prévisualiser le jeton JWT d'Alaric. Vous avez identifié les rôles dans le claim `realm_access.roles` et constaté que les rôles hérités via le rôle composite `gouverneur` sont tous présents.
+
+---
+
+### Étape 5 — Se connecter à la console de gestion du compte
+
+Maintenant que nous avons compris le contenu du jeton via l'outil Evaluate, vérifions que tout fonctionne en conditions réelles. Chaque sujet de Valdoria peut accéder à son propre bureau des affaires civiles pour consulter son profil.
 
 1. Ouvrez un **nouvel onglet de navigation privée** (mode incognito) dans votre navigateur
 2. Accédez à : **http://localhost:8080/realms/valdoria/account**
@@ -256,91 +380,46 @@ Chaque sujet de Valdoria peut accéder à son propre bureau des affaires civiles
 
 ---
 
-### Étape 5 — Récupérer et observer le laissez-passer numérique (JWT)
+### Étape 6 — Observer le jeton réel via les outils développeur du navigateur
 
-Le jeton JWT est le laissez-passer que Keycloak délivre à chaque sujet authentifié. Observons son contenu.
+L'outil Evaluate nous a montré une **prévisualisation** du jeton. Maintenant, observons le **vrai jeton** échangé entre le navigateur et Keycloak.
 
 #### Récupérer le jeton via les outils développeur
 
 1. Toujours dans l'onglet incognito où vous êtes connecté en tant qu'Alaric, ouvrez les **outils développeur** du navigateur :
    - **Chrome / Edge :** `F12` ou `Ctrl+Shift+I` (Windows/Linux) / `Cmd+Option+I` (Mac)
    - **Firefox :** `F12` ou `Ctrl+Shift+I` (Windows/Linux) / `Cmd+Option+I` (Mac)
-2. Cliquez sur l'onglet **« Application »** (Chrome/Edge) ou **« Storage »** (Firefox)
-3. Dans le panneau de gauche, développez **« Session Storage »**
-4. Cliquez sur **`http://localhost:8080`**
-5. **Observation :** Plusieurs clés sont présentes, dont une qui contient le jeton d'accès
-6. Cherchez une clé qui ressemble à `kc-callback-...` ou qui contient `access_token`
-7. **Alternative plus simple :** Dans l'onglet **« Network »** (Réseau), actualisez la page (`F5`) et cherchez une requête vers `/account` ou `/userinfo`. Dans les en-têtes de la requête, vous trouverez un header `Authorization: Bearer <token>`
+2. Cliquez sur l'onglet **« Network »** (Réseau)
+3. Cochez **« Preserve log »** (Conserver le journal)
+4. Actualisez la page (`F5`)
+5. Dans la liste des requêtes, cherchez une requête vers `/token`
+6. Cliquez sur cette requête, puis sur l'onglet **« Response »** (ou **« Preview »**)
+7. **Observation :** La réponse contient un objet JSON avec plusieurs champs, dont `access_token`
+8. Copiez la valeur complète du champ `access_token` (c'est une longue chaîne de caractères encodée en base64)
 
-**Méthode recommandée : utiliser l'endpoint userinfo**
+**Méthode alternative — Session Storage :**
 
-8. Dans l'onglet **« Console »** des outils développeur, exécutez le code JavaScript suivant :
-
-```javascript
-fetch('http://localhost:8080/realms/valdoria/protocol/openid-connect/userinfo', {
-  credentials: 'include'
-})
-.then(r => r.json())
-.then(data => console.log(data));
-```
-
-9. **Observation :** Les informations de l'utilisateur s'affichent dans la console (nom, email, etc.)
-
-**Récupérer le jeton d'accès complet**
-
-10. Pour récupérer le jeton JWT complet, nous allons forcer une nouvelle authentification et capturer le jeton
-11. Dans l'onglet **« Network »** des outils développeur, cochez **« Preserve log »** (Conserver le journal)
-12. Dans la barre d'adresse, accédez à : **http://localhost:8080/realms/valdoria/protocol/openid-connect/auth?client_id=account-console&redirect_uri=http://localhost:8080/realms/valdoria/account/&response_type=code&scope=openid**
-13. Vous êtes déjà authentifié, donc vous êtes immédiatement redirigé
-14. Dans l'onglet **« Network »**, cherchez une requête vers `/token`
-15. Cliquez sur cette requête, puis sur l'onglet **« Response »**
-16. **Observation :** La réponse contient un objet JSON avec plusieurs champs, dont `access_token`
-17. Copiez la valeur complète du champ `access_token` (c'est une longue chaîne de caractères encodée en base64)
-
-**Note :** Si cette méthode est trop complexe, passez directement à l'étape suivante où nous utiliserons un jeton d'exemple pour la démonstration.
-
-> **Checkpoint :** Vous avez identifié où se trouve le jeton JWT dans les échanges entre le navigateur et Keycloak.
-
----
-
-### Étape 6 — Décoder et analyser le laissez-passer
-
-Maintenant que nous avons le jeton, décodons-le pour observer son contenu.
+9. Cliquez sur l'onglet **« Application »** (Chrome/Edge) ou **« Storage »** (Firefox)
+10. Dans le panneau de gauche, développez **« Session Storage »**
+11. Cliquez sur **`http://localhost:8080`**
+12. Cherchez une clé qui contient `token` — la valeur contient le jeton d'accès
 
 #### Décoder le jeton sur jwt.io
 
-1. Ouvrez un nouvel onglet et accédez à : **https://jwt.io**
-2. Dans la section **« Encoded »** (à gauche), collez le jeton JWT que vous avez copié à l'étape précédente
-3. La section **« Decoded »** (à droite) affiche automatiquement le contenu décodé du jeton
+13. Ouvrez un nouvel onglet et accédez à : **https://jwt.io**
+14. Dans la section **« Encoded »** (à gauche), collez le jeton JWT que vous avez copié
+15. La section **« Decoded »** (à droite) affiche automatiquement le contenu décodé du jeton
+16. **Observation :** Le contenu correspond exactement à ce que l'outil Evaluate avait prévisualisé !
 
-**Si vous n'avez pas réussi à récupérer le jeton, utilisez cette méthode alternative :**
+**Note :** jwt.io peut afficher "Invalid Signature" en rouge — c'est normal car le site ne connaît pas la clé publique de votre Keycloak. Le décodage fonctionne quand même correctement.
 
-4. Retournez dans la console d'administration de Keycloak (onglet non-incognito)
-5. Dans le realm `valdoria`, allez dans **« Clients »**
-6. Cliquez sur **« Create client »**
-7. Remplissez :
-   - **Client ID :** `test-jwt`
-   - **Client type :** `OpenID Connect`
-8. Cliquez sur **« Next »**
-9. Activez **« Direct access grants »**
-10. Cliquez sur **« Save »**
-11. Ouvrez un terminal et exécutez la commande suivante :
+> **Checkpoint :** Vous avez récupéré le vrai jeton JWT depuis le navigateur et vérifié qu'il correspond à la prévisualisation de l'outil Evaluate.
 
-```bash
-curl -X POST 'http://localhost:8080/realms/valdoria/protocol/openid-connect/token' \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  -d 'grant_type=password' \
-  -d 'client_id=test-jwt' \
-  -d 'username=alaric' \
-  -d 'password=valdoria123'
-```
+---
 
-12. La réponse contient un champ `access_token` — copiez sa valeur
-13. Collez cette valeur dans **https://jwt.io**
+### Étape 7 — Analyser la structure complète du jeton
 
-#### Analyser le contenu du jeton
-
-Une fois le jeton décodé sur jwt.io, observez les trois sections :
+Prenons le temps d'analyser en détail les trois sections du jeton JWT visible sur jwt.io.
 
 **Header (en-tête)**
 
@@ -358,7 +437,7 @@ Une fois le jeton décodé sur jwt.io, observez les trois sections :
 
 **Payload (charge utile)**
 
-C'est ici que se trouvent les informations importantes. Cherchez les claims suivants :
+C'est ici que se trouvent les informations importantes :
 
 ```json
 {
@@ -368,7 +447,7 @@ C'est ici que se trouvent les informations importantes. Cherchez les claims suiv
   "iss": "http://localhost:8080/realms/valdoria",
   "sub": "...",
   "typ": "Bearer",
-  "azp": "test-jwt",
+  "azp": "account-console",
   "preferred_username": "alaric",
   "email": "alaric@valdoria.empire",
   "given_name": "Alaric",
@@ -388,100 +467,72 @@ C'est ici que se trouvent les informations importantes. Cherchez les claims suiv
 }
 ```
 
-**Points d'observation importants :**
+**Explication des claims principaux :**
 
-- **`preferred_username`** : le nom d'utilisateur (`alaric`)
-- **`email`** : l'adresse email de l'utilisateur
-- **`given_name`** et **`family_name`** : le prénom et le nom de famille
-- **`realm_access.roles`** : **C'EST ICI QUE SE TROUVENT LES RÔLES !**
-  - Le rôle `gouverneur` est présent
-  - Les rôles hérités (`sujet`, `artisan`, `marchand`, `scribe`) sont également présents grâce au rôle composite
-  - Les rôles par défaut du realm sont aussi inclus
+| Claim | Description |
+| --- | --- |
+| `exp` | Date d'expiration du jeton (timestamp Unix) |
+| `iat` | Date de création du jeton (timestamp Unix) |
+| `iss` | Issuer — l'émetteur du jeton (URL du realm) |
+| `sub` | Subject — identifiant unique de l'utilisateur |
+| `azp` | Authorized party — le client qui a demandé le jeton |
+| `preferred_username` | Nom d'utilisateur |
+| `email` | Adresse email |
+| `given_name` | Prénom |
+| `family_name` | Nom de famille |
+| `realm_access.roles` | Liste des rôles de royaume |
 
-**Point clé :** Les applications utilisent le claim `realm_access.roles` pour contrôler l'accès aux ressources. Par exemple, une application peut vérifier si le jeton contient le rôle `gouverneur` avant d'afficher la page d'administration.
+**Signature**
 
-**Note importante :** Les attributs personnalisés (`rang`, `ville_origine`) **n'apparaissent pas encore** dans le jeton. Pour les inclure, il faudra configurer des **mappers** (ce sera abordé dans un exercice ultérieur).
+La troisième partie du JWT est la signature cryptographique. Elle garantit que le jeton n'a pas été modifié. Seul Keycloak (qui possède la clé privée) peut créer une signature valide.
 
-> **Checkpoint :** Vous avez décodé le jeton JWT d'Alaric et identifié les rôles dans le claim `realm_access.roles`. Vous constatez que les rôles hérités via le rôle composite `gouverneur` sont tous présents.
+> **Checkpoint :** Vous comprenez la structure d'un jeton JWT : Header, Payload et Signature. Vous savez où trouver les rôles (`realm_access.roles`) et les informations d'identité.
 
 ---
 
-### Étape 7 — Comparer les jetons de différents utilisateurs
+### Étape 8 — Récapitulatif : comparer les jetons de tous les utilisateurs
 
-Pour bien comprendre comment les rôles sont transportés, comparons les jetons de plusieurs utilisateurs.
-
-#### Récupérer le jeton de Cedric
-
-1. Fermez l'onglet incognito où vous étiez connecté en tant qu'Alaric
-2. Ouvrez un **nouvel onglet incognito**
-3. Accédez à : **http://localhost:8080/realms/valdoria/account**
-4. Connectez-vous avec les identifiants de Cedric :
-   - **Username :** `cedric`
-   - **Password :** `valdoria123`
-5. Utilisez la même méthode que précédemment pour récupérer le jeton (via curl ou via les outils développeur)
-
-**Avec curl :**
-
-```bash
-curl -X POST 'http://localhost:8080/realms/valdoria/protocol/openid-connect/token' \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  -d 'grant_type=password' \
-  -d 'client_id=test-jwt' \
-  -d 'username=cedric' \
-  -d 'password=valdoria123'
-```
-
-6. Copiez le jeton et décodez-le sur **https://jwt.io**
-
-#### Comparer les rôles
-
-7. Observez le claim `realm_access.roles` dans le jeton de Cedric :
-
-```json
-{
-  "realm_access": {
-    "roles": [
-      "artisan",
-      "default-roles-valdoria",
-      "offline_access",
-      "uma_authorization"
-    ]
-  }
-}
-```
-
-**Comparaison avec le jeton d'Alaric :**
+Grâce à l'outil Evaluate, nous avons déjà comparé les jetons de plusieurs utilisateurs à l'étape 4. Voici un récapitulatif de ce que nous avons observé :
 
 | Utilisateur | Rôle attribué | Rôles dans le jeton |
 | --- | --- | --- |
 | Alaric | `gouverneur` (composite) | `gouverneur`, `sujet`, `artisan`, `marchand`, `scribe` + rôles par défaut |
+| Brunhild | `maitre-forgeron` (composite) | `maitre-forgeron`, `artisan`, `sujet` + rôles par défaut |
 | Cedric | `artisan` (simple) | `artisan` + rôles par défaut |
+| Diane | `marchand` (simple) | `marchand` + rôles par défaut |
+| Edmond | `scribe` (simple) | `scribe` + rôles par défaut |
 
-**Point d'observation :** Cedric ne possède que le rôle `artisan` car c'est un rôle simple (non composite). Il n'hérite d'aucun autre rôle. En revanche, Alaric possède tous les rôles car `gouverneur` est un rôle composite qui inclut tous les autres.
+**Observations clés :**
 
-#### Tester avec Brunhild (rôle composite)
+1. **Rôles simples** : Cedric, Diane et Edmond ne possèdent que leur rôle direct (plus les rôles par défaut du realm)
 
-8. Répétez l'opération avec Brunhild (`brunhild` / `valdoria123`)
-9. Observez le claim `realm_access.roles` :
+2. **Rôles composites** : 
+   - Alaric (`gouverneur`) hérite de **tous** les rôles de base car `gouverneur` les inclut tous
+   - Brunhild (`maitre-forgeron`) hérite de `artisan` et `sujet` car ce sont les rôles inclus dans `maitre-forgeron`
 
-```json
-{
-  "realm_access": {
-    "roles": [
-      "maitre-forgeron",
-      "artisan",
-      "sujet",
-      "default-roles-valdoria",
-      "offline_access",
-      "uma_authorization"
-    ]
-  }
-}
+3. **Rôles par défaut** : Tous les utilisateurs possèdent automatiquement `default-roles-valdoria`, `offline_access` et `uma_authorization`
+
+**Schéma de la hiérarchie des rôles :**
+
+```
+gouverneur (Alaric)
+├── sujet
+├── artisan
+├── marchand
+└── scribe
+
+maitre-forgeron (Brunhild)
+├── artisan
+└── sujet
+
+artisan (Cedric) — rôle simple, pas d'héritage
+
+marchand (Diane) — rôle simple, pas d'héritage
+
+scribe (Edmond) — rôle simple, pas d'héritage
 ```
 
-**Point d'observation :** Brunhild possède le rôle `maitre-forgeron` (composite) qui inclut automatiquement `artisan` et `sujet`. C'est la hiérarchie que nous avons définie dans l'exercice 2.
-
-> **Checkpoint :** Vous avez comparé les jetons de trois utilisateurs et constaté que les rôles composites injectent automatiquement tous leurs rôles associés dans le jeton JWT.
+> **Checkpoint :** Vous comprenez comment les rôles composites injectent automatiquement tous leurs rôles associés dans le jeton JWT.
 
 ---
 
@@ -501,8 +552,11 @@ curl -X POST 'http://localhost:8080/realms/valdoria/protocol/openid-connect/toke
 
 | Problème | Cause probable | Solution |
 | --- | --- | --- |
+| L'onglet « Evaluate » n'apparaît pas | Vous n'êtes pas dans l'onglet « Client scopes » du client | Allez dans Clients > account-console > Client scopes > Evaluate |
+| Le champ « Users » ne propose aucun utilisateur | Les utilisateurs n'ont pas été créés ou vous êtes dans le mauvais realm | Vérifiez que vous êtes dans le realm `valdoria` et que les utilisateurs existent |
+| Le jeton généré par Evaluate est vide | Aucun utilisateur sélectionné | Sélectionnez un utilisateur dans le champ « Users » avant de cliquer sur « Generated access token » |
 | Impossible de se connecter à la Account Console | Mauvais identifiants ou realm incorrect | Vérifiez que l'URL contient `/realms/valdoria/account` et que les identifiants sont corrects |
-| Le jeton ne s'affiche pas dans les outils développeur | Session Storage vide ou mauvais onglet | Utilisez la méthode curl pour récupérer le jeton directement |
+| Le jeton ne s'affiche pas dans les outils développeur | Session Storage vide ou mauvais onglet | Utilisez l'outil Evaluate de Keycloak pour prévisualiser le jeton |
 | Les rôles n'apparaissent pas dans le jeton | Rôles non attribués ou jeton expiré | Vérifiez l'onglet « Role mapping » de l'utilisateur et générez un nouveau jeton |
 | jwt.io affiche "Invalid Signature" | Normal — jwt.io ne connaît pas la clé publique de votre Keycloak | Ignorez cet avertissement, le décodage fonctionne quand même |
 | Les attributs personnalisés n'apparaissent pas dans le jeton | C'est normal — les mappers ne sont pas encore configurés | Les attributs seront injectés dans un exercice ultérieur via des mappers |
@@ -592,6 +646,7 @@ Créez un tableau comparatif des rôles présents dans le jeton de chaque utilis
 | Jeton JWT (Access Token) | Laissez-passer numérique |
 | Claim JWT | Information inscrite sur le laissez-passer |
 | Account Console | Bureau des affaires civiles |
+| Outil Evaluate | Atelier de prévisualisation des laissez-passer |
 | Client applicatif | Échoppe (point de service métier) |
 | Groupe | Guilde (ex : guilde des forgerons) |
 | Client Scope / Mapper | Parchemin officiel |
