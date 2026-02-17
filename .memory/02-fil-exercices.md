@@ -158,27 +158,38 @@ La province de Valdoria possède désormais ses titres impériaux. Il est temps 
 **Contexte narratif**
 La province a besoin d'un point de service pour accueillir ses sujets et protéger ses ressources. Les architectes ouvrent le **Comptoir des voyageurs** (l'application front-end où les sujets se présentent) et sécurisent la **Réserve** (l'API qui détient les ressources du royaume). Le Comptoir demande des laissez-passer (jetons) **au nom de la Réserve** — c'est le concept d'audience.
 
+Les architectes enrichissent d'abord les profils des sujets avec l'attribut **ville d'origine**, puis configurent les clients et les mappers pour injecter toutes les informations nécessaires dans les jetons. Ils utilisent l'**atelier de prévisualisation des laissez-passer** (outil Evaluate) pour vérifier que tout est correctement configuré avant même de connecter une vraie application.
+
 **Objectifs pédagogiques**
 
-- Créer et configurer deux clients : un client public (front) et un client API (resource server)
-- Comprendre le flux Authorization Code (OIDC)
-- Comprendre le concept d'audience (`aud`) : le jeton émis par le Comptoir est destiné à la Réserve
-- Connecter l'application front-end à Keycloak et tester l'accès à l'API
+- Ajouter des attributs personnalisés aux utilisateurs (`ville_origine`)
+- Créer et configurer un client **public** (SPA) avec PKCE pour le front-end
+- Créer et configurer un client **bearer-only** pour l'API
+- Configurer des **mappers** pour injecter les rôles de royaume et attributs dans les jetons
+- Configurer l'**audience** (`aud`) pour indiquer la destination des jetons
+- Utiliser l'outil **Evaluate** pour prévisualiser et valider le contenu des jetons
+- Simuler le contrôle d'accès de l'API en analysant les jetons
 
 **Étapes**
 
-1. Créer le client `comptoir-des-voyageurs` dans le realm `valdoria` (type : public, redirect URI vers l'application locale)
-2. Créer le client `reserve-valdoria` (type : bearer-only ou confidential — il ne sert qu'à valider les jetons)
-3. Lancer la mini-application front-end (le Comptoir)
-4. Tester la connexion : l'utilisateur est redirigé vers Keycloak, puis revient authentifié
-5. Observer le jeton : le champ `aud` (audience) pointe vers `reserve-valdoria` — c'est pour cette API que le jeton est valide
-6. Tester les endpoints de la Réserve :
-   - `GET /infos` → accessible par tous les utilisateurs authentifiés (Alaric, Brunhild, Cedric)
-   - `GET /inventaire` → accessible uniquement par un `marchand` (Brunhild ✓, Cedric ✗)
-   - `GET /villes/{id}/artefacts` → accessible par un `marchand`, résultats filtrés par l'attribut `ville_origine`
-7. Se connecter avec Cedric (`voyageur`) et constater le refus sur `/inventaire` (HTTP 403)
+1. Ajouter l'attribut personnalisé `ville_origine` aux trois utilisateurs (Alaric → Valdoria-Centre, Brunhild → Nordheim, Cedric → Sudbourg)
+2. Créer le client `comptoir-des-voyageurs` (type : public, Standard flow activé, PKCE S256 obligatoire)
+3. Créer le client `reserve-valdoria` (type : bearer-only — tous flux désactivés)
+4. Vérifier que le mapper des rôles de royaume existe déjà dans le scope `roles` (assigné par défaut)
+5. Créer un Client Scope `profil-valdorien` avec un mapper pour l'attribut `ville_origine`
+6. Assigner le scope `profil-valdorien` au client Comptoir
+7. Créer un mapper d'audience dans le scope dédié du Comptoir pour forcer `aud: reserve-valdoria`
+8. Utiliser l'outil Evaluate pour prévisualiser les jetons de chaque utilisateur et vérifier :
+   - La présence des rôles de royaume dans `realm_access.roles` (avec héritage via rôles composites)
+   - La présence de l'attribut `ville_origine`
+   - La présence de `reserve-valdoria` dans le claim `aud`
+9. Simuler le contrôle d'accès de la Réserve :
+   - Alaric (gouverneur → inclut `marchand`) peut accéder à `/inventaire` ✅
+   - Brunhild (maitre-forgeron → **sans** `marchand`) ne peut **pas** accéder à `/inventaire` ❌
+   - Cedric (artisan) ne peut **pas** accéder à `/inventaire` ❌
+10. Observer comment l'attribut `ville_origine` permettrait le filtrage contextuel des données
 
-**Point clé** — Le flux Authorization Code est le flux recommandé pour les applications web. L'**audience** (`aud`) indique à quelle API le jeton est destiné : le Comptoir (front) obtient un jeton pour la Réserve (API). L'API vérifie à la fois le rôle (`marchand`) pour l'accès et l'attribut (`ville_origine`) pour le filtrage des données.
+**Point clé** — Le flux Authorization Code avec PKCE (S256) est le standard pour les applications web modernes. Les **mappers** contrôlent finement le contenu des jetons : rôles de royaume (autorisation), attributs personnalisés (filtrage contextuel), audience (sécurité). L'**outil Evaluate** est indispensable pour vérifier la configuration avant de connecter une vraie application. L'**audience** (`aud`) indique à quelle API le jeton est destiné et permet à l'API de vérifier que le jeton lui est bien adressé.
 
 ---
 
