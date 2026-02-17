@@ -90,15 +90,32 @@ Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria
 1. Créer le realm `valdoria` depuis la console d'administration
 2. Vérifier l'isolation : observer que les utilisateurs et rôles du realm `master` n'existent pas dans `valdoria`
 3. Créer deux rôles de royaume simples :
-   - `voyageur` (sujet du royaume — accès aux informations publiques)
-   - `marchand` (commerçant — accès à l'inventaire et aux artefacts de la Réserve)
+   - `sujet` (citoyen ordinaire de Valdoria — accès minimal aux services du royaume)
+   - `marchand` (commerçant de l'empire — accès aux places de marché et registres commerciaux)
 4. Créer un rôle composite :
-   - `gouverneur` (administrateur de la province — hérite de `voyageur` et `marchand`)
+   - `gouverneur` (administrateur suprême de la province — hérite de `sujet` + `marchand`)
 5. Configurer les paramètres de session : durées de vie des sessions SSO et des tokens
 6. Paramétrer le serveur SMTP vers Mailhog pour les emails de vérification (préparation pour la gestion des utilisateurs)
 7. Explorer les paramètres de tokens : observer les options d'Access Token et Refresh Token
 
-**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants. Le rôle composite `gouverneur` hérite automatiquement des droits de `voyageur` et `marchand` : c'est le mécanisme clé pour gérer les hiérarchies de droits sans attributions manuelles répétitives.
+**Rôles créés :**
+
+*Rôles de base (simples) :*
+- `sujet` : Citoyen ordinaire de Valdoria
+- `marchand` : Commerçant de l'empire
+
+*Rôles composites (hiérarchiques) :*
+- `gouverneur` : Hérite de `sujet` + `marchand` → Administrateur suprême de la province
+
+**Pédagogie du modèle simplifié :**
+Cette structure volontairement épurée (3 rôles au total) facilite la compréhension des concepts fondamentaux :
+- L'isolation des rôles entre realms
+- L'héritage via les rôles composites
+- La hiérarchie administrative
+
+Les modèles de rôles plus complexes (avec rôles métier spécialisés) seront abordés dans les exercices avancés du Module 3.
+
+**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants. Le rôle composite `gouverneur` hérite automatiquement des droits de `sujet` et `marchand` : c'est le mécanisme clé pour gérer les hiérarchies de droits sans attributions manuelles répétitives.
 
 ---
 
@@ -120,15 +137,15 @@ La province de Valdoria possède désormais ses titres impériaux. Il est temps 
 **Étapes**
 
 1. Créer trois utilisateurs de test dans le realm `valdoria` :
-   - `alaric` le gouverneur (ville d'origine : Valdoria-Centre)
-   - `brunhild` la marchande (ville d'origine : Nordheim)
-   - `cedric` le voyageur (ville d'origine : Sudbourg)
-2. Attribuer à chaque utilisateur son rôle correspondant (`gouverneur`, `marchand`, `voyageur`)
+   - `alaric` le gouverneur (ville d'origine : Valdoria-Centre) → rôle composite
+   - `brunhild` la marchande (ville d'origine : Nordheim) → rôle simple
+   - `cedric` le sujet (ville d'origine : Sudbourg) → rôle de base
+2. Attribuer à chaque utilisateur son rôle correspondant (`gouverneur`, `marchand`, `sujet`)
 3. Ajouter l'attribut `ville_origine` à chaque utilisateur (onglet « Attributes »)
-4. Se connecter avec l'utilisateur `alaric` via la Account Console
+4. Vérifier les profils utilisateurs et l'héritage des rôles pour alaric
 5. Utiliser l'outil Evaluate pour prévisualiser le jeton JWT
-6. Identifier où apparaissent les rôles dans les claims du jeton (section `realm_access.roles`)
-7. Comparer avec un jeton obtenu par `cedric` : observer que `cedric` (voyageur) n'a pas le rôle `marchand`, tandis qu'`alaric` (gouverneur) hérite de tous les rôles via le composite
+6. Se connecter avec l'utilisateur `alaric` via la Account Console
+7. Comprendre la différence entre rôles de royaume et rôles de client dans les jetons
 
 **Point clé** — Le **rôle** détermine si un sujet peut accéder à une ressource (ex : seul un `marchand` peut consulter l'inventaire). L'**attribut** (`ville_origine`) enrichit le jeton avec des informations contextuelles que l'API pourra utiliser pour filtrer les données (ex : ne montrer que les artefacts de la ville du sujet).
 

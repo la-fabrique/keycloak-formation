@@ -38,7 +38,7 @@ A l'issue de cet exercice, vous serez capable de :
 
 > La province de Valdoria possède désormais ses institutions. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs profils métier.
 >
-> Les architectes créent les trois premiers habitants de Valdoria : un gouverneur pour administrer la province, un maître forgeron pour diriger les ateliers, et un artisan pour représenter les métiers de base.
+> Les architectes créent les trois premiers habitants de Valdoria : un gouverneur pour administrer la province, une marchande pour gérer le commerce, et un simple sujet pour représenter les citoyens ordinaires.
 >
 > Chaque sujet reçoit un **laissez-passer numérique** (jeton JWT) qui matérialise son identité. Les architectes découvrent l'**atelier de prévisualisation des laissez-passer** (outil Evaluate) qui leur permet d'observer le contenu des jetons avant même qu'un sujet ne se connecte.
 >
@@ -49,7 +49,7 @@ A l'issue de cet exercice, vous serez capable de :
 | Concept Keycloak | Métaphore Authéria |
 | --- | --- |
 | Utilisateur | Sujet de l'empire |
-| Rôle de royaume | Profil métier (gouverneur, artisan, etc.) |
+| Rôle de royaume | Profil métier (gouverneur, marchand, sujet) |
 | Rôle de client | Permission sur un service spécifique |
 | Jeton JWT (Access Token) | Laissez-passer numérique |
 | Claim JWT | Information inscrite sur le laissez-passer |
@@ -99,7 +99,7 @@ La province accueille ses trois premiers habitants. Chacun recevra un profil mé
 
 Répétez les étapes 5 à 13 pour créer les utilisateurs suivants :
 
-**Brunhild le Maître forgeron**
+**Brunhild la marchande**
 
 | Champ | Valeur |
 | --- | --- |
@@ -107,11 +107,11 @@ Répétez les étapes 5 à 13 pour créer les utilisateurs suivants :
 | **Email** | `brunhild@valdoria.empire` |
 | **Email verified** | ✅ |
 | **First name** | `Brunhild` |
-| **Last name** | `le Maître forgeron` |
+| **Last name** | `la marchande` |
 | **Password** | `valdoria123` |
 | **Temporary** | OFF |
 
-**Cedric l'artisan**
+**Cedric le sujet**
 
 | Champ | Valeur |
 | --- | --- |
@@ -119,7 +119,7 @@ Répétez les étapes 5 à 13 pour créer les utilisateurs suivants :
 | **Email** | `cedric@valdoria.empire` |
 | **Email verified** | ✅ |
 | **First name** | `Cedric` |
-| **Last name** | `l'artisan` |
+| **Last name** | `le sujet` |
 | **Password** | `valdoria123` |
 | **Temporary** | OFF |
 
@@ -128,9 +128,9 @@ Répétez les étapes 5 à 13 pour créer les utilisateurs suivants :
 **Pourquoi seulement 3 utilisateurs ?**
 
 Ces trois utilisateurs suffisent pour illustrer tous les concepts pédagogiques :
-- **Alaric** (gouverneur) → rôle composite complet (hérite de tous les rôles de base)
-- **Brunhild** (maitre-forgeron) → rôle composite partiel (hérite de `artisan` et `sujet`)
-- **Cedric** (artisan) → rôle simple (aucun héritage)
+- **Alaric** (gouverneur) → rôle composite (hérite de `sujet` + `marchand`)
+- **Brunhild** (marchand) → rôle simple
+- **Cedric** (sujet) → rôle simple (rôle de base)
 
 ---
 
@@ -146,7 +146,7 @@ Chaque sujet reçoit maintenant son profil métier officiel.
 4. Dans la liste qui apparaît, **cochez le rôle** `gouverneur`
 5. Cliquez sur **« Assign »**
 6. **Observation :** Le rôle `gouverneur` apparaît maintenant dans la liste des rôles attribués
-7. **Point d'observation :** Comme `gouverneur` est un rôle composite (créé dans l'exercice 2), Alaric hérite automatiquement des rôles `sujet`, `artisan`, `marchand` et `scribe`. Vous pouvez le vérifier en activant le filtre **« Show inherited roles »** (ou **« Afficher les rôles hérités »**) en haut de la liste.
+7. **Point d'observation :** Comme `gouverneur` est un rôle composite (créé dans l'exercice 2), Alaric hérite automatiquement des rôles `sujet` et `marchand`. Vous pouvez le vérifier en activant le filtre **« Show inherited roles »** (ou **« Afficher les rôles hérités »**) en haut de la liste.
 
 #### Attribuer les rôles aux autres utilisateurs
 
@@ -154,16 +154,58 @@ Répétez les étapes 1 à 5 pour attribuer les rôles suivants :
 
 | Utilisateur | Rôle à attribuer |
 | --- | --- |
-| `brunhild` | `maitre-forgeron` |
-| `cedric` | `artisan` |
+| `brunhild` | `marchand` |
+| `cedric` | `sujet` |
 
 > **Checkpoint :** Chaque utilisateur possède maintenant son rôle. Vérifiez en consultant l'onglet « Role mapping » de chaque utilisateur.
 
 ---
 
-### Étape 3 — Vérifier les profils utilisateurs
+### Étape 3 — Ajouter les attributs personnalisés aux utilisateurs
 
-Les utilisateurs de Valdoria sont maintenant créés avec leurs rôles. Vérifions que leurs profils sont complets.
+Les attributs permettent d'enrichir le profil utilisateur avec des informations contextuelles qui ne sont pas liées au contrôle d'accès.
+
+#### 3.1 Comprendre la distinction : rôle vs. attribut
+
+- **Rôle** (`gouverneur`, `marchand`, `sujet`) → **Contrôle d'accès** (qui peut faire quoi)
+- **Attribut** (`ville_origine`) → **Enrichissement contextuel** (informations sur l'utilisateur)
+
+Les rôles définissent les permissions, les attributs définissent les caractéristiques.
+
+#### 3.2 Ajouter l'attribut `ville_origine`
+
+Pour chaque utilisateur créé, ajoutons une ville d'origine :
+
+1. Dans la liste des **« Users »**, cliquez sur **`alaric`**
+2. Cliquez sur l'onglet **« Attributes »**
+3. Cliquez sur **« Add »** (ou le bouton d'ajout d'attribut)
+4. Remplissez les champs :
+   - **Key :** `ville_origine`
+   - **Value :** `Valdoria-Centre`
+5. Cliquez sur **« Save »**
+
+Répétez l'opération pour les autres utilisateurs :
+
+| Utilisateur | Attribut `ville_origine` |
+| --- | --- |
+| `alaric` | `Valdoria-Centre` |
+| `brunhild` | `Nordheim` |
+| `cedric` | `Sudbourg` |
+
+#### 3.3 Vérifier les attributs
+
+1. Retournez sur l'onglet **« Attributes »** de chaque utilisateur
+2. Vérifiez que `ville_origine` apparaît bien avec la valeur correcte
+
+**Point d'observation :** Ces attributs personnalisés enrichissent le profil utilisateur. Dans l'exercice 8, nous configurerons des **mappers** pour injecter ces attributs dans les jetons JWT. Les applications pourront alors utiliser `ville_origine` pour filtrer des données ou personnaliser l'expérience utilisateur.
+
+> **Checkpoint :** Les 3 utilisateurs ont l'attribut `ville_origine` configuré.
+
+---
+
+### Étape 4 — Vérifier les profils utilisateurs
+
+Les utilisateurs de Valdoria sont maintenant créés avec leurs rôles et leurs attributs. Vérifions que leurs profils sont complets.
 
 #### Vérifier le profil d'Alaric
 
@@ -175,15 +217,13 @@ Les utilisateurs de Valdoria sont maintenant créés avec leurs rôles. Vérifio
    - Last name : `le gouverneur`
 3. Cliquez sur l'onglet **« Role mapping »**
 4. Activez le toggle **« Show inherited roles »**
-5. **Observation :** Alaric possède le rôle `gouverneur` directement attribué, et hérite automatiquement de `sujet`, `artisan`, `marchand`, `scribe`
+5. **Observation :** Alaric possède le rôle `gouverneur` directement attribué, et hérite automatiquement de `sujet` et `marchand`
 
-**Point d'observation :** Les informations de base (nom, prénom, email) sont suffisantes pour cet exercice. Les attributs personnalisés avancés (comme `rang` ou `ville_origine`) seront abordés dans un exercice ultérieur sur les mappers et les client scopes.
-
-> **Checkpoint :** Les trois utilisateurs sont créés avec leurs rôles. Alaric hérite de tous les rôles via le composite `gouverneur`.
+> **Checkpoint :** Les trois utilisateurs sont créés avec leurs rôles. Alaric hérite des deux rôles de base via le composite `gouverneur`.
 
 ---
 
-### Étape 4 — Prévisualiser le laissez-passer avec l'outil Evaluate de Keycloak
+### Étape 5 — Prévisualiser le laissez-passer avec l'outil Evaluate de Keycloak
 
 Avant même de se connecter en tant qu'utilisateur, Keycloak offre un outil puissant pour **prévisualiser** le contenu du jeton JWT qui sera généré. C'est l'outil **Evaluate** disponible dans la configuration des clients.
 
@@ -260,9 +300,9 @@ Vous accédez à l'interface d'évaluation des jetons. Cette interface permet de
   - `manage-account` : permet de gérer son propre compte
   - `manage-account-links` : permet de gérer les liens avec des IDP externes
 
-**Point clé :** Dans ce contexte, le jeton contient les rôles spécifiques au client `account` (l'API de gestion du compte). Les rôles de royaume (`gouverneur`, `artisan`, etc.) ne sont **pas automatiquement inclus** dans ce jeton car ils ne sont pas mappés par défaut pour le client `account-console`.
+**Point clé :** Dans ce contexte, le jeton contient les rôles spécifiques au client `account` (l'API de gestion du compte). Les rôles de royaume (`gouverneur`, `marchand`, `sujet`) ne sont **pas automatiquement inclus** dans ce jeton car ils ne sont pas mappés par défaut pour le client `account-console`.
 
-**Note importante :** Pour que les rôles de royaume (`gouverneur`, `artisan`, etc.) apparaissent dans les jetons, il faudra configurer des **mappers** dans les client scopes. Ce sera abordé dans un exercice ultérieur sur les clients applicatifs métier.
+**Note importante :** Pour que les rôles de royaume (`gouverneur`, `marchand`, `sujet`) apparaissent dans les jetons, il faudra configurer des **mappers** dans les client scopes. Ce sera abordé dans un exercice ultérieur sur les clients applicatifs métier.
 
 #### Comparer avec d'autres utilisateurs
 
@@ -284,7 +324,7 @@ Vous accédez à l'interface d'évaluation des jetons. Cette interface permet de
 }
 ```
 
-**Point d'observation :** Tous les utilisateurs du realm ont par défaut les mêmes rôles sur le client `account` (gestion de leur propre compte). Les rôles de royaume (`artisan`, `gouverneur`, etc.) ne sont pas visibles dans ce jeton car ils ne sont pas configurés pour être inclus dans les jetons destinés à l'API `account`.
+**Point d'observation :** Tous les utilisateurs du realm ont par défaut les mêmes rôles sur le client `account` (gestion de leur propre compte). Les rôles de royaume (`gouverneur`, `marchand`, `sujet`) ne sont pas visibles dans ce jeton car ils ne sont pas configurés pour être inclus dans les jetons destinés à l'API `account`.
 
 #### Observer les autres types de jetons
 
@@ -294,13 +334,13 @@ Vous accédez à l'interface d'évaluation des jetons. Cette interface permet de
 
 **Point d'observation :** L'outil Evaluate est extrêmement pratique pour le debug et la vérification des configurations. Il permet de voir exactement ce que contiendra le jeton **avant** de déployer une application, sans avoir à se connecter manuellement avec chaque utilisateur.
 
-**Note importante sur les rôles de royaume :** Les rôles de royaume (`gouverneur`, `artisan`, `marchand`, `scribe`) que nous avons créés dans l'exercice 2 **ne sont pas automatiquement inclus** dans tous les jetons. Leur inclusion dépend de la configuration des **client scopes** et des **mappers**. Dans l'exercice 4, nous créerons une application métier et configurerons les mappers pour inclure les rôles de royaume dans les jetons.
+**Note importante sur les rôles de royaume :** Les rôles de royaume (`gouverneur`, `marchand`, `sujet`) que nous avons créés dans l'exercice 2 **ne sont pas automatiquement inclus** dans tous les jetons. Leur inclusion dépend de la configuration des **client scopes** et des **mappers**. Dans l'exercice 4, nous créerons une application métier et configurerons les mappers pour inclure les rôles de royaume dans les jetons.
 
 > **Checkpoint :** Vous avez utilisé l'outil Evaluate pour prévisualiser le jeton JWT d'Alaric. Vous avez identifié les rôles dans le claim `realm_access.roles` et constaté que les rôles hérités via le rôle composite `gouverneur` sont tous présents.
 
 ---
 
-### Étape 5 — Se connecter à la console de gestion du compte
+### Étape 6 — Se connecter à la console de gestion du compte
 
 Maintenant que nous avons compris le contenu du jeton via l'outil Evaluate, vérifions que tout fonctionne en conditions réelles. Chaque sujet de Valdoria peut accéder à son propre bureau des affaires civiles pour consulter son profil.
 
@@ -325,7 +365,7 @@ Maintenant que nous avons compris le contenu du jeton via l'outil Evaluate, vér
 
 ---
 
-### Étape 6 — Récapitulatif : comprendre les rôles de royaume vs rôles de client
+### Étape 7 — Récapitulatif : comprendre les rôles de royaume vs rôles de client
 
 Grâce à l'outil Evaluate, nous avons observé le contenu du jeton pour le client `account-console` appelant l'API `account`. Récapitulons ce que nous avons appris :
 
@@ -334,13 +374,13 @@ Grâce à l'outil Evaluate, nous avons observé le contenu du jeton pour le clie
 | Utilisateur | Rôle de royaume attribué | Rôles dans le jeton (resource_access.account.roles) |
 | --- | --- | --- |
 | Alaric | `gouverneur` (composite) | `manage-account`, `manage-account-links` |
-| Brunhild | `maitre-forgeron` (composite) | `manage-account`, `manage-account-links` |
-| Cedric | `artisan` (simple) | `manage-account`, `manage-account-links` |
+| Brunhild | `marchand` (simple) | `manage-account`, `manage-account-links` |
+| Cedric | `sujet` (simple) | `manage-account`, `manage-account-links` |
 
 **Observations clés :**
 
 1. **Rôles de client vs rôles de royaume** : 
-   - Les **rôles de royaume** (`gouverneur`, `artisan`, etc.) définissent les profils métier dans Valdoria
+   - Les **rôles de royaume** (`gouverneur`, `marchand`, `sujet`) définissent les profils métier dans Valdoria
    - Les **rôles de client** (`manage-account`, `manage-account-links`) définissent les permissions sur une API spécifique
    - Dans ce jeton, seuls les rôles du client `account` sont présents
 
@@ -349,7 +389,7 @@ Grâce à l'outil Evaluate, nous avons observé le contenu du jeton pour le clie
    - C'est normal : tout sujet de Valdoria peut accéder à son bureau des affaires civiles
 
 3. **Les rôles de royaume ne sont pas automatiquement inclus** :
-   - Les rôles `gouverneur`, `artisan`, `marchand`, `scribe` ne sont **pas présents** dans ce jeton
+   - Les rôles `gouverneur`, `marchand`, `sujet` ne sont **pas présents** dans ce jeton
    - Pour les inclure, il faudra configurer des **mappers** dans les client scopes
    - Ce sera l'objet de l'exercice 4 (création d'une application métier)
 
@@ -360,9 +400,10 @@ Utilisateur Alaric
 ├── Rôles de royaume (profils métier)
 │   ├── gouverneur (composite)
 │   ├── sujet (hérité)
-│   ├── artisan (hérité)
-│   ├── marchand (hérité)
-│   └── scribe (hérité)
+│   └── marchand (hérité)
+│
+├── Attributs personnalisés
+│   └── ville_origine: "Valdoria-Centre"
 │
 └── Rôles de client (permissions sur APIs)
     └── account
@@ -449,9 +490,9 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 2. Cliquez sur **`alaric`**
 3. Allez dans l'onglet **« Role mapping »**
 4. Activez le toggle **« Show inherited roles »**
-5. **Observation :** Vous voyez le rôle `gouverneur` directement attribué, et les rôles `sujet`, `artisan`, `marchand`, `scribe` marqués comme hérités
-6. Répétez l'opération pour `brunhild` : vous verrez `maitre-forgeron` directement attribué, et `artisan` + `sujet` hérités
-7. Pour `cedric` : seul le rôle `artisan` est présent, sans héritage
+5. **Observation :** Vous voyez le rôle `gouverneur` directement attribué, et les rôles `sujet` et `marchand` marqués comme hérités
+6. Répétez l'opération pour `brunhild` : vous verrez `marchand` directement attribué, sans héritage
+7. Pour `cedric` : seul le rôle `sujet` est présent, sans héritage
 
 **Point d'observation :** Cette vue permet de vérifier rapidement la hiérarchie des rôles et l'héritage via les rôles composites.
 
@@ -459,10 +500,10 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 
 ## Récapitulatif des utilisateurs créés
 
-| Username | Nom complet | Email | Rôle de royaume | Rôles hérités |
-| --- | --- | --- | --- | --- |
-| `alaric` | Alaric le gouverneur | alaric@valdoria.empire | `gouverneur` (composite) | `sujet`, `artisan`, `marchand`, `scribe` |
-| `brunhild` | Brunhild le Maître forgeron | brunhild@valdoria.empire | `maitre-forgeron` (composite) | `artisan`, `sujet` |
-| `cedric` | Cedric l'artisan | cedric@valdoria.empire | `artisan` (simple) | aucun |
+| Username | Nom complet | Email | Rôle | Rôles hérités | Ville d'origine |
+| --- | --- | --- | --- | --- | --- |
+| `alaric` | Alaric le gouverneur | alaric@valdoria.empire | `gouverneur` | `sujet`, `marchand` | Valdoria-Centre |
+| `brunhild` | Brunhild la marchande | brunhild@valdoria.empire | `marchand` | aucun | Nordheim |
+| `cedric` | Cedric le sujet | cedric@valdoria.empire | `sujet` | aucun | Sudbourg |
 
 **Mot de passe commun :** `valdoria123`

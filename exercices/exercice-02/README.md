@@ -109,7 +109,7 @@ Valdoria est une province vierge. Vérifions qu'elle ne contient aucun élément
 
 ### Étape 3 — Créer les profils métier de base (rôles simples)
 
-Les institutions de Valdoria nécessitent 4 profils métier de base. Créons-les.
+Les institutions de Valdoria nécessitent 2 profils métier de base. Créons-les.
 
 #### Créer le rôle `sujet`
 
@@ -117,85 +117,46 @@ Les institutions de Valdoria nécessitent 4 profils métier de base. Créons-les
 2. Cliquez sur **« Create role »**
 3. Remplissez les champs :
    - **Role name :** `sujet`
-   - **Description :** `Sujet du royaume de Valdoria — accès minimal aux services du royaume`
+   - **Description :** `Sujet du royaume de Valdoria — citoyen ordinaire avec accès minimal aux services du royaume`
 4. Cliquez sur **« Save »**
 
-#### Créer le rôle `artisan`
+#### Créer le rôle `marchand`
 
 5. Retournez à la liste des rôles (cliquez sur **« Realm roles »** dans le menu latéral)
 6. Cliquez sur **« Create role »**
 7. Remplissez les champs :
-   - **Role name :** `artisan`
-   - **Description :** `Artisan du royaume de Valdoria — accès aux ateliers et ressources de production`
+   - **Role name :** `marchand`
+   - **Description :** `Marchand du royaume de Valdoria — commerçant avec accès aux places de marché et registres commerciaux`
 8. Cliquez sur **« Save »**
 
-#### Créer le rôle `marchand`
-
-9. Retournez à la liste des rôles
-10. Cliquez sur **« Create role »**
-11. Remplissez les champs :
-    - **Role name :** `marchand`
-    - **Description :** `Marchand du royaume de Valdoria — accès aux places de marché et registres commerciaux`
-12. Cliquez sur **« Save »**
-
-#### Créer le rôle `scribe`
-
-13. Retournez à la liste des rôles
-14. Cliquez sur **« Create role »**
-15. Remplissez les champs :
-    - **Role name :** `scribe`
-    - **Description :** `Scribe du royaume de Valdoria — accès en lecture aux archives de la province`
-16. Cliquez sur **« Save »**
-
-> **Checkpoint :** Vous avez créé 4 rôles de base : `sujet`, `artisan`, `marchand`, `scribe`. Ces rôles apparaissent dans la liste des Realm roles.
+> **Checkpoint :** Vous avez créé 2 rôles de base : `sujet` et `marchand`. Ces rôles apparaissent dans la liste des Realm roles.
 
 ---
 
-### Étape 4 — Créer les profils hiérarchiques (rôles composites)
+### Étape 4 — Créer le profil hiérarchique (rôle composite)
 
 Certains profils métier incluent automatiquement les droits d'autres profils. C'est le principe des **rôles composites**.
 
-#### Créer le rôle composite `maitre-forgeron`
+#### Créer le rôle composite `gouverneur`
 
-Un maître-forgeron est un artisan expérimenté. Il hérite de tous les droits d'un artisan, plus des droits spécifiques.
+Le gouverneur est l'administrateur suprême de la province. Il possède tous les droits de base.
 
 1. Dans la liste des **« Realm roles »**, cliquez sur **« Create role »**
 2. Remplissez les champs :
-   - **Role name :** `maitre-forgeron`
-   - **Description :** `Maître artisan du royaume de Valdoria — droits étendus sur les ateliers et la formation des apprentis`
+   - **Role name :** `gouverneur`
+   - **Description :** `Gouverneur du royaume de Valdoria — administrateur suprême de la province avec tous les droits`
 3. Cliquez sur **« Save »**
 4. Une fois le rôle créé, vous êtes redirigé vers la page de détails du rôle
 5. Cliquez sur l'onglet **« Associated roles »** (ou **« Rôles associés »**)
 6. Cliquez sur **« Assign role »**
-7. Dans la liste qui apparaît, **cochez les rôles suivants** :
-   - `artisan`
+7. Dans la liste qui apparaît, **cochez les deux rôles de base** :
    - `sujet`
+   - `marchand`
 8. Cliquez sur **« Assign »**
 
-**Point d'observation :** Le rôle `maitre-forgeron` est maintenant un **rôle composite**. Tout utilisateur ayant le rôle `maitre-forgeron` héritera automatiquement des rôles `artisan` et `sujet`. Il n'est pas nécessaire de les attribuer manuellement.
+**Point d'observation :** Le rôle `gouverneur` est maintenant un **rôle composite**. Tout utilisateur ayant le rôle `gouverneur` héritera automatiquement des rôles `sujet` et `marchand`. Il n'est pas nécessaire de les attribuer manuellement. C'est ainsi que se construit la hiérarchie administrative de Valdoria.
 
-#### Créer le rôle composite `gouverneur`
-
-Le gouverneur est l'administrateur suprême de la province. Il possède tous les droits.
-
-9. Retournez à la liste des **« Realm roles »**
-10. Cliquez sur **« Create role »**
-11. Remplissez les champs :
-    - **Role name :** `gouverneur`
-    - **Description :** `Gouverneur du royaume de Valdoria — administrateur suprême de la province avec tous les droits`
-12. Cliquez sur **« Save »**
-13. Cliquez sur l'onglet **« Associated roles »**
-14. Cliquez sur **« Assign role »**
-15. **Cochez tous les rôles de base** :
-    - `sujet`
-    - `artisan`
-    - `marchand`
-    - `scribe`
-16. Cliquez sur **« Assign »**
-
-**Point d'observation :** Le gouverneur hérite de tous les profils métier de la province. C'est la hiérarchie administrative de Valdoria.
-
-> **Checkpoint :** Vous avez créé 2 rôles composites : `maitre-forgeron` (inclut `artisan` + `sujet`) et `gouverneur` (inclut tous les rôles de base).
+> **Checkpoint :** Vous avez créé 1 rôle composite : `gouverneur` (inclut `sujet` + `marchand`).
 
 ---
 
@@ -204,27 +165,19 @@ Le gouverneur est l'administrateur suprême de la province. Il possède tous les
 Visualisons la structure hiérarchique que nous venons de créer.
 
 1. Dans la liste des **« Realm roles »**, cliquez sur le rôle **`gouverneur`**
-2. Observez l'onglet **« Associated roles »** : les 4 rôles de base sont listés
-3. Retournez à la liste des rôles et cliquez sur **`maitre-forgeron`**
-4. Observez l'onglet **« Associated roles »** : les rôles `artisan` et `sujet` sont listés
+2. Observez l'onglet **« Associated roles »** : les 2 rôles de base (`sujet` et `marchand`) sont listés
 
 **Schéma conceptuel de la hiérarchie :**
 
 ```
 gouverneur (composite)
 ├── sujet
-├── artisan
-├── marchand
-└── scribe
-
-maitre-forgeron (composite)
-├── artisan
-└── sujet
+└── marchand
 ```
 
-**Point clé :** Les rôles composites permettent de gérer efficacement les hiérarchies de droits. En production, ils évitent d'attribuer manuellement des dizaines de rôles individuels à chaque utilisateur.
+**Point clé :** Les rôles composites permettent de gérer efficacement les hiérarchies de droits. En production, ils évitent d'attribuer manuellement des dizaines de rôles individuels à chaque utilisateur. Ici, notre modèle simplifié (3 rôles au total) facilite la compréhension du concept d'héritage.
 
-> **Checkpoint :** Vous comprenez la structure hiérarchique des rôles de Valdoria. Le gouverneur possède tous les droits ; le maître-forgeron possède les droits d'artisan et de sujet.
+> **Checkpoint :** Vous comprenez la structure hiérarchique des rôles de Valdoria. Le gouverneur hérite automatiquement des droits de `sujet` et `marchand`.
 
 ---
 
@@ -325,8 +278,8 @@ Avant de pouvoir tester l'envoi d'email, l'utilisateur administrateur doit avoir
 > **Le realm `valdoria` est maintenant opérationnel.**
 >
 > Il dispose de :
-> - **6 profils métier** (4 simples + 2 composites) qui structurent la société valdorienne
-> - **Une hiérarchie de droits** via les rôles composites (le gouverneur hérite de tous les droits)
+> - **3 profils métier** (2 simples + 1 composite) qui structurent la société valdorienne
+> - **Une hiérarchie de droits** via le rôle composite (le gouverneur hérite des droits de sujet et marchand)
 > - **Des paramètres de session** adaptés à un environnement de test
 > - **Un réseau de messagers** (SMTP) pour envoyer des notifications officielles
 >
@@ -385,11 +338,8 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 | Rôle | Type | Description | Rôles inclus |
 | --- | --- | --- | --- |
 | `sujet` | Simple | Citoyen de base | — |
-| `artisan` | Simple | Accès aux ateliers | — |
-| `marchand` | Simple | Accès aux marchés | — |
-| `scribe` | Simple | Accès en lecture aux archives | — |
-| `maitre-forgeron` | Composite | Maître artisan | `artisan`, `sujet` |
-| `gouverneur` | Composite | Administrateur suprême | `sujet`, `artisan`, `marchand`, `scribe` |
+| `marchand` | Simple | Commerçant avec accès aux marchés | — |
+| `gouverneur` | Composite | Administrateur suprême | `sujet`, `marchand` |
 
 ---
 

@@ -10,9 +10,9 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 - [ ] Le realm `valdoria` a été créé et est actif
 - [ ] L'isolation a été constatée (0 utilisateurs, clients système uniquement)
-- [ ] Les 4 rôles simples ont été créés (`sujet`, `artisan`, `marchand`, `scribe`)
-- [ ] Les 2 rôles composites ont été créés (`maitre-forgeron`, `gouverneur`)
-- [ ] Les rôles composites incluent bien les rôles de base (vérification dans « Associated roles »)
+- [ ] Les 2 rôles simples ont été créés (`sujet`, `marchand`)
+- [ ] Le rôle composite a été créé (`gouverneur`)
+- [ ] Le rôle composite inclut bien les 2 rôles de base (vérification dans « Associated roles »)
 - [ ] Les paramètres de session ont été modifiés (15 min idle, 2h max)
 - [ ] La configuration SMTP a été testée avec succès
 - [ ] Un email de test est visible dans Mailhog
@@ -84,36 +84,18 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 | Role name | Description |
 | --- | --- |
-| `sujet` | Sujet du royaume de Valdoria — accès minimal aux services du royaume |
-| `artisan` | Artisan du royaume de Valdoria — accès aux ateliers et ressources de production |
-| `marchand` | Marchand du royaume de Valdoria — accès aux places de marché et registres commerciaux |
-| `scribe` | Scribe du royaume de Valdoria — accès en lecture aux archives de la province |
+| `sujet` | Sujet du royaume de Valdoria — citoyen ordinaire avec accès minimal aux services du royaume |
+| `marchand` | Marchand du royaume de Valdoria — commerçant avec accès aux places de marché et registres commerciaux |
 
 **Résultat attendu :**
-- 4 nouveaux rôles apparaissent dans la liste des **« Realm roles »**
-- Total de rôles dans le realm : 7 (3 par défaut + 4 créés)
+- 2 nouveaux rôles apparaissent dans la liste des **« Realm roles »**
+- Total de rôles dans le realm : 5 (3 par défaut + 2 créés)
 
-**Note formateur :** Les descriptions sont importantes pour la documentation. Encouragez les participants à les remplir soigneusement.
+**Note formateur :** Les descriptions sont importantes pour la documentation. Encouragez les participants à les remplir soigneusement. Le modèle simplifié (2 rôles de base + 1 composite) facilite la compréhension du concept d'héritage sans surcharger les débutants.
 
 ---
 
-### Étape 4 — Créer les profils hiérarchiques (rôles composites)
-
-#### Créer `maitre-forgeron`
-
-**Procédure :**
-
-1. **« Create role »**
-2. Role name : `maitre-forgeron`
-3. Description : `Maître artisan du royaume de Valdoria — droits étendus sur les ateliers et la formation des apprentis`
-4. **« Save »**
-5. Onglet **« Associated roles »** > **« Assign role »**
-6. Cocher : `artisan` et `sujet`
-7. **« Assign »**
-
-**Vérification :**
-- Dans l'onglet **« Associated roles »**, les 2 rôles doivent être listés
-- Un badge indique le nombre de rôles associés : `2`
+### Étape 4 — Créer le profil hiérarchique (rôle composite)
 
 #### Créer `gouverneur`
 
@@ -124,17 +106,17 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 3. Description : `Gouverneur du royaume de Valdoria — administrateur suprême de la province avec tous les droits`
 4. **« Save »**
 5. Onglet **« Associated roles »** > **« Assign role »**
-6. Cocher : `sujet`, `artisan`, `marchand`, `scribe`
+6. Cocher : `sujet` et `marchand`
 7. **« Assign »**
 
 **Vérification :**
-- Dans l'onglet **« Associated roles »**, les 4 rôles doivent être listés
-- Un badge indique le nombre de rôles associés : `4`
+- Dans l'onglet **« Associated roles »**, les 2 rôles doivent être listés
+- Un badge indique le nombre de rôles associés : `2`
 
-**Point de vigilance :** Certains participants peuvent tenter d'ajouter `maitre-forgeron` au rôle `gouverneur`. Ce n'est pas nécessaire (et peut créer de la confusion). Le gouverneur hérite directement des rôles de base. Le `maitre-forgeron` est un profil métier spécialisé, pas un niveau hiérarchique inférieur au gouverneur.
+**Point de vigilance :** Vérifiez que les participants cochent bien les deux rôles. L'héritage ne fonctionne que si les rôles sont explicitement associés dans l'onglet « Associated roles ».
 
 **Résultat attendu :**
-- Total de rôles dans le realm : 9 (3 par défaut + 4 simples + 2 composites)
+- Total de rôles dans le realm : 6 (3 par défaut + 2 simples + 1 composite)
 
 ---
 
@@ -142,27 +124,19 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 **Vérification `gouverneur` :**
 - Menu **« Realm roles »** > clic sur `gouverneur`
-- Onglet **« Associated roles »** : 4 rôles listés (`sujet`, `artisan`, `marchand`, `scribe`)
-
-**Vérification `maitre-forgeron` :**
-- Menu **« Realm roles »** > clic sur `maitre-forgeron`
-- Onglet **« Associated roles »** : 2 rôles listés (`artisan`, `sujet`)
+- Onglet **« Associated roles »** : 2 rôles listés (`sujet`, `marchand`)
 
 **Schéma hiérarchique :**
 
 ```
 gouverneur (composite)
 ├── sujet
-├── artisan
-├── marchand
-└── scribe
-
-maitre-forgeron (composite)
-├── artisan
-└── sujet
+└── marchand
 ```
 
 **Point de discussion :** Les rôles composites sont essentiels en production pour gérer des hiérarchies complexes. Exemple réel : un rôle `admin-application` pourrait inclure `view-users`, `manage-users`, `view-logs`, `manage-config`, etc. Sans rôles composites, il faudrait attribuer manuellement des dizaines de rôles à chaque administrateur.
+
+**Note pédagogique :** Notre modèle simplifié (3 rôles au total) permet de comprendre le mécanisme d'héritage sans surcharger les participants. Des structures de rôles plus complexes seront abordées dans les exercices avancés du Module 3.
 
 ---
 
@@ -416,38 +390,20 @@ Pour référence, voici à quoi ressemble un export partiel du realm `valdoria` 
     "realm": [
       {
         "name": "sujet",
-        "description": "Citoyen de base de Valdoria — accès minimal aux services publics",
-        "composite": false
-      },
-      {
-        "name": "artisan",
-        "description": "Artisan de Valdoria — accès aux ateliers et ressources de production",
+        "description": "Citoyen ordinaire de Valdoria — accès minimal aux services publics",
         "composite": false
       },
       {
         "name": "marchand",
-        "description": "Marchand de Valdoria — accès aux places de marché et registres commerciaux",
+        "description": "Marchand de Valdoria — commerçant avec accès aux places de marché et registres commerciaux",
         "composite": false
-      },
-      {
-        "name": "scribe",
-        "description": "Scribe de Valdoria — accès en lecture aux archives de la province",
-        "composite": false
-      },
-      {
-        "name": "maitre-forgeron",
-        "description": "Maître artisan de Valdoria — droits étendus sur les ateliers et la formation des apprentis",
-        "composite": true,
-        "composites": {
-          "realm": ["artisan", "sujet"]
-        }
       },
       {
         "name": "gouverneur",
         "description": "Gouverneur de Valdoria — administrateur suprême de la province avec tous les droits",
         "composite": true,
         "composites": {
-          "realm": ["sujet", "artisan", "marchand", "scribe"]
+          "realm": ["sujet", "marchand"]
         }
       }
     ]
