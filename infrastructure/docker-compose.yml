@@ -86,7 +86,7 @@ services:
   # --- Comptoir des voyageurs (Application front-end) ---
   comptoir:
     build:
-      context: ../src/front
+      context: ../packages/front
       dockerfile: Dockerfile
     container_name: autheria-comptoir
     ports:
