@@ -17,10 +17,6 @@ function toggleSection(section: keyof typeof expandedSections.value) {
 function formatJson(obj: unknown): string {
   return JSON.stringify(obj, null, 2)
 }
-
-function highlightClaim(key: string): boolean {
-  return ['aud', 'realm_access', 'sub', 'exp', 'iat', 'iss', 'preferred_username', 'email'].includes(key)
-}
 </script>
 
 <template>
