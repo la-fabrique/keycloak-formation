@@ -94,6 +94,24 @@ services:
     networks:
       - autheria-network
 
+  # --- Réserve de Valdoria (API protégée) ---
+  reserve:
+    build:
+      context: ../packages/api
+      dockerfile: Dockerfile
+    container_name: autheria-reserve
+    environment:
+      PORT: 3001
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: valdoria
+      KEYCLOAK_CLIENT_ID: reserve-valdoria
+    ports:
+      - "3001:3001"
+    depends_on:
+      - keycloak
+    networks:
+      - autheria-network
+
 volumes:
   postgres_data:
   openldap_data:

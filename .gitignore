@@ -1,6 +1,10 @@
 # Environment variables
 infrastructure/.env
 
+# Node
+packages/front/node_modules/
+packages/api/node_modules/
+
 # Docker volumes
 infrastructure/postgres_data/
 infrastructure/openldap_data/
