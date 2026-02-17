@@ -108,8 +108,7 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      keycloak:
-        condition: service_healthy
+      - keycloak
     networks:
       - autheria-network
 
