@@ -1,15 +1,48 @@
 <script setup lang="ts">
 import { useKeycloak } from '../composables/useKeycloak'
+import { useRouter, useRoute } from 'vue-router'
 
 const { userProfile, logout } = useKeycloak()
+const router = useRouter()
+const route = useRoute()
+
+function navigateTo(name: string) {
+  router.push({ name })
+}
+
+function isActive(name: string): boolean {
+  return route.name === name
+}
 </script>
 
 <template>
   <header class="app-header">
     <div class="header-content">
-      <div class="header-title">
-        <h1>Comptoir des voyageurs</h1>
-        <span class="province">Valdoria</span>
+      <div class="header-left">
+        <div class="header-title">
+          <h1>Comptoir des voyageurs</h1>
+          <span class="province">Valdoria</span>
+        </div>
+        <nav class="header-nav">
+          <button 
+            @click="navigateTo('Reserve')" 
+            :class="['nav-btn', { active: isActive('Reserve') }]"
+          >
+            🏰 Réserve
+          </button>
+          <button 
+            @click="navigateTo('Profil')" 
+            :class="['nav-btn', { active: isActive('Profil') }]"
+          >
+            👤 Profil
+          </button>
+          <button 
+            @click="navigateTo('Debug')" 
+            :class="['nav-btn', { active: isActive('Debug') }]"
+          >
+            🔍 Debug
+          </button>
+        </nav>
       </div>
       <div class="header-user">
         <span class="username">{{ userProfile.username }}</span>
@@ -34,6 +67,14 @@ const { userProfile, logout } = useKeycloak()
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex: 1;
 }
 
 .header-title h1 {
@@ -50,6 +91,34 @@ const { userProfile, logout } = useKeycloak()
   font-size: 0.9rem;
   font-style: italic;
   margin-left: 0.75rem;
+}
+
+.header-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  background: transparent;
+  color: #f4e8d8;
+  border: 2px solid transparent;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.nav-btn:hover {
+  background: rgba(139, 111, 71, 0.3);
+  border-color: #8b6f47;
+}
+
+.nav-btn.active {
+  background: #8b6f47;
+  border-color: #c9a96e;
+  color: #f4e8d8;
 }
 
 .header-user {
