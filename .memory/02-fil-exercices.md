@@ -164,7 +164,7 @@ Les architectes enrichissent d'abord les profils des sujets avec l'attribut **vi
 
 - Ajouter des attributs personnalisés aux utilisateurs (`ville_origine`)
 - Créer et configurer un client **public** (SPA) avec PKCE pour le front-end
-- Créer et configurer un client **bearer-only** pour l'API
+- Créer et configurer un client **confidentiel (Resource Server)** pour l'API
 - Configurer des **mappers** pour injecter les rôles de royaume et attributs dans les jetons
 - Configurer l'**audience** (`aud`) pour indiquer la destination des jetons
 - Utiliser l'outil **Evaluate** pour prévisualiser et valider le contenu des jetons
@@ -174,7 +174,7 @@ Les architectes enrichissent d'abord les profils des sujets avec l'attribut **vi
 
 1. Ajouter l'attribut personnalisé `ville_origine` aux trois utilisateurs (Alaric → Valdoria-Centre, Brunhild → Nordheim, Cedric → Sudbourg)
 2. Créer le client `comptoir-des-voyageurs` (type : public, Standard flow activé, PKCE S256 obligatoire)
-3. Créer le client `reserve-valdoria` (type : bearer-only — tous flux désactivés)
+3. Créer le client `reserve-valdoria` (type : client confidentiel RS — Service accounts roles activé)
 4. Vérifier que le mapper des rôles de royaume existe déjà dans le scope `roles` (assigné par défaut)
 5. Créer un Client Scope `profil-valdorien` avec un mapper pour l'attribut `ville_origine`
 6. Assigner le scope `profil-valdorien` au client Comptoir

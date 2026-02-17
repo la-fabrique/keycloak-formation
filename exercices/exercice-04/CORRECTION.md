@@ -11,7 +11,7 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 - [ ] Les attributs `ville_origine` sont ajoutés aux 3 utilisateurs
 - [ ] Le client `comptoir-des-voyageurs` est créé (type public, Standard flow activé)
 - [ ] PKCE est activé avec méthode `S256` pour le Comptoir
-- [ ] Le client `reserve-valdoria` est créé (bearer-only)
+- [ ] Le client `reserve-valdoria` est créé (client confidentiel Resource Server)
 - [ ] Le scope `profil-valdorien` est créé avec le mapper `ville-origine-mapper`
 - [ ] Le scope `profil-valdorien` est assigné au client Comptoir
 - [ ] Le mapper d'audience `audience-reserve-valdoria` est créé
@@ -141,22 +141,22 @@ Si l'application front-end utilise un port différent (ex : 5173 pour Vite), les
 | Standard flow | ❌ Décoché |
 | Direct access grants | ❌ Décoché |
 | Implicit flow | ❌ Décoché |
-| Service accounts roles | ❌ Décoché |
+| Service accounts roles | ✅ Coché |
 | OAuth 2.0 Device Authorization Grant | ❌ Décoché |
 
-**Tous les flux doivent être DÉCOCHÉS** — c'est la configuration **bearer-only**.
+**Service accounts roles activé** — c'est la configuration **Resource Server** (permet l'introspection de jetons).
 
 **Wizard (Step 3: Login settings) :**
 - Tous les champs vides (une API n'a pas d'URLs de redirection)
 
 **Points de vigilance formateur :**
-- **Client authentication ON + tous flux désactivés** = bearer-only
-- Cette configuration signifie : "Ce client ne démarre jamais de flux d'authentification, il se contente de valider les jetons présentés"
-- Si un participant coche un flux (ex : Standard flow), ce n'est plus un bearer-only → le client pourrait initier des flux d'authentification (inutile pour une API)
-- **Alternative possible :** Certains formateurs préfèrent créer un client confidentiel standard sans flux, l'effet est similaire
+- **Client authentication ON + Service accounts roles** = Resource Server
+- Cette configuration signifie : "Ce client ne démarre pas de flux d'authentification utilisateur, il valide les jetons présentés et peut faire de l'introspection"
+- Si un participant coche Standard flow ou Direct access grants, le client pourrait initier des flux d'authentification utilisateur (inutile pour une API)
+- **Service accounts roles** permet au client d'obtenir un token pour appeler l'endpoint d'introspection de Keycloak si nécessaire
 
 **Note sur le secret :**
-Keycloak génère automatiquement un secret pour ce client (car Client authentication = ON). Ce secret n'est **pas utilisé** dans cet exercice (l'API n'appelle pas Keycloak), mais il pourrait servir si l'API devait faire de l'introspection de jetons via l'endpoint `/token/introspect`.
+Keycloak génère automatiquement un secret pour ce client (car Client authentication = ON). Ce secret est utilisé si l'API doit faire de l'introspection de jetons via l'endpoint `/token/introspect` (grâce à Service accounts roles activé).
 
 **Vérification :**
 Après création, aller dans l'onglet « Credentials » du client `reserve-valdoria` → un secret est affiché. Notez que ce secret est regénérable.
@@ -514,8 +514,8 @@ Dans une application OAuth réelle, le client (Comptoir) peut demander un jeton 
    Comptoir des voyageurs                  Réserve de Valdoria
    (comptoir-des-voyageurs)                (reserve-valdoria)
 
-   Type: Public (SPA)                      Type: Bearer-only (API)
-   Flux: Authorization Code + PKCE        Flux: Aucun (validation uniquement)
+   Type: Public (SPA)                      Type: Client confidentiel (Resource Server)
+   Flux: Authorization Code + PKCE        Flux: Service accounts (validation + introspection)
 
    ┌─────────────────┐                    ┌─────────────────┐
    │ Utilisateur     │                    │ GET /infos      │
@@ -536,7 +536,7 @@ Dans une application OAuth réelle, le client (Comptoir) peut demander un jeton 
 
 ## Points pédagogiques clés
 
-### 1. Client public vs bearer-only
+### 1. Client public vs client confidentiel (Resource Server)
 
 **Client public (Comptoir) :**
 - Pas de secret (Client authentication = OFF)
@@ -544,10 +544,10 @@ Dans une application OAuth réelle, le client (Comptoir) peut demander un jeton 
 - Obtient des jetons au nom des utilisateurs
 - Exemple : applications web (React, Vue, Angular), applications mobiles
 
-**Client bearer-only (Réserve) :**
-- Possède un secret mais ne l'utilise pas pour l'authentification des utilisateurs
-- N'initie jamais de flux (tous flux désactivés)
-- Se contente de **valider** les jetons reçus
+**Client confidentiel Resource Server (Réserve) :**
+- Possède un secret (Client authentication = ON)
+- N'initie pas de flux d'authentification utilisateur
+- Valide les jetons reçus et peut faire de l'introspection (Service accounts roles)
 - Exemple : APIs REST, microservices backend
 
 ### 2. PKCE (Proof Key for Code Exchange)
@@ -609,7 +609,7 @@ Le mapper `audience resolve` du scope `roles` ajoute automatiquement dans le cla
 ### Q2 : Est-ce qu'on doit vraiment créer un mapper pour l'audience, ou est-ce que `audience resolve` suffit ?
 
 **Réponse :**
-`audience resolve` fonctionne **uniquement** si l'utilisateur a des rôles de client sur l'API cible. Dans notre cas, les utilisateurs n'ont **pas** de rôles sur le client `reserve-valdoria` (c'est un bearer-only, il n'a pas de rôles de client définis). Sans le mapper manuel `audience-reserve-valdoria`, le jeton ne contiendrait **pas** `reserve-valdoria` dans `aud`. Le mapper manuel **force** l'ajout de cette audience, quel que soit l'utilisateur.
+`audience resolve` fonctionne **uniquement** si l'utilisateur a des rôles de client sur l'API cible. Dans notre cas, les utilisateurs n'ont **pas** de rôles sur le client `reserve-valdoria` (c'est un Resource Server, il n'a pas de rôles de client définis pour les utilisateurs finaux). Sans le mapper manuel `audience-reserve-valdoria`, le jeton ne contiendrait **pas** `reserve-valdoria` dans `aud`. Le mapper manuel **force** l'ajout de cette audience, quel que soit l'utilisateur.
 
 ### Q3 : Pourquoi mettre l'attribut `ville_origine` dans l'access token et pas l'ID token ?
 
@@ -718,7 +718,7 @@ Répartition :
 ### Opportunités de discussion
 
 **Pause après l'étape 4 :**
-Expliquer la différence fondamentale entre client public (front) et bearer-only (API). Dessiner le flux au tableau :
+Expliquer la différence fondamentale entre client public (front) et client confidentiel Resource Server (API). Dessiner le flux au tableau :
 ```
 Utilisateur → Comptoir → Keycloak → Code → Comptoir → Jeton → Réserve
 ```
