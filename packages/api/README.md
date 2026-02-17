@@ -38,7 +38,7 @@ npm run dev
 ### Prérequis dans Keycloak
 
 1. **Realm** : `valdoria` doit exister
-2. **Client** : `reserve-valdoria` configuré en **bearer-only**
+2. **Client** : `reserve-valdoria` configuré en **client confidentiel (Resource Server)**
 3. **Rôles de royaume** :
    - `sujet` : Citoyen ordinaire
    - `marchand` : Commerçant (accès à l'inventaire et aux artefacts)

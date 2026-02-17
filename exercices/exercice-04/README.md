@@ -10,7 +10,7 @@
 A l'issue de cet exercice, vous serez capable de :
 
 - Créer et configurer un client **public** (SPA) pour une application front-end
-- Créer et configurer un client **bearer-only** pour une API protégée
+- Créer et configurer un client **confidentiel (Resource Server)** pour une API protégée
 - Comprendre le flux **Authorization Code avec PKCE**
 - Configurer des **mappers** pour inclure les rôles de royaume dans les jetons
 - Configurer un **mapper** pour injecter des attributs personnalisés dans les jetons
@@ -52,7 +52,7 @@ A l'issue de cet exercice, vous serez capable de :
 | Concept Keycloak | Métaphore Authéria |
 | --- | --- |
 | Client public (SPA) | Comptoir des voyageurs (lieu public) |
-| Client bearer-only (API) | Réserve (ressources protégées) |
+| Client confidentiel (Resource Server) | Réserve (ressources protégées) |
 | Authorization Code Flow + PKCE | Procédure d'obtention d'un laissez-passer sécurisé |
 | Jeton JWT (Access Token) | Laissez-passer numérique |
 | Audience (`aud`) | Destination du laissez-passer |
@@ -171,7 +171,7 @@ Le flux Authorization Code doit être sécurisé avec **PKCE** (Proof Key for Co
 
 ### Étape 4 — Créer le client « Réserve de Valdoria » (API)
 
-La Réserve est l'API qui expose les ressources protégées du royaume. C'est un client **bearer-only** : il ne gère pas l'authentification des utilisateurs, il se contente de **valider** les jetons JWT présentés.
+La Réserve est l'API qui expose les ressources protégées du royaume. C'est un **client confidentiel (Resource Server)** : il ne gère pas l'authentification des utilisateurs, il se contente de **valider** les jetons JWT présentés.
 
 1. Dans le menu latéral gauche, cliquez sur **« Clients »**
 2. Cliquez sur **« Create client »**
@@ -191,11 +191,12 @@ La Réserve est l'API qui expose les ressources protégées du royaume. C'est un
 6. Configurez les options suivantes :
    - **Client authentication :** ON (activé — client confidentiel)
    - **Authorization :** OFF (désactivé)
-   - **Authentication flow :** Décochez **TOUS** les flux (Standard flow, Direct access grants, Implicit flow, Service accounts roles, OAuth 2.0 Device Authorization Grant)
+   - **Authentication flow :** Décochez **Standard flow**, **Direct access grants**, **Implicit flow**, **OAuth 2.0 Device Authorization Grant**
+   - **Authentication flow :** Cochez **« Service accounts roles »** (pour permettre l'introspection de jetons)
 7. Cliquez sur **« Next »**
 
 **Point d'observation :**
-- **Client authentication ON** avec **tous les flux désactivés** = configuration **bearer-only**. Ce client n'initie jamais de flux d'authentification, il se contente de valider les jetons.
+- **Client authentication ON** avec **Service accounts roles** activé = configuration **Resource Server**. Ce client n'initie pas de flux d'authentification utilisateur, il se contente de valider les jetons.
 - Cette configuration est **standard pour les APIs REST** : elles reçoivent des jetons émis par d'autres clients (comme `comptoir-des-voyageurs`) et les valident.
 
 #### Configuration des URLs (Step 3: Login settings)
@@ -204,7 +205,7 @@ La Réserve est l'API qui expose les ressources protégées du royaume. C'est un
 9. Laissez tous les champs vides
 10. Cliquez sur **« Save »**
 
-> **Checkpoint :** Le client `reserve-valdoria` est créé en mode bearer-only. Il apparaît dans la liste des clients.
+> **Checkpoint :** Le client `reserve-valdoria` est créé en mode Resource Server. Il apparaît dans la liste des clients.
 
 ---
 
@@ -590,7 +591,7 @@ Félicitations ! Vous avez configuré l'ensemble du système d'authentification 
 | Client | Type | Rôle |
 | --- | --- | --- |
 | `comptoir-des-voyageurs` | Public (SPA) | Application front-end pour l'authentification |
-| `reserve-valdoria` | Bearer-only | API protégée validant les jetons |
+| `reserve-valdoria` | Client confidentiel (Resource Server) | API protégée validant les jetons |
 
 **Mappers configurés :**
 
@@ -723,7 +724,7 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 | Concept | Explication | Emplacement dans Keycloak |
 | --- | --- | --- |
 | **Client public** | Client sans secret (app front-end) | Client authentication = OFF |
-| **Client bearer-only** | Client qui valide les jetons (API) | Client authentication = ON + tous flux désactivés |
+| **Client confidentiel (RS)** | Client qui valide les jetons (API) | Client authentication = ON + Service accounts roles |
 | **Authorization Code Flow** | Flux avec redirection (navigateur) | Authentication flow > Standard flow |
 | **PKCE** | Protection contre l'interception du code | Advanced > Proof Key for Code Exchange (S256) |
 | **Access Token** | Jeton d'autorisation (courte durée) | Contient rôles et attributs |
@@ -743,7 +744,7 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 | Realm | Province de l'empire |
 | Realm `master` | Le Château de l'empereur (super-admin) |
 | Client public (SPA) | Comptoir des voyageurs (lieu public) |
-| Client bearer-only (API) | Réserve (ressources protégées) |
+| Client confidentiel (Resource Server) | Réserve (ressources protégées) |
 | Realm role | Profil métier (gouverneur, marchand, artisan) |
 | Composite role | Profil hiérarchique (inclut d'autres profils) |
 | Groupe | Guilde (ex : guilde des forgerons) |
