@@ -83,6 +83,17 @@ services:
     networks:
       - autheria-network
 
+  # --- Comptoir des voyageurs (Application front-end) ---
+  comptoir:
+    build:
+      context: ../packages/front
+      dockerfile: Dockerfile
+    container_name: autheria-comptoir
+    ports:
+      - "5173:80"
+    networks:
+      - autheria-network
+
 volumes:
   postgres_data:
   openldap_data:
