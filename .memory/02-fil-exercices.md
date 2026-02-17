@@ -13,10 +13,12 @@ Chaque exercice correspond à une étape de construction de cet IAM impérial, d
 | ----------------------- | ----------------------------------------- |
 | Realm                   | Province de l'empire                      |
 | Realm `master`          | Le Château de l'empereur (super-admin)    |
-| Client applicatif       | Échoppe (point de service métier)         |
-| Rôle (Realm role)       | Profil métier (paysan, chambellan, forgeron) |
-| Groupe                  | Guilde (ex : guilde des forgerons)        |
+| Client applicatif (front) | Comptoir des voyageurs (application accessible aux sujets) |
+| Client applicatif (API)   | Réserve (API protégée, ressources du royaume) |
+| Rôle (Realm role)       | Titre impérial (voyageur, marchand, gouverneur) |
+| Groupe                  | Guilde (ex : guilde des marchands)        |
 | Utilisateur             | Sujet de l'empire                         |
+| Attribut utilisateur    | Trait du sujet (ex : ville d'origine)     |
 | Client Scope / Mapper   | Parchemin officiel                        |
 | Service Account (M2M)   | Automate impérial                         |
 | Annuaire LDAP           | Province alliée                           |
@@ -30,8 +32,8 @@ Un `docker-compose.yml` pré-configuré fournit :
 - **Keycloak 26.1** + PostgreSQL
 - **Mailhog** (serveur SMTP de test)
 - **OpenLDAP** (utilisé au Jour 2)
-- Une **mini-application front** (échoppe principale de la province)
-- Une **API back-end** protégée (salle du trésor)
+- Une **mini-application front** (le Comptoir des voyageurs)
+- Une **API back-end** protégée (la Réserve)
 
 > Les stagiaires lancent l'environnement une seule fois en début de formation.
 
@@ -72,13 +74,14 @@ Avant de gouverner, il faut bâtir la capitale. Les architectes déploient le ch
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria, joyau de l'Empire d'Authéria. Les architectes créent cette nouvelle province et établissent ses institutions fondamentales : les profils métier qui structureront toute la société valdorienne.
+Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria, joyau de l'Empire d'Authéria. Les architectes créent cette nouvelle province et établissent ses titres impériaux : les rôles qui structureront toute la société valdorienne et détermineront l'accès aux ressources du royaume.
 
 **Objectifs pédagogiques**
 
 - Créer et configurer un realm dédié pour une organisation
 - Comprendre l'isolation complète entre realms (utilisateurs, rôles, clients)
 - Créer les rôles de royaume (Realm roles) qui serviront de fondation à l'autorisation
+- Créer un rôle composite pour illustrer l'héritage de droits
 - Configurer les paramètres de session et de tokens
 - Paramétrer les notifications par email
 
@@ -86,71 +89,79 @@ Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria
 
 1. Créer le realm `valdoria` depuis la console d'administration
 2. Vérifier l'isolation : observer que les utilisateurs et rôles du realm `master` n'existent pas dans `valdoria`
-3. Créer trois rôles de royaume fondamentaux :
-   - `chambellan` (administrateur de la province)
-   - `forgeron` (artisan avec accès aux ressources de production)
-   - `paysan` (citoyen avec accès de base)
-4. Configurer les paramètres de session : durées de vie des sessions SSO et des tokens
-5. Paramétrer le serveur SMTP vers Mailhog pour les emails de vérification (préparation pour la gestion des utilisateurs)
-6. Explorer les paramètres de tokens : observer les options d'Access Token et Refresh Token
+3. Créer deux rôles de royaume simples :
+   - `voyageur` (sujet du royaume — accès aux informations publiques)
+   - `marchand` (commerçant — accès à l'inventaire et aux artefacts de la Réserve)
+4. Créer un rôle composite :
+   - `gouverneur` (administrateur de la province — hérite de `voyageur` et `marchand`)
+5. Configurer les paramètres de session : durées de vie des sessions SSO et des tokens
+6. Paramétrer le serveur SMTP vers Mailhog pour les emails de vérification (préparation pour la gestion des utilisateurs)
+7. Explorer les paramètres de tokens : observer les options d'Access Token et Refresh Token
 
-**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants. Les Realm roles créés ici constituent la base du système d'autorisation et seront utilisés dans tous les exercices suivants.
+**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants. Le rôle composite `gouverneur` hérite automatiquement des droits de `voyageur` et `marchand` : c'est le mécanisme clé pour gérer les hiérarchies de droits sans attributions manuelles répétitives.
 
 ---
 
-### Exercice 3 — Peupler Valdoria et attribuer les profils métier
+### Exercice 3 — Peupler Valdoria et attribuer les titres impériaux
 
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-La province de Valdoria possède désormais ses institutions. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs profils métier. Les architectes créent les premiers habitants et observent comment leurs droits sont matérialisés dans leurs laissez-passer numériques.
+La province de Valdoria possède désormais ses titres impériaux. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs rôles. Les architectes créent les premiers habitants et observent comment leurs droits sont matérialisés dans leurs laissez-passer numériques (jetons JWT). Ils ajoutent également un trait personnel — la ville d'origine — pour illustrer la différence entre un rôle (ce qu'on est autorisé à faire) et un attribut (ce qui nous décrit).
 
 **Objectifs pédagogiques**
 
 - Créer des utilisateurs dans le realm
 - Attribuer des rôles de royaume aux utilisateurs
+- Ajouter un attribut personnalisé (`ville_origine`) à chaque utilisateur
 - Observer les rôles dans un jeton JWT (Access Token)
-- Comprendre comment les applications exploiteront ces rôles
+- Comprendre la distinction entre rôle et attribut : le rôle contrôle l'**accès**, l'attribut enrichit le **contexte**
 
 **Étapes**
 
 1. Créer trois utilisateurs de test dans le realm `valdoria` :
-   - `alaric` (chambellan)
-   - `brunhild` (forgeron)
-   - `cedric` (paysan)
-2. Attribuer à chaque utilisateur son rôle correspondant
-3. Se connecter avec l'utilisateur `alaric` via la Account Console
-4. Récupérer le jeton JWT (depuis les outils développeur du navigateur ou via un client de test)
-5. Décoder le jeton sur [jwt.io](https://jwt.io)
+   - `alaric` le gouverneur (ville d'origine : Valdoria-Centre)
+   - `brunhild` la marchande (ville d'origine : Nordheim)
+   - `cedric` le voyageur (ville d'origine : Sudbourg)
+2. Attribuer à chaque utilisateur son rôle correspondant (`gouverneur`, `marchand`, `voyageur`)
+3. Ajouter l'attribut `ville_origine` à chaque utilisateur (onglet « Attributes »)
+4. Se connecter avec l'utilisateur `alaric` via la Account Console
+5. Utiliser l'outil Evaluate pour prévisualiser le jeton JWT
 6. Identifier où apparaissent les rôles dans les claims du jeton (section `realm_access.roles`)
-7. Comparer avec un jeton obtenu par `cedric` : observer les différences de rôles
+7. Comparer avec un jeton obtenu par `cedric` : observer que `cedric` (voyageur) n'a pas le rôle `marchand`, tandis qu'`alaric` (gouverneur) hérite de tous les rôles via le composite
 
-**Point clé** — Les rôles de royaume sont le mécanisme central d'autorisation dans Keycloak. Ils sont transportés dans le jeton JWT et exploitables par les applications pour contrôler l'accès aux ressources.
+**Point clé** — Le **rôle** détermine si un sujet peut accéder à une ressource (ex : seul un `marchand` peut consulter l'inventaire). L'**attribut** (`ville_origine`) enrichit le jeton avec des informations contextuelles que l'API pourra utiliser pour filtrer les données (ex : ne montrer que les artefacts de la ville du sujet).
 
 ---
 
-### Exercice 4 — Ouvrir la première échoppe
+### Exercice 4 — Ouvrir le Comptoir des voyageurs et sa Réserve
 
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-La province a besoin d'un point de service pour accueillir ses sujets. Les architectes ouvrent la première échoppe : une application web sécurisée.
+La province a besoin d'un point de service pour accueillir ses sujets et protéger ses ressources. Les architectes ouvrent le **Comptoir des voyageurs** (l'application front-end où les sujets se présentent) et sécurisent la **Réserve** (l'API qui détient les ressources du royaume). Le Comptoir demande des laissez-passer (jetons) **au nom de la Réserve** — c'est le concept d'audience.
 
 **Objectifs pédagogiques**
 
-- Créer et configurer un client applicatif (public)
+- Créer et configurer deux clients : un client public (front) et un client API (resource server)
 - Comprendre le flux Authorization Code (OIDC)
-- Connecter une application front-end à Keycloak
+- Comprendre le concept d'audience (`aud`) : le jeton émis par le Comptoir est destiné à la Réserve
+- Connecter l'application front-end à Keycloak et tester l'accès à l'API
 
 **Étapes**
 
-1. Créer le client `echoppe-principale` dans le realm `valdoria` (type : public, redirect URI vers l'application locale)
-2. Lancer la mini-application front-end
-3. Tester la connexion : l'utilisateur est redirigé vers Keycloak, puis revient authentifié
-4. Afficher le nom et les rôles de l'utilisateur connecté
-5. Vérifier que seul un utilisateur avec le rôle `chambellan` accède à la page d'administration
+1. Créer le client `comptoir-des-voyageurs` dans le realm `valdoria` (type : public, redirect URI vers l'application locale)
+2. Créer le client `reserve-valdoria` (type : bearer-only ou confidential — il ne sert qu'à valider les jetons)
+3. Lancer la mini-application front-end (le Comptoir)
+4. Tester la connexion : l'utilisateur est redirigé vers Keycloak, puis revient authentifié
+5. Observer le jeton : le champ `aud` (audience) pointe vers `reserve-valdoria` — c'est pour cette API que le jeton est valide
+6. Tester les endpoints de la Réserve :
+   - `GET /infos` → accessible par tous les utilisateurs authentifiés (Alaric, Brunhild, Cedric)
+   - `GET /inventaire` → accessible uniquement par un `marchand` (Brunhild ✓, Cedric ✗)
+   - `GET /villes/{id}/artefacts` → accessible par un `marchand`, résultats filtrés par l'attribut `ville_origine`
+7. Se connecter avec Cedric (`voyageur`) et constater le refus sur `/inventaire` (HTTP 403)
 
-**Point clé** — Le flux Authorization Code est le flux recommandé pour les applications web. Le navigateur ne voit jamais le secret ; seul un code temporaire est échangé.
+**Point clé** — Le flux Authorization Code est le flux recommandé pour les applications web. L'**audience** (`aud`) indique à quelle API le jeton est destiné : le Comptoir (front) obtient un jeton pour la Réserve (API). L'API vérifie à la fois le rôle (`marchand`) pour l'accès et l'attribut (`ville_origine`) pour le filtrage des données.
 
 ---
 
@@ -159,18 +170,19 @@ La province a besoin d'un point de service pour accueillir ses sujets. Les archi
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-La province possède plusieurs voies de commerce, chacune adaptée à un type de marchand. Les architectes testent les différentes voies d'accès pour en comprendre les usages et les limites.
+La province possède plusieurs voies de commerce, chacune adaptée à un type de sujet. Les architectes testent les différentes voies d'accès pour en comprendre les usages et les limites : comment un sujet obtient-il son laissez-passer ? Comment la Réserve vérifie-t-elle sa validité ?
 
 **Objectifs pédagogiques**
 
 - Distinguer les principaux flux OIDC (Authorization Code, Client Credentials)
 - Comprendre le rôle des secrets client
 - Manipuler les jetons dans Postman
+- Observer l'audience (`aud`) et les rôles dans les différents jetons
 
 **Étapes**
 
-1. Depuis Postman, exécuter un flux **Authorization Code** : observer la redirection, le code, puis l'échange contre un jeton
-2. Examiner le contenu du jeton d'accès (access token) et du jeton d'identité (ID token)
+1. Depuis Postman, exécuter un flux **Authorization Code** via le client `comptoir-des-voyageurs` : observer la redirection, le code, puis l'échange contre un jeton
+2. Examiner le contenu du jeton d'accès (access token) et du jeton d'identité (ID token) — vérifier que l'audience pointe vers `reserve-valdoria`
 3. Tester le **refresh token** : rafraîchir le jeton d'accès sans se reconnecter
 4. Appeler le **endpoint d'introspection** pour valider un jeton côté serveur
 5. Comparer les claims présentes selon le flux utilisé
@@ -184,7 +196,7 @@ La province possède plusieurs voies de commerce, chacune adaptée à un type de
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-Certaines missions ne nécessitent aucun humain. L'automate impérial exécute des tâches de manière autonome, sans l'intervention d'un sujet.
+Certaines missions ne nécessitent aucun humain. L'automate impérial exécute des tâches de manière autonome, sans l'intervention d'un sujet. Il doit pouvoir consulter l'inventaire de la Réserve pour réapprovisionner automatiquement les stocks.
 
 **Objectifs pédagogiques**
 
@@ -195,10 +207,10 @@ Certaines missions ne nécessitent aucun humain. L'automate impérial exécute d
 **Étapes**
 
 1. Créer le client `automate-imperial` (type : confidential, service account activé)
-2. Attribuer le rôle `forgeron` au compte de service
+2. Attribuer le rôle `marchand` au compte de service (pour accéder à l'inventaire de la Réserve)
 3. Depuis Postman, obtenir un jeton via le flux **Client Credentials**
-4. Vérifier que le rôle `forgeron` est bien présent dans le jeton
-5. Appeler l'API back-end protégée avec ce jeton et constater l'accès autorisé
+4. Vérifier que le rôle `marchand` est bien présent dans le jeton
+5. Appeler `GET /inventaire` sur la Réserve avec ce jeton et constater l'accès autorisé
 
 **Point clé** — Le flux Client Credentials ne fait intervenir aucun utilisateur. Le client s'authentifie directement avec son secret et reçoit un jeton portant ses propres rôles.
 
@@ -215,7 +227,7 @@ Certaines missions ne nécessitent aucun humain. L'automate impérial exécute d
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-La province grandit. Pour gérer efficacement des centaines de sujets, les architectes créent des guildes et organisent la population en une structure hiérarchique.
+La province grandit. Pour gérer efficacement des centaines de sujets, les architectes créent des guildes et organisent la population en une structure hiérarchique. Plutôt que d'attribuer les titres impériaux un par un, ils les associent directement aux guildes.
 
 **Objectifs pédagogiques**
 
@@ -226,8 +238,8 @@ La province grandit. Pour gérer efficacement des centaines de sujets, les archi
 
 **Étapes**
 
-1. Créer les groupes : `guilde-forgerons`, `guilde-paysans`, `conseil-des-maitres` (sous-groupe de `guilde-forgerons`)
-2. Attribuer le rôle `forgeron` au groupe `guilde-forgerons` et `paysan` au groupe `guilde-paysans`
+1. Créer les groupes : `guilde-marchands`, `guilde-voyageurs`, `conseil-de-valdoria` (sous-groupe de `guilde-marchands`)
+2. Attribuer le rôle `marchand` au groupe `guilde-marchands` et `voyageur` au groupe `guilde-voyageurs`
 3. Importer une dizaine d'utilisateurs (import JSON ou création manuelle)
 4. Affecter les utilisateurs aux groupes
 5. Se connecter avec un utilisateur d'une guilde et vérifier qu'il hérite du rôle du groupe
@@ -242,23 +254,25 @@ La province grandit. Pour gérer efficacement des centaines de sujets, les archi
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-Les parchemins officiels déterminent quelles informations figurent sur le laissez-passer de chaque sujet. Les architectes apprennent à enrichir ces documents avec des données personnalisées.
+Les parchemins officiels déterminent quelles informations figurent sur le laissez-passer de chaque sujet. Les architectes apprennent à enrichir ces documents pour que la Réserve puisse exploiter l'attribut `ville_origine` : sur l'endpoint `GET /villes/{id}/artefacts`, l'API doit connaître la ville du sujet pour filtrer les résultats.
 
 **Objectifs pédagogiques**
 
 - Comprendre le rôle des Client Scopes et des Mappers
-- Ajouter un attribut personnalisé à un utilisateur
-- Configurer un mapper pour injecter cet attribut dans le jeton
+- Configurer un mapper pour injecter l'attribut `ville_origine` dans le jeton
+- Observer comment la Réserve utilise cet attribut pour filtrer les données
 
 **Étapes**
 
-1. Ajouter un attribut personnalisé `rang` (ex. : `capitaine`) à un utilisateur
-2. Créer un Client Scope `profil-avance`
-3. Ajouter un mapper de type « User Attribute » pour projeter `rang` dans le jeton
-4. Associer le scope `profil-avance` au client `echoppe-principale`
-5. Se connecter et comparer le jeton **avant** et **après** l'ajout du scope
+1. Vérifier que l'attribut `ville_origine` est bien défini sur les utilisateurs (exercice 3)
+2. Créer un Client Scope `profil-valdorien`
+3. Ajouter un mapper de type « User Attribute » pour projeter `ville_origine` dans le jeton
+4. Associer le scope `profil-valdorien` au client `comptoir-des-voyageurs`
+5. Se connecter et comparer le jeton **avant** et **après** l'ajout du scope : l'attribut `ville_origine` apparaît dans les claims
+6. Tester `GET /villes/nordheim/artefacts` avec Brunhild (`ville_origine: Nordheim`) → résultats filtrés
+7. Tester le même endpoint avec Cedric (`ville_origine: Sudbourg`) → résultats différents, car la Réserve utilise l'attribut du jeton pour filtrer
 
-**Point clé** — Les Client Scopes et les Mappers contrôlent finement le contenu des jetons. C'est le mécanisme qui permet d'adapter les informations transmises à chaque application.
+**Point clé** — Les Client Scopes et les Mappers contrôlent finement le contenu des jetons. Le rôle `marchand` ouvre la porte (autorisation), tandis que l'attribut `ville_origine` indique à la Réserve quelles données montrer (filtrage contextuel). C'est la complémentarité entre RBAC (rôles) et ABAC (attributs).
 
 ---
 
@@ -267,7 +281,7 @@ Les parchemins officiels déterminent quelles informations figurent sur le laiss
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-Le service de renseignement impérial a besoin de voir la province à travers les yeux d'un sujet ordinaire, sans connaître son mot de passe. C'est la fonction d'impersonation.
+Le service de renseignement impérial a besoin de voir la province à travers les yeux d'un sujet ordinaire, sans connaître son mot de passe. C'est la fonction d'impersonation. Un voyageur se plaint de ne pas voir l'inventaire de la Réserve — l'administrateur doit diagnostiquer le problème.
 
 **Objectifs pédagogiques**
 
@@ -278,9 +292,9 @@ Le service de renseignement impérial a besoin de voir la province à travers le
 **Étapes**
 
 1. Créer un utilisateur `support-imperial` avec les droits d'impersonation
-2. Depuis la console d'administration, impersonner un utilisateur standard
+2. Depuis la console d'administration, impersonner l'utilisateur `cedric` (voyageur)
 3. Observer la session créée : vérifier qu'elle est distincte de la session admin
-4. Provoquer volontairement une erreur de rôle (ex. : un `paysan` tente d'accéder à une ressource réservée au `chambellan`) et la diagnostiquer via le jeton
+4. Tenter d'accéder à `GET /inventaire` via le Comptoir : constater le refus (Cedric n'a pas le rôle `marchand`) et diagnostiquer via le jeton
 
 **Point clé** — L'impersonation est un outil puissant de support. Elle crée une session réelle au nom de l'utilisateur cible, permettant de reproduire exactement son expérience.
 
@@ -367,18 +381,18 @@ L'empire est fonctionnel, mais vulnérable. Les architectes renforcent les défe
 
 | Jour | Module | Exercices | Thème narratif |
 | ---- | ------ | --------- | -------------- |
-| J1 matin | Module 1 — Fondations | Ex. 1 à 3 | Fonder l'empire, organiser les métiers |
-| J1 après-midi | Module 2 — Clients | Ex. 4 à 6 | Ouvrir les échoppes, sécuriser les accès |
-| J2 matin | Module 3 — Identités | Ex. 7 à 9 | Organiser la population, enrichir les laissez-passer |
+| J1 matin | Module 1 — Fondations | Ex. 1 à 3 | Fonder l'empire, attribuer les titres impériaux |
+| J1 après-midi | Module 2 — Clients | Ex. 4 à 6 | Ouvrir le Comptoir et la Réserve, sécuriser les accès |
+| J2 matin | Module 3 — Identités | Ex. 7 à 9 | Organiser les guildes, enrichir les laissez-passer |
 | J2 après-midi | Module 4 — Intégrations | Ex. 10 à 12 | Alliances, diplomatie et fortification |
 
 ---
 
 ## Idées de gamification
 
-- **Cartes de rôle** : distribuer des cartes physiques (chambellan, forgeron, paysan) à chaque stagiaire pour matérialiser les attributions de profils métier.
+- **Cartes de titre** : distribuer des cartes physiques (voyageur, marchand, gouverneur) à chaque stagiaire pour matérialiser les attributions de rôles.
 - **Incident impérial** : injecter un problème de configuration à résoudre en équipe.
-  > *« Un paysan accède à l'échoppe du chambellan. Trouvez la faille et corrigez-la. »*
+  > *« Un voyageur accède à l'inventaire de la Réserve. Trouvez la faille et corrigez-la. »*
 - **Défi chronométré** : lancer un mini-challenge en fin de module.
-  > *« Bloquez l'accès aux échoppes réservées aux paysans en moins de 10 minutes. »*
+  > *« Faites en sorte que Cedric puisse consulter les artefacts de Nordheim en moins de 10 minutes. »*
 - **Parchemin récapitulatif** : chaque stagiaire maintient un journal de bord avec les commandes et configurations clés réalisées.
