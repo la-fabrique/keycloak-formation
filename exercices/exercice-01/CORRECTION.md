@@ -11,57 +11,17 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 - [ ] Les 4 conteneurs Docker sont en état `running`
 - [ ] Le conteneur `autheria-keycloak` est `healthy`
 - [ ] Le participant est connecté à la console d'administration
-- [ ] Le realm `master` a été exploré (utilisateurs, paramètres, sessions)
-- [ ] Un realm `test-isolation` a été créé et l'isolation constatée
-- [ ] Le realm `test-isolation` a été supprimé
+- [ ] Le realm `master` a été exploré (utilisateurs, paramètres, sessions, clients)
+- [ ] Un realm `test-isolation` a été créé et l'isolation constatée (Users vide, clients par défaut)
+- [ ] Le client `realm-management` du realm `test-isolation` a été exploré (onglet Roles)
+- [ ] La création automatique du client `test-isolation` dans le realm `master` a été observée
+- [ ] Le realm `test-isolation` a été supprimé et le client correspondant disparu de `master`
 
 ---
 
 ## Correction détaillée
 
 ### Étape 1 — Lancer l'environnement Docker
-
-**Commandes exactes :**
-
-```bash
-cd infrastructure
-docker compose up -d
-```
-
-**Sortie attendue :**
-
-```
-[+] Running 5/5
- ✔ Network infrastructure_autheria-network  Created
- ✔ Volume "infrastructure_postgres_data"     Created
- ✔ Volume "infrastructure_openldap_data"     Created
- ✔ Volume "infrastructure_openldap_config"   Created
- ✔ Container autheria-postgres               Started
- ✔ Container autheria-mailhog                Started
- ✔ Container autheria-openldap               Started
- ✔ Container autheria-keycloak               Started
-```
-
-**Timing :**
-- PostgreSQL : prêt en ~5 secondes
-- Keycloak : `healthy` en 30 à 60 secondes (peut aller jusqu'à 90 secondes sur des machines lentes)
-- Mailhog et OpenLDAP : démarrage immédiat
-
-**Vérification :**
-
-```bash
-docker compose ps
-```
-
-Résultat :
-
-```
-NAME                  STATUS                   PORTS
-autheria-keycloak     running (healthy)        0.0.0.0:8080->8080/tcp
-autheria-mailhog      running                  0.0.0.0:1025->1025/tcp, 0.0.0.0:8025->8025/tcp
-autheria-openldap     running                  0.0.0.0:389->389/tcp
-autheria-postgres     running (healthy)        0.0.0.0:5432->5432/tcp
-```
 
 **Notes formateur :**
 - Si un participant a un Mac Apple Silicon (ARM), les images sont compatibles multi-architecture — aucun problème attendu
@@ -73,9 +33,6 @@ autheria-postgres     running (healthy)        0.0.0.0:5432->5432/tcp
 ### Étape 2 — Accéder à la console d'administration
 
 **URL exacte :** `http://localhost:8080`
-
-Après clic sur « Administration Console », l'URL devient :
-`http://localhost:8080/admin/master/console/`
 
 **Identifiants :**
 - Utilisateur : `admin`
@@ -114,34 +71,26 @@ Ces valeurs proviennent des variables `KC_BOOTSTRAP_ADMIN_USERNAME` et `KC_BOOTS
   - Le client `security-admin-console`
   - L'heure de début et le dernier accès
 
+#### 3d. Clients du realm `master`
+
+**Résultat attendu :** la liste initiale contient (au minimum) :
+- `admin-cli` — client en ligne de commande pour l'administration via l'API REST
+- `security-admin-console` — la console d'administration elle-même
+- `broker` — utilisé pour la fédération d'identité
+- `master-realm` — client interne du realm
+
+**Point à souligner :** noter cette liste, car un nouveau client va y apparaître à l'étape 4 lors de la création d'un realm. C'est le mécanisme par lequel le realm `master` maintient le contrôle sur les autres realms.
+
 ---
 
 ### Étape 4 — Créer puis supprimer un realm de test
 
-#### Création
+**Point à souligner :** 
 
-1. Menu déroulant du realm (haut gauche, affiche `master`)
-2. Bouton **« Create realm »**
-3. Champ « Realm name » : saisir `test-isolation`
-4. Cliquer sur **« Create »**
-5. La console bascule automatiquement vers le nouveau realm
+ce client est créé automatiquement dans **chaque** realm. Il permet de déléguer finement les droits d'administration d'un realm sans donner accès au realm `master`.
 
-#### Vérification de l'isolation
-
-- **Users > View all users** : 0 utilisateurs — aucun héritage depuis `master`
-- **Clients** : seuls les clients par défaut sont présents (`account`, `admin-cli`, `broker`, `realm-management`, `security-admin-console`)
-- **Realm roles** : seuls les rôles par défaut existent (`default-roles-test-isolation`, `offline_access`, `uma_authorization`)
-
-#### Suppression
-
-La procédure de suppression dans Keycloak 26 :
-
-1. Rebasculer sur `master` via le menu déroulant
-2. Ouvrir à nouveau le menu déroulant des realms
-3. A côté de `test-isolation`, cliquer sur les **trois points** (icône kebab)
-4. Cliquer sur **« Delete »**
-5. Saisir le nom du realm (`test-isolation`) pour confirmer la suppression
-6. Cliquer sur **« Delete »**
+Un nouveau client nommé **`test-isolation`** doit être apparu dans la liste
+C'est le mécanisme automatique de Keycloak : chaque nouveau realm génère un client du même nom dans `master`, permettant au Château de l'empereur d'administrer la province
 
 **Note :** Dans Keycloak 26, la confirmation de suppression demande de retaper le nom du realm. C'est une mesure de sécurité pour éviter les suppressions accidentelles.
 
@@ -188,6 +137,6 @@ Sujets à aborder avec les participants après l'exercice :
 
 ## Transition vers l'exercice 2
 
-> Maintenant que la capitale est fondée et le Château de l'empereur découvert, les architectes vont créer la **Province de Valdoria** — un realm dédié où seront configurés les utilisateurs, clients et rôles de la formation.
+> Maintenant que la capitale est fondée et le Château de l'empereur découvert, les administrateurs impériaux vont créer la **Province de Valdoria** — un realm dédié où seront configurés les utilisateurs, clients et rôles de la formation.
 >
 > Dans l'exercice suivant, vous créerez le realm `valdoria`, établirez les profils métier de la province (rôles) et brancherez le serveur de courrier (Mailhog) pour les notifications officielles.
