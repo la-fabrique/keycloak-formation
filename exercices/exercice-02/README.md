@@ -309,8 +309,7 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 
 1. Dans **« Realm settings »** > **« Events »**, cliquez sur l'onglet **« User events settings »**
 2. Activez **« Save events »** (toggle ON)
-3. Dans **« Saved types »**, cochez quelques événements : `LOGIN`, `LOGOUT`, `UPDATE_EMAIL`, `UPDATE_PROFILE`
-4. Cliquez sur **« Save »**
+3. Cliquez sur **« Save »**
 
 **Point d'observation :** Les événements sont essentiels pour l'audit de sécurité et le debug. En production, ils sont souvent exportés vers un SIEM (Security Information and Event Management). Vous pourrez observer ces événements en action dans l'exercice suivant, lors de la création et de la connexion des premiers utilisateurs.
 
