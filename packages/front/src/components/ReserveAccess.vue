@@ -18,7 +18,7 @@ const artefactsResponse = ref<ApiResponse>({ status: 'idle' })
 
 // Ville d'origine de l'utilisateur (extraite des attributs)
 const villeOrigine = ref<string>(
-  (userProfile.value.attributes.ville_origine as string) || ''
+  (userProfile.value.attributes.villeOrigine as string) || ''
 )
 
 /**
@@ -215,7 +215,7 @@ function getStatusBadge(response: ApiResponse): string {
       
       <p class="endpoint-description">
         🔐 RBAC + ABAC — Rôle <code class="role-badge">marchand</code> requis<br>
-        📍 Filtrage par <code class="attribute-badge">ville_origine</code> : {{ villeOrigine }}
+        📍 Filtrage par <code class="attribute-badge">villeOrigine</code> : {{ villeOrigine }}
       </p>
 
       <button 
@@ -235,7 +235,7 @@ function getStatusBadge(response: ApiResponse): string {
         <h4>❌ Erreur {{ artefactsResponse.statusCode }}</h4>
         <p>{{ artefactsResponse.error }}</p>
         <p v-if="artefactsResponse.statusCode === 403" class="hint">
-          💡 Accès refusé. Vous devez avoir le rôle <code>marchand</code> et l'attribut <code>ville_origine</code> correspondant (ou le rôle <code>gouverneur</code> pour un accès total).
+          💡 Accès refusé. Vous devez avoir le rôle <code>marchand</code> et l'attribut <code>villeOrigine</code> correspondant (ou le rôle <code>gouverneur</code> pour un accès total).
         </p>
       </div>
     </div>

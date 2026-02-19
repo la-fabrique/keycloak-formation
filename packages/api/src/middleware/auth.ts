@@ -36,7 +36,7 @@ export interface KeycloakToken {
   realm_access?: {
     roles: string[];
   };
-  ville_origine?: string;
+  villeOrigine?: string;
   aud?: string | string[];
   iss?: string;
   exp?: number;

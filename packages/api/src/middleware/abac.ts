@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 /**
  * Middleware ABAC (Attribute-Based Access Control)
- * Vérifie que l'attribut ville_origine de l'utilisateur correspond à la ville demandée
+ * Vérifie que l'attribut villeOrigine de l'utilisateur correspond à la ville demandée
  * Exception: les gouverneurs ont accès à toutes les villes
  */
 export const requireVilleAccess = (
@@ -28,13 +28,13 @@ export const requireVilleAccess = (
   }
 
   // Pour les autres utilisateurs, vérifier la ville d'origine
-  const villeOrigine = req.user.ville_origine;
+  const villeOrigine = req.user.villeOrigine;
   const villeRequested = req.params.ville;
 
   if (!villeOrigine) {
     res.status(403).json({
       error: "Forbidden",
-      message: "Attribut 'ville_origine' manquant dans le token",
+      message: "Attribut 'villeOrigine' manquant dans le token",
     });
     return;
   }

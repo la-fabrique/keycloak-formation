@@ -8,7 +8,7 @@ La **Réserve de Valdoria** est une API REST minimaliste qui illustre les mécan
 
 - **Authentification JWT** : Validation des tokens émis par Keycloak via les clés publiques JWKS
 - **RBAC (Role-Based Access Control)** : Contrôle d'accès basé sur les rôles (`marchand`, `gouverneur`)
-- **ABAC (Attribute-Based Access Control)** : Filtrage contextuel basé sur l'attribut `ville_origine`
+- **ABAC (Attribute-Based Access Control)** : Filtrage contextuel basé sur l'attribut `villeOrigine`
 
 ## 🚀 Démarrage
 
@@ -43,8 +43,8 @@ npm run dev
    - `sujet` : Citoyen ordinaire
    - `marchand` : Commerçant (accès à l'inventaire et aux artefacts)
    - `gouverneur` : Administrateur (accès total, hérite de `sujet` + `marchand`)
-4. **Attribut utilisateur** : `ville_origine` (valeurs possibles : `valdoria-centre`, `nordheim`, `sudbourg`)
-5. **Client Scope** : `profil-valdorien` avec mapper pour injecter `ville_origine` dans le token
+4. **Attribut utilisateur** : `villeOrigine` (valeurs possibles : `valdoria-centre`, `nordheim`, `sudbourg`)
+5. **Client Scope** : `attributs-valdorien` avec mapper pour injecter `villeOrigine` dans le token
 6. **Mapper d'audience** : Configurer `aud: reserve-valdoria` dans les tokens
 
 ### Variables d'environnement
@@ -118,7 +118,7 @@ Retourne les artefacts d'une ville spécifique.
 **Authentification** : ✅ Token JWT requis  
 **Autorisation** :
 - Rôle `marchand` requis (RBAC)
-- Accès limité à sa `ville_origine` **sauf pour les `gouverneur`** (ABAC)
+- Accès limité à sa `villeOrigine` **sauf pour les `gouverneur`** (ABAC)
 
 **Villes disponibles** : `valdoria-centre`, `nordheim`, `sudbourg`
 
@@ -143,11 +143,11 @@ curl http://localhost:3001/villes/nordheim/artefacts \
 
 **Erreurs possibles** :
 - `401 Unauthorized` : Token manquant ou invalide
-- `403 Forbidden` : Rôle `marchand` manquant OU ville ne correspond pas à `ville_origine`
+- `403 Forbidden` : Rôle `marchand` manquant OU ville ne correspond pas à `villeOrigine`
 - `404 Not Found` : Ville inexistante
 
 **Règles ABAC** :
-- Un utilisateur avec le rôle `marchand` et `ville_origine: nordheim` peut accéder uniquement à `/villes/nordheim/artefacts`
+- Un utilisateur avec le rôle `marchand` et `villeOrigine: nordheim` peut accéder uniquement à `/villes/nordheim/artefacts`
 - Un utilisateur avec le rôle `gouverneur` peut accéder à **toutes** les villes
 
 ---
@@ -197,7 +197,7 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### 3. Scénarios de test
 
-| Utilisateur | Rôle | `ville_origine` | `/inventaire` | `/villes/nordheim/artefacts` |
+| Utilisateur | Rôle | `villeOrigine` | `/inventaire` | `/villes/nordheim/artefacts` |
 |-------------|------|-----------------|---------------|------------------------------|
 | Alaric | `gouverneur` | `valdoria-centre` | ✅ Accès autorisé | ✅ Accès autorisé (toutes villes) |
 | Brunhild | `marchand` | `nordheim` | ✅ Accès autorisé | ✅ Accès autorisé (sa ville) |
@@ -237,9 +237,9 @@ Le middleware `rbac.ts` vérifie que l'utilisateur possède un rôle spécifique
 
 ### ABAC (Attribute-Based Access Control)
 
-Le middleware `abac.ts` vérifie un attribut personnalisé (`ville_origine`) dans le token JWT pour filtrer l'accès aux ressources.
+Le middleware `abac.ts` vérifie un attribut personnalisé (`villeOrigine`) dans le token JWT pour filtrer l'accès aux ressources.
 
-**Exemple** : Un marchand de Nordheim (`ville_origine: nordheim`) ne peut consulter que les artefacts de Nordheim, sauf s'il a le rôle `gouverneur` (accès total).
+**Exemple** : Un marchand de Nordheim (`villeOrigine: nordheim`) ne peut consulter que les artefacts de Nordheim, sauf s'il a le rôle `gouverneur` (accès total).
 
 ### Validation JWT locale
 

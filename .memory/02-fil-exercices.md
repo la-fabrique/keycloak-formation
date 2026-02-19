@@ -158,7 +158,6 @@ Les architectes enrichissent d'abord les profils des sujets avec l'attribut **vi
 
 **Objectifs pédagogiques**
 
-- Ajouter des attributs personnalisés aux utilisateurs (`ville_origine`)
 - Créer et configurer un client **public** (SPA) avec PKCE pour le front-end
 - Créer et configurer un client **confidentiel (Resource Server)** pour l'API
 - Configurer des **mappers** pour injecter les rôles de royaume et attributs dans les jetons
@@ -168,24 +167,20 @@ Les architectes enrichissent d'abord les profils des sujets avec l'attribut **vi
 
 **Étapes**
 
-1. Ajouter l'attribut personnalisé `ville_origine` aux trois utilisateurs (Alaric → Valdoria-Centre, Brunhild → Nordheim, Cedric → Sudbourg)
-2. Créer le client `comptoir-des-voyageurs` (type : public, Standard flow activé, PKCE S256 obligatoire)
-3. Créer le client `reserve-valdoria` (type : client confidentiel RS — Service accounts roles activé)
-4. Vérifier que le mapper des rôles de royaume existe déjà dans le scope `roles` (assigné par défaut)
-5. Créer un Client Scope `profil-valdorien` avec un mapper pour l'attribut `ville_origine`
-6. Assigner le scope `profil-valdorien` au client Comptoir
-7. Créer un mapper d'audience dans le scope dédié du Comptoir pour forcer `aud: reserve-valdoria`
-8. Utiliser l'outil Evaluate pour prévisualiser les jetons de chaque utilisateur et vérifier :
-   - La présence des rôles de royaume dans `realm_access.roles` (avec héritage via rôles composites)
-   - La présence de l'attribut `ville_origine`
-   - La présence de `reserve-valdoria` dans le claim `aud`
-9. Simuler le contrôle d'accès de la Réserve :
+1. Créer le client `comptoir-des-voyageurs` (type : public, Standard flow activé, PKCE S256)
+2. Créer le client `reserve-valdoria` (type : client confidentiel RS — Service accounts roles activé)
+3. Vérifier que le mapper des rôles de royaume existe déjà dans le scope `roles` (assigné par défaut)
+4. Créer un Client Scope `attributs-valdorien` avec un mapper pour l'attribut `villeOrigine`
+5. Assigner le scope `attributs-valdorien` au client Comptoir (type Default)
+6. Configurer l'audience via `audience resolve` : créer un client role `access` sur `reserve-valdoria`, l'inclure dans le rôle composite `sujet`
+7. Utiliser l'outil Evaluate pour prévisualiser les jetons et vérifier rôles, `villeOrigine` et `aud: reserve-valdoria`
+8. Simuler le contrôle d'accès de la Réserve :
    - Alaric (gouverneur → inclut `marchand`) peut accéder à `/inventaire` ✅
-   - Brunhild (maitre-forgeron → **sans** `marchand`) ne peut **pas** accéder à `/inventaire` ❌
-   - Cedric (artisan) ne peut **pas** accéder à `/inventaire` ❌
-10. Observer comment l'attribut `ville_origine` permettrait le filtrage contextuel des données
+   - Brunhild (`marchand`) peut accéder à `/inventaire` ✅
+   - Cedric (`sujet`, sans `marchand`) ne peut **pas** accéder à `/inventaire` ❌
+9. Observer comment l'attribut `villeOrigine` permet le filtrage contextuel des données
 
-**Point clé** — Le flux Authorization Code avec PKCE (S256) est le standard pour les applications web modernes. Les **mappers** contrôlent finement le contenu des jetons : rôles de royaume (autorisation), attributs personnalisés (filtrage contextuel), audience (sécurité). L'**outil Evaluate** est indispensable pour vérifier la configuration avant de connecter une vraie application. L'**audience** (`aud`) indique à quelle API le jeton est destiné et permet à l'API de vérifier que le jeton lui est bien adressé.
+**Point clé** — Le flux Authorization Code avec PKCE (S256) est le standard pour les applications web modernes. Les **mappers** contrôlent finement le contenu des jetons : rôles de royaume (autorisation), attributs personnalisés (filtrage contextuel), audience (sécurité). L'**outil Evaluate** est indispensable pour vérifier la configuration avant de connecter une vraie application. L'**audience** (`aud`) est configurée via le mapper `audience resolve` combiné à un client role : tous les porteurs du rôle `sujet` obtiennent automatiquement `reserve-valdoria` dans leur `aud`.
 
 ---
 
@@ -278,25 +273,25 @@ La province grandit. Pour gérer efficacement des centaines de sujets, les archi
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-Les parchemins officiels déterminent quelles informations figurent sur le laissez-passer de chaque sujet. Les architectes apprennent à enrichir ces documents pour que la Réserve puisse exploiter l'attribut `ville_origine` : sur l'endpoint `GET /villes/{id}/artefacts`, l'API doit connaître la ville du sujet pour filtrer les résultats.
+Les parchemins officiels déterminent quelles informations figurent sur le laissez-passer de chaque sujet. Les architectes apprennent à enrichir ces documents pour que la Réserve puisse exploiter l'attribut `villeOrigine` : sur l'endpoint `GET /villes/{id}/artefacts`, l'API doit connaître la ville du sujet pour filtrer les résultats.
 
 **Objectifs pédagogiques**
 
 - Comprendre le rôle des Client Scopes et des Mappers
-- Configurer un mapper pour injecter l'attribut `ville_origine` dans le jeton
+- Configurer un mapper pour injecter l'attribut `villeOrigine` dans le jeton
 - Observer comment la Réserve utilise cet attribut pour filtrer les données
 
 **Étapes**
 
-1. Vérifier que l'attribut `ville_origine` est bien défini sur les utilisateurs (exercice 3)
-2. Créer un Client Scope `profil-valdorien`
-3. Ajouter un mapper de type « User Attribute » pour projeter `ville_origine` dans le jeton
-4. Associer le scope `profil-valdorien` au client `comptoir-des-voyageurs`
-5. Se connecter et comparer le jeton **avant** et **après** l'ajout du scope : l'attribut `ville_origine` apparaît dans les claims
-6. Tester `GET /villes/nordheim/artefacts` avec Brunhild (`ville_origine: Nordheim`) → résultats filtrés
-7. Tester le même endpoint avec Cedric (`ville_origine: Sudbourg`) → résultats différents, car la Réserve utilise l'attribut du jeton pour filtrer
+1. Vérifier que l'attribut `villeOrigine` est bien défini sur les utilisateurs (exercice 3)
+2. Créer un Client Scope `attributs-valdorien`
+3. Ajouter un mapper de type « User Attribute » pour projeter `villeOrigine` dans le jeton
+4. Associer le scope `attributs-valdorien` au client `comptoir-des-voyageurs`
+5. Se connecter et comparer le jeton **avant** et **après** l'ajout du scope : l'attribut `villeOrigine` apparaît dans les claims
+6. Tester `GET /villes/nordheim/artefacts` avec Brunhild (`villeOrigine: Nordheim`) → résultats filtrés
+7. Tester le même endpoint avec Cedric (`villeOrigine: Sudbourg`) → résultats différents, car la Réserve utilise l'attribut du jeton pour filtrer
 
-**Point clé** — Les Client Scopes et les Mappers contrôlent finement le contenu des jetons. Le rôle `marchand` ouvre la porte (autorisation), tandis que l'attribut `ville_origine` indique à la Réserve quelles données montrer (filtrage contextuel). C'est la complémentarité entre RBAC (rôles) et ABAC (attributs).
+**Point clé** — Les Client Scopes et les Mappers contrôlent finement le contenu des jetons. Le rôle `marchand` ouvre la porte (autorisation), tandis que l'attribut `villeOrigine` indique à la Réserve quelles données montrer (filtrage contextuel). C'est la complémentarité entre RBAC (rôles) et ABAC (attributs).
 
 ---
 
