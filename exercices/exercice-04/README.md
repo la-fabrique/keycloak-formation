@@ -89,16 +89,16 @@ Le Comptoir des voyageurs est l'application front-end qui permet aux sujets de s
 
 | Champ | Valeur |
 | --- | --- |
-| **Root URL** | `http://localhost:3000` |
+| **Root URL** | `http://localhost:5173` |
 | **Home URL** | *(laisser vide)* |
-| **Valid redirect URIs** | `http://localhost:3000/*` |
-| **Valid post logout redirect URIs** | `http://localhost:3000/*` |
-| **Web origins** | `http://localhost:3000` |
+| **Valid redirect URIs** | `http://localhost:5173/*` |
+| **Valid post logout redirect URIs** | `http://localhost:5173/*` |
+| **Web origins** | `http://localhost:5173` |
 
 10. Cliquez sur **« Save »**
 
 **Point d'observation :**
-- **Valid redirect URIs** : liste blanche des URLs vers lesquelles Keycloak peut rediriger après authentification. Le caractère `*` autorise tous les chemins sous `http://localhost:3000/`.
+- **Valid redirect URIs** : liste blanche des URLs vers lesquelles Keycloak peut rediriger après authentification. Le caractère `*` autorise tous les chemins sous `http://localhost:5173/`.
 - **Web origins** : autorise le front-end à appeler les endpoints Keycloak en AJAX (gestion CORS).
 
 > **Checkpoint :** Le client `comptoir-des-voyageurs` est créé. Vous êtes redirigé vers la page de détails du client.
