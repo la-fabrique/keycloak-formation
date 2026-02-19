@@ -123,14 +123,13 @@ Les modèles de rôles plus complexes (avec rôles métier spécialisés) seront
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-La province de Valdoria possède désormais ses titres impériaux. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs rôles. Les architectes créent les premiers habitants et observent comment leurs droits sont matérialisés dans leurs laissez-passer numériques (jetons JWT). Ils ajoutent également un trait personnel — la ville d'origine — pour illustrer la différence entre un rôle (ce qu'on est autorisé à faire) et un attribut (ce qui nous décrit).
+La province de Valdoria possède désormais ses titres impériaux. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs rôles. Les architectes créent les premiers habitants et leur ajoutent un trait personnel — la ville d'origine — pour illustrer la différence entre un rôle (ce qu'on est autorisé à faire) et un attribut (ce qui nous décrit).
 
 **Objectifs pédagogiques**
 
 - Créer des utilisateurs dans le realm
 - Attribuer des rôles de royaume aux utilisateurs
-- Ajouter un attribut personnalisé (`ville_origine`) à chaque utilisateur
-- Observer les rôles dans un jeton JWT (Access Token)
+- Ajouter un attribut personnalisé (`villeOrigine`) à chaque utilisateur
 - Comprendre la distinction entre rôle et attribut : le rôle contrôle l'**accès**, l'attribut enrichit le **contexte**
 
 **Étapes**
@@ -140,13 +139,11 @@ La province de Valdoria possède désormais ses titres impériaux. Il est temps 
    - `brunhild` la marchande (ville d'origine : Nordheim) → rôle simple
    - `cedric` le sujet (ville d'origine : Sudbourg) → rôle de base
 2. Attribuer à chaque utilisateur son rôle correspondant (`gouverneur`, `marchand`, `sujet`)
-3. Ajouter l'attribut `ville_origine` à chaque utilisateur (onglet « Attributes »)
+3. Ajouter l'attribut `villeOrigine` via le User Profile du realm, puis renseigner la valeur pour chaque utilisateur
 4. Vérifier les profils utilisateurs et l'héritage des rôles pour alaric
-5. Utiliser l'outil Evaluate pour prévisualiser le jeton JWT
-6. Se connecter avec l'utilisateur `alaric` via la Account Console
-7. Comprendre la différence entre rôles de royaume et rôles de client dans les jetons
+5. Se connecter avec l'utilisateur `alaric` via la Account Console
 
-**Point clé** — Le **rôle** détermine si un sujet peut accéder à une ressource (ex : seul un `marchand` peut consulter l'inventaire). L'**attribut** (`ville_origine`) enrichit le jeton avec des informations contextuelles que l'API pourra utiliser pour filtrer les données (ex : ne montrer que les artefacts de la ville du sujet).
+**Point clé** — Le **rôle** détermine si un sujet peut accéder à une ressource (ex : seul un `marchand` peut consulter l'inventaire). L'**attribut** (`villeOrigine`) enrichit le profil avec des informations contextuelles qui seront exploitées par les applications (ex : filtrer les données par ville d'origine).
 
 ---
 
