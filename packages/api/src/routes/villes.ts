@@ -18,7 +18,7 @@ router.get(
   requireRole("marchand"),
   requireVilleAccess,
   (req: Request, res: Response) => {
-    const { ville } = req.params;
+    const ville = req.params.ville as string;
 
     // Vérifier que la ville existe
     if (!villes.includes(ville)) {

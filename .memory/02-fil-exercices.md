@@ -12,7 +12,7 @@ Chaque exercice correspond à une étape de construction de cet IAM impérial, d
 | Concept Keycloak        | Métaphore Authéria                        |
 | ----------------------- | ----------------------------------------- |
 | Realm                   | Province de l'empire                      |
-| Realm `master`          | Le Château de l'empereur (super-admin)    |
+| Realm `master`          | la (province) capitale de l'empire et son château (super-admin)    |
 | Client applicatif (front) | Comptoir des voyageurs (application accessible aux sujets) |
 | Client applicatif (API)   | Réserve (API protégée, ressources du royaume) |
 | Rôle (Realm role)       | Titre impérial (voyageur, marchand, gouverneur) |
@@ -50,13 +50,14 @@ Un `docker-compose.yml` pré-configuré fournit :
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-Avant de gouverner, il faut bâtir la capitale. Les architectes déploient le château central et découvrent le Château de l'empereur, siège du pouvoir absolu.
+Les stagiaires incarnent un membre de la **Garde Impériale** (`super-administrateur`). Avant d'instaurer l'ordre impérial, il faut bâtir la capitale (1ère province de l'empire) et le **Château de l'empereur** (realm `master`), siège du pouvoir absolu. La capitale est le centre nerveux de l'administration : aucun comptoir (`client` app) ne doit jamais y être rattaché directement — elle est réservée aux membres de la Garde impériale qui administrent l'empire et ses provinces (autres `realms`).
 
 **Objectifs pédagogiques**
 
 - Installer et lancer Keycloak 26.1 via Docker
 - Naviguer dans la console d'administration
 - Comprendre le rôle du realm `master` (le Château de l'empereur)
+- Observer l'isolation entre realms (provinces)
 
 **Étapes**
 

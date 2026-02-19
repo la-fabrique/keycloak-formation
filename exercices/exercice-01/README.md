@@ -36,41 +36,28 @@ A l'issue de cet exercice, vous serez capable de :
 
 ## Contexte narratif
 
-> Vous êtes un **Architecte de la Sécurité** de l'Empire d'Authéria.
+> Vous êtes un membre de la **Garde Impériale** (`super-administrateur`) de l'Empire d'Authéria.
 >
-> Avant de gouverner, il faut bâtir la capitale. Votre première mission : déployer le **château central** — le serveur Keycloak — et découvrir **le Château de l'empereur**, siège du pouvoir absolu qui contrôle l'ensemble de l'empire.
+> Avant d'instaurer l'ordre impérial, il faut bâtir la capitale, qui est aussi la 1ère province de l'empire. Votre première mission : construire cette capitale et le  **le Château de l'empereur** (realm `master`), siège du pouvoir absolu qui contrôle l'ensemble de l'empire.
 >
-> Le Château de l'empereur (realm `master`) est le centre nerveux de l'administration. Aucune application ne doit jamais y être rattachée directement : il est réservé aux super-administrateurs.
+> La capitale et son Château impérial  est le centre nerveux de l'administration.  
+> Aucun **comptoir** (`client` app) ne doit jamais y être rattaché directement : il est réservé aux membre de la **Garde impériale** (`super-administrateur`) qui administre l'empire et ses provainces ( autres `realms`) .
 
-### Lexique de l'Empire
-
-| Concept Keycloak | Métaphore Authéria |
-| --- | --- |
-| Realm | Province de l'empire |
-| Realm `master` | Le Château de l'empereur (super-admin) |
-| Utilisateur | Sujet de l'empire |
-
----
 
 ## Étapes
 
 ### Étape 1 — Lancer l'environnement Docker
 
-Ouvrez un terminal et placez-vous dans le dossier `infrastructure/` du dépôt de formation :
+Ouvrez un terminal et placez-vous à la racine `./` du dépôt de formation :
 
 ```bash
-cd infrastructure
-```
-
-Lancez l'ensemble des services en arrière-plan :
-
-```bash
-docker compose up -d
+npm run docker:up
 ```
 
 Attendez que tous les conteneurs soient prêts, puis vérifiez leur état :
 
 ```bash
+cd infrastructure
 docker compose ps
 ```
 
@@ -78,10 +65,10 @@ docker compose ps
 
 ```
 NAME                  STATUS
-autheria-keycloak     running (healthy)
-autheria-postgres     running (healthy)
-autheria-mailhog      running
-autheria-openldap     running
+autheria-keycloak     Up About a minute (health: starting)
+autheria-postgres     Up About a minute (healthy) 
+autheria-mailhog      Up About a minute
+autheria-openldap     Up About a minute
 ```
 
 > **Note :** Le conteneur `autheria-keycloak` peut mettre **30 à 60 secondes** avant de passer au statut `healthy`. Si le statut indique `starting`, patientez quelques instants et relancez `docker compose ps`.
@@ -90,12 +77,12 @@ autheria-openldap     running
 
 | Conteneur | Rôle |
 | --- | --- |
-| `autheria-keycloak` | Le serveur Keycloak 26.1 — le château central |
+| `autheria-keycloak` | Le serveur Keycloak 26.1 — **l'administration impériale** |
 | `autheria-postgres` | La base de données PostgreSQL qui stocke la configuration de Keycloak |
 | `autheria-mailhog` | Un serveur SMTP de test pour capturer les emails (vérification, réinitialisation) |
 | `autheria-openldap` | Un annuaire LDAP — le registre de la province voisine (utilisé au Jour 2) |
 
-> **Checkpoint :** La commande `docker compose ps` affiche 4 conteneurs avec le statut `running`. Le conteneur `autheria-keycloak` est au statut `healthy`.
+> **Checkpoint :** La commande `docker compose ps` affiche au moins 4 conteneurs avec le statut `running`. Le conteneur `autheria-keycloak` est au statut `healthy`.
 
 ---
 
@@ -114,7 +101,7 @@ Vous arrivez sur le tableau de bord de la console d'administration. En haut à g
 
 ---
 
-### Étape 3 — Explorer le realm `master` (le Château de l'empereur)
+### Étape 3 — Explorer le realm `master` (la capitale de l'empire et son château)
 
 Le realm `master` est le siège du Château de l'empereur. Explorons ses différentes composantes.
 
@@ -227,7 +214,7 @@ En d'autres termes : **chaque nouveau realm créé est automatiquement enregistr
 
 ## Point clé
 
-> **Le realm `master` est le Château de l'empereur.**
+> **Le realm `master` est la capitale de l'empire.**
 >
 > Il est réservé **exclusivement** à l'administration globale de Keycloak. Les applications et les utilisateurs finaux ne doivent **jamais** être rattachés au realm `master`. Chaque application ou organisation doit disposer de son propre realm dédié.
 
@@ -254,32 +241,3 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 - **Interface Mailhog** — accédez à `http://localhost:8025`. L'interface est vide pour l'instant (aucun email envoyé), mais elle sera utilisée dans les exercices suivants.
 - **Logs Keycloak** — dans votre terminal, lancez `docker compose logs -f keycloak` pour suivre les logs en temps réel. Identifiez le message indiquant que Keycloak est prêt.
 
----
-
-## Récapitulatif des commandes
-
-| Commande | Description |
-| --- | --- |
-| `docker compose up -d` | Lancer l'environnement en arrière-plan |
-| `docker compose ps` | Vérifier l'état des conteneurs |
-| `docker compose logs -f keycloak` | Suivre les logs de Keycloak en temps réel |
-| `docker compose down` | Arrêter l'environnement (données conservées) |
-| `docker compose down -v` | Arrêter l'environnement et supprimer les données |
-
----
-
-## Lexique complet de l'Empire d'Authéria
-
-| Concept Keycloak | Métaphore Authéria |
-| --- | --- |
-| Realm | Province de l'empire |
-| Realm `master` | Le Château de l'empereur (super-admin) |
-| Client applicatif | Échoppe (point de service métier) |
-| Rôle (Realm role) | Profil métier (sujet, artisan, marchand, gouverneur) |
-| Groupe | Guilde (ex : guilde des forgerons) |
-| Utilisateur | Sujet de l'empire |
-| Client Scope / Mapper | Parchemin officiel |
-| Service Account (M2M) | Automate impérial |
-| Annuaire LDAP | Province alliée |
-| IDP externe (SSO) | Ambassade étrangère |
-| Politique de sécurité | Fortification |
