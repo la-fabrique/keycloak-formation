@@ -12,6 +12,7 @@ A l'issue de cet exercice, vous serez capable de :
 - Créer et configurer un realm dédié pour une organisation
 - Comprendre l'isolation complète entre realms (utilisateurs, rôles, clients)
 - Créer des rôles de royaume (Realm roles) simples et composites
+- Configurer un rôle par défaut attribué automatiquement à tout nouvel utilisateur
 - Comprendre l'héritage de droits via les rôles composites
 - Configurer les paramètres de session et de tokens
 - Paramétrer les notifications par email (SMTP)
@@ -23,7 +24,7 @@ A l'issue de cet exercice, vous serez capable de :
 ### Prérequis techniques
 
 - L'environnement Docker doit être **actif** (exercice 1 complété)
-- Les 4 conteneurs doivent être en état `running` et `healthy`
+- Les 3 conteneurs (postgres, mailhog, keycloak) doivent être en état `running` et `healthy`
 - Accès à la console d'administration de Keycloak
 
 ### Prérequis de connaissances
@@ -35,28 +36,18 @@ A l'issue de cet exercice, vous serez capable de :
 
 ## Contexte narratif
 
-> Le Château de l'empereur accorde une charte pour fonder la **Province de Valdoria**, joyau de l'Empire d'Authéria.
+> L'empereur accorde une charte pour fonder la **Province de Valdoria**, joyau de l'Empire d'Authéria.
 >
-> Les architectes créent cette nouvelle province et établissent ses **institutions fondamentales** : les profils métier qui structureront toute la société valdorienne.
+> Les administrateurs de l'empire créent cette nouvelle province et établissent ses **institutions fondamentales** : les profils métier qui structureront toute la société valdorienne.
 >
-> Chaque sujet de Valdoria recevra un profil selon sa fonction : simple citoyen, artisan, marchand, scribe ou gouverneur. Certains profils incluent automatiquement les droits d'autres profils — c'est la hiérarchie des responsabilités.
+> Chaque sujet de Valdoria recevra un titre (`role`) selon sa fonction : simple sujet, marchand ou gouverneur. Certains profils incluent automatiquement les droits d'autres profils — c'est la hiérarchie des responsabilités.
 
-### Lexique de l'Empire
-
-| Concept Keycloak | Métaphore Authéria |
-| --- | --- |
-| Realm | Province de l'empire |
-| Realm role | Profil métier (fonction dans la société) |
-| Composite role | Profil hiérarchique (qui inclut d'autres profils) |
-| SMTP configuration | Réseau de messagers impériaux |
-
----
 
 ## Étapes
 
-### Étape 1 — Créer le realm `valdoria`
+### Étape 1 — Créer la province (`realm`) de `valdoria`
 
-Le Château de l'empereur accorde la charte. Il est temps de fonder officiellement la province.
+L'administration impériale accorde la charte. Il est temps de fonder officiellement la province.
 
 1. Connectez-vous à la console d'administration de Keycloak : **http://localhost:8080/admin**
 2. Identifiants : `admin` / `admin`
@@ -91,6 +82,7 @@ Valdoria est une province vierge. Vérifions qu'elle ne contient aucun élément
    - `admin-cli` — client en ligne de commande
    - `broker` — utilisé pour la fédération d'identité
    - `realm-management` — client interne pour l'administration du realm
+      > Ce client définit des rôles pour manager le realm (ex: `create-client`, `manage-users`, `view-events` ...) 
    - `security-admin-console` — console d'administration
 
 #### 2c. Observer les rôles par défaut
@@ -129,7 +121,20 @@ Les institutions de Valdoria nécessitent 2 profils métier de base. Créons-les
    - **Description :** `Marchand du royaume de Valdoria — commerçant avec accès aux places de marché et registres commerciaux`
 8. Cliquez sur **« Save »**
 
-> **Checkpoint :** Vous avez créé 2 rôles de base : `sujet` et `marchand`. Ces rôles apparaissent dans la liste des Realm roles.
+#### Configurer `sujet` comme rôle par défaut
+
+Tout habitant de Valdoria est automatiquement un sujet de la province. Configurons le rôle `sujet` pour qu'il soit attribué automatiquement à chaque nouvel utilisateur.
+
+9. Dans la liste des **« Realm roles »**, cliquez sur le rôle **`default-roles-valdoria`**
+   > Redirection vers `Realm sttings`/`User registration`
+10. Cliquez sur l'onglet **« Associated roles »**
+11. Cliquez sur **« Assign role »**
+12. Dans la liste qui apparaît, **cochez le rôle** `sujet`
+13. Cliquez sur **« Assign »**
+
+**Point d'observation :** Le rôle `default-roles-valdoria` est un rôle composite spécial, créé automatiquement par Keycloak pour chaque realm. Tout utilisateur créé dans le realm hérite automatiquement de ses rôles associés. En y ajoutant `sujet`, chaque nouvel habitant de Valdoria recevra ce titre de citoyen sans intervention manuelle.
+
+> **Checkpoint :** Vous avez créé 2 rôles de base : `sujet` et `marchand`. Le rôle `sujet` est configuré comme rôle par défaut — tout nouvel utilisateur du realm `valdoria` le recevra automatiquement.
 
 ---
 
@@ -170,14 +175,17 @@ Visualisons la structure hiérarchique que nous venons de créer.
 **Schéma conceptuel de la hiérarchie :**
 
 ```
+default-roles-valdoria (rôle par défaut du realm)
+└── sujet  ←  attribué automatiquement à tout nouvel utilisateur
+
 gouverneur (composite)
 ├── sujet
 └── marchand
 ```
 
-**Point clé :** Les rôles composites permettent de gérer efficacement les hiérarchies de droits. En production, ils évitent d'attribuer manuellement des dizaines de rôles individuels à chaque utilisateur. Ici, notre modèle simplifié (3 rôles au total) facilite la compréhension du concept d'héritage.
+**Point clé :** Les rôles composites permettent de gérer efficacement les hiérarchies de droits. En production, ils évitent d'attribuer manuellement des dizaines de rôles individuels à chaque utilisateur. Ici, notre modèle simplifié (3 rôles au total) facilite la compréhension du concept d'héritage. Le rôle `sujet`, configuré comme rôle par défaut, garantit que tout nouvel habitant de Valdoria est reconnu comme citoyen dès sa création.
 
-> **Checkpoint :** Vous comprenez la structure hiérarchique des rôles de Valdoria. Le gouverneur hérite automatiquement des droits de `sujet` et `marchand`.
+> **Checkpoint :** Vous comprenez la structure hiérarchique des rôles de Valdoria. Le gouverneur hérite automatiquement des droits de `sujet` et `marchand`. Le rôle `sujet` est attribué par défaut à tout nouvel utilisateur.
 
 ---
 
@@ -190,8 +198,8 @@ Valdoria doit définir combien de temps un sujet peut rester connecté et combie
 3. Observez les valeurs par défaut :
    - **SSO Session Idle :** 30 minutes (durée d'inactivité avant déconnexion automatique)
    - **SSO Session Max :** 10 heures (durée maximale d'une session, même active)
-   - **SSO Session Idle Remember Me :** 30 jours (si "Se souvenir de moi" est coché)
-   - **SSO Session Max Remember Me :** 30 jours
+   - **SSO Session Idle Remember Me :** _
+   - **SSO Session Max Remember Me :** _
 
 **Pour cet exercice, modifions les valeurs pour des sessions plus courtes (environnement de test) :**
 
@@ -244,25 +252,20 @@ Valdoria doit pouvoir envoyer des messages officiels à ses sujets : vérificati
 
 Avant de pouvoir tester l'envoi d'email, l'utilisateur administrateur doit avoir une adresse email configurée.
 
-4. Après avoir sauvegardé, un bouton **« Test connection »** apparaît en haut de la page
-5. Cliquez sur **« Test connection »**
-6. Une boîte de dialogue apparaît avec le message : *« You need to configure your e-mail address first »*
-7. Cliquez sur **« Configure e-mail address »**
-8. **Attention :** vous êtes redirigé vers le profil de l'utilisateur `admin` **dans le realm `master`**
-9. Dans le champ **« Email »**, saisissez : `admin@empire.local`
-10. Cliquez sur **« Save »**
-11. **Important :** Retournez sur le realm **`valdoria`** via le menu déroulant en haut à gauche
-12. Naviguez à nouveau vers **« Realm settings »** > onglet **« Email »**
-13. Cliquez sur **« Test connection »**
-14. La boîte de dialogue affiche maintenant l'adresse email de l'admin : `admin@empire.local`
-15. Cliquez sur **« Send test email »**
-16. Un message de confirmation devrait apparaître : *« Success! E-mail sent. »*
+4. Cliquez sur **« Configure e-mail address »**
+5. **Attention :** vous êtes redirigé vers le profil de l'utilisateur `admin` **dans le realm `master`**
+6. Dans le champ **« Email »**, saisissez : `admin@empire.local`
+7. Cliquez sur **« Save »**
+8. **Important :** Retournez sur le realm **`valdoria`** via le menu déroulant en haut à gauche
+9. Naviguez à nouveau vers **« Realm settings »** > onglet **« Email »**
+10. Cliquez sur **« Test connection »**
+11. Un message de confirmation devrait apparaître : *« Success! E-mail sent. »*
 
 #### Vérifier la réception dans Mailhog
 
-17. Ouvrez un nouvel onglet de navigateur et accédez à : **http://localhost:8025**
-18. L'interface de Mailhog s'affiche
-19. **Observation :** un email de test est arrivé avec :
+12. Ouvrez un nouvel onglet de navigateur et accédez à : **http://localhost:8025**
+13. L'interface de Mailhog s'affiche
+14. **Observation :** un email de test est arrivé avec :
     - **From :** `Province de Valdoria <noreply@valdoria.empire>`
     - **To :** `admin@empire.local`
     - **Subject :** `Test message`
@@ -279,11 +282,12 @@ Avant de pouvoir tester l'envoi d'email, l'utilisateur administrateur doit avoir
 >
 > Il dispose de :
 > - **3 profils métier** (2 simples + 1 composite) qui structurent la société valdorienne
+> - **Un rôle par défaut** (`sujet`) attribué automatiquement à tout nouvel utilisateur
 > - **Une hiérarchie de droits** via le rôle composite (le gouverneur hérite des droits de sujet et marchand)
 > - **Des paramètres de session** adaptés à un environnement de test
 > - **Un réseau de messagers** (SMTP) pour envoyer des notifications officielles
 >
-> Les rôles créés ici serviront de fondation à tous les exercices suivants. Chaque utilisateur créé dans Valdoria recevra un ou plusieurs de ces profils métier.
+> Les rôles créés ici serviront de fondation à tous les exercices suivants. Chaque utilisateur créé dans Valdoria recevra automatiquement le titre de `sujet`, et pourra se voir attribuer des profils métier supplémentaires.
 
 ---
 
@@ -291,25 +295,15 @@ Avant de pouvoir tester l'envoi d'email, l'utilisateur administrateur doit avoir
 
 | Problème | Cause probable | Solution |
 | --- | --- | --- |
-| Le bouton « Create realm » n'apparaît pas | Vous n'êtes pas connecté en tant qu'admin du realm `master` | Vérifiez que vous êtes bien connecté avec `admin` / `admin` |
 | Le test SMTP échoue avec « Connection refused » | Le conteneur Mailhog n'est pas démarré | Vérifiez avec `docker compose ps` que `autheria-mailhog` est en état `running` |
 | Le test SMTP échoue avec « Unknown host » | Le nom d'hôte est incorrect | Vérifiez que vous avez bien saisi `autheria-mailhog` (et non `mailhog` ou `localhost`) |
 | L'email de test n'arrive pas dans Mailhog | Mauvais port SMTP | Vérifiez que le port est bien `1025` (et non `8025` qui est le port web) |
-| Je ne vois pas l'onglet « Associated roles » | Vous n'avez pas encore sauvegardé le rôle | Créez d'abord le rôle avec « Save », puis l'onglet apparaîtra |
 
 ---
 
 ## Pour aller plus loin
 
 Si vous avez terminé en avance, explorez ces éléments supplémentaires :
-
-### Explorer les paramètres de tokens
-
-1. Dans **« Realm settings »** > **« Tokens »**, observez les différents types de tokens :
-   - **Access Token** — jeton d'accès aux ressources (courte durée : 5 min)
-   - **Refresh Token** — jeton pour renouveler l'access token (longue durée)
-   - **ID Token** — jeton d'identité OIDC (contient les informations utilisateur)
-2. Notez les valeurs par défaut : elles seront utilisées dans les exercices suivants pour comprendre le cycle de vie des jetons
 
 ### Activer la journalisation des événements
 
@@ -332,31 +326,3 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 **Note :** Les premiers utilisateurs de Valdoria seront créés dans l'exercice suivant. La personnalisation du thème de connexion sera abordée dans un exercice ultérieur.
 
 ---
-
-## Récapitulatif des rôles créés
-
-| Rôle | Type | Description | Rôles inclus |
-| --- | --- | --- | --- |
-| `sujet` | Simple | Citoyen de base | — |
-| `marchand` | Simple | Commerçant avec accès aux marchés | — |
-| `gouverneur` | Composite | Administrateur suprême | `sujet`, `marchand` |
-
----
-
-## Lexique complet de l'Empire d'Authéria
-
-| Concept Keycloak | Métaphore Authéria |
-| --- | --- |
-| Realm | Province de l'empire |
-| Realm `master` | Le Château de l'empereur (super-admin) |
-| Realm role | Profil métier (fonction dans la société) |
-| Composite role | Profil hiérarchique (inclut d'autres profils) |
-| Client applicatif | Échoppe (point de service métier) |
-| Groupe | Guilde (ex : guilde des forgerons) |
-| Utilisateur | Sujet de l'empire |
-| Client Scope / Mapper | Parchemin officiel |
-| Service Account (M2M) | Automate impérial |
-| Annuaire LDAP | Province alliée |
-| IDP externe (SSO) | Ambassade étrangère |
-| Politique de sécurité | Fortification |
-| SMTP / Email | Réseau de messagers impériaux |

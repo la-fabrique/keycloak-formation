@@ -15,7 +15,7 @@ Chaque exercice correspond à une étape de construction de cet IAM impérial, d
 | Realm `master`          | la (province) capitale de l'empire et son château (super-admin)    |
 | Client applicatif (front) | Comptoir des voyageurs (application accessible aux sujets) |
 | Client applicatif (API)   | Réserve (API protégée, ressources du royaume) |
-| Rôle (Realm role)       | Titre impérial (voyageur, marchand, gouverneur) |
+| Rôle (Realm role)       | Titre impérial (sujet, marchand, gouverneur) |
 | Groupe                  | Guilde (ex : guilde des marchands)        |
 | Utilisateur             | Sujet de l'empire                         |
 | Attribut utilisateur    | Trait du sujet (ex : ville d'origine)     |
@@ -81,23 +81,21 @@ Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria
 
 - Créer et configurer un realm dédié pour une organisation
 - Comprendre l'isolation complète entre realms (utilisateurs, rôles, clients)
-- Créer les rôles de royaume (Realm roles) qui serviront de fondation à l'autorisation
-- Créer un rôle composite pour illustrer l'héritage de droits
+- Créer des rôles de royaume (Realm roles) simples et composites
+- Configurer un rôle par défaut attribué automatiquement à tout nouvel utilisateur
+- Comprendre l'héritage de droits via les rôles composites
 - Configurer les paramètres de session et de tokens
-- Paramétrer les notifications par email
+- Paramétrer les notifications par email (SMTP)
 
 **Étapes**
 
 1. Créer le realm `valdoria` depuis la console d'administration
-2. Vérifier l'isolation : observer que les utilisateurs et rôles du realm `master` n'existent pas dans `valdoria`
-3. Créer deux rôles de royaume simples :
-   - `sujet` (citoyen ordinaire de Valdoria — accès minimal aux services du royaume)
-   - `marchand` (commerçant de l'empire — accès aux places de marché et registres commerciaux)
-4. Créer un rôle composite :
-   - `gouverneur` (administrateur suprême de la province — hérite de `sujet` + `marchand`)
-5. Configurer les paramètres de session : durées de vie des sessions SSO et des tokens
-6. Paramétrer le serveur SMTP vers Mailhog pour les emails de vérification (préparation pour la gestion des utilisateurs)
-7. Explorer les paramètres de tokens : observer les options d'Access Token et Refresh Token
+2. Constater l'isolation : utilisateurs (vide), clients système uniquement, rôles par défaut (3)
+3. Créer deux rôles de royaume simples : `sujet`, `marchand` — puis configurer `sujet` comme rôle par défaut (via `default-roles-valdoria`)
+4. Créer le rôle composite `gouverneur` (hérite de `sujet` + `marchand`)
+5. Vérifier la hiérarchie des rôles (schéma default-roles-valdoria / gouverneur)
+6. Configurer les paramètres de session (SSO idle 15 min, max 2 h) et observer les tokens (valeurs par défaut)
+7. Configurer le serveur SMTP vers Mailhog et tester l’envoi d’email
 
 **Rôles créés :**
 
@@ -116,7 +114,7 @@ Cette structure volontairement épurée (3 rôles au total) facilite la compréh
 
 Les modèles de rôles plus complexes (avec rôles métier spécialisés) seront abordés dans les exercices avancés du Module 3.
 
-**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants. Le rôle composite `gouverneur` hérite automatiquement des droits de `sujet` et `marchand` : c'est le mécanisme clé pour gérer les hiérarchies de droits sans attributions manuelles répétitives.
+**Point clé** — Chaque realm est un espace totalement isolé : utilisateurs, clients, rôles et configuration sont indépendants. Le rôle `sujet` est configuré comme rôle par défaut (attribué automatiquement à tout nouvel utilisateur). Le rôle composite `gouverneur` hérite automatiquement des droits de `sujet` et `marchand` : c'est le mécanisme clé pour gérer les hiérarchies de droits sans attributions manuelles répétitives.
 
 ---
 

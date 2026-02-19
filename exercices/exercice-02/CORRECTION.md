@@ -11,6 +11,7 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 - [ ] Le realm `valdoria` a été créé et est actif
 - [ ] L'isolation a été constatée (0 utilisateurs, clients système uniquement)
 - [ ] Les 2 rôles simples ont été créés (`sujet`, `marchand`)
+- [ ] Le rôle `sujet` est configuré comme rôle par défaut (ajouté à `default-roles-valdoria`)
 - [ ] Le rôle composite a été créé (`gouverneur`)
 - [ ] Le rôle composite inclut bien les 2 rôles de base (vérification dans « Associated roles »)
 - [ ] Les paramètres de session ont été modifiés (15 min idle, 2h max)
@@ -23,50 +24,12 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 ### Étape 1 — Créer le realm `valdoria`
 
-**Procédure exacte :**
-
-1. Menu déroulant des realms (haut gauche) > **« Create realm »**
-2. Champ « Realm name » : `valdoria`
-3. Toggle « Enabled » : ON (par défaut)
-4. Bouton **« Create »**
-
-**Résultat attendu :**
-- La console bascule automatiquement sur le realm `valdoria`
-- Le menu déroulant affiche maintenant `valdoria`
-- L'URL devient : `http://localhost:8080/admin/valdoria/console/`
-
 **Note formateur :** Si un participant a des difficultés à trouver le menu déroulant, rappelez qu'il se trouve **à gauche** du logo Keycloak (et non dans le menu utilisateur en haut à droite).
 
 ---
 
 ### Étape 2 — Constater l'isolation du nouveau realm
 
-#### 2a. Utilisateurs
-
-**Résultat attendu :**
-- Menu **« Users »** > **« View all users »** : 0 utilisateurs
-- Message affiché : *« No users found »*
-
-#### 2b. Clients
-
-**Clients système présents par défaut :**
-- `account` — console de compte utilisateur (ancienne version)
-- `account-console` — nouvelle console de compte (Keycloak 26+)
-- `admin-cli` — client pour l'API d'administration
-- `broker` — utilisé pour la fédération d'identité
-- `realm-management` — client interne pour administrer le realm
-- `security-admin-console` — console d'administration web
-
-**Total : 6 clients système**
-
-#### 2c. Rôles
-
-**Rôles par défaut présents :**
-- `default-roles-valdoria` — rôle composite attribué automatiquement à tous les nouveaux utilisateurs
-- `offline_access` — permet d'obtenir des refresh tokens offline
-- `uma_authorization` — User-Managed Access (autorisation fine)
-
-**Total : 3 rôles par défaut**
 
 **Point de vigilance :** Certains participants peuvent être surpris de voir des clients et rôles "par défaut". Expliquez que ce sont des éléments système créés automatiquement par Keycloak pour chaque nouveau realm. Ils ne proviennent pas du realm `master`.
 
@@ -74,24 +37,13 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 ### Étape 3 — Créer les profils métier de base (rôles simples)
 
-**Procédure pour chaque rôle :**
-
-1. Menu **« Realm roles »** > **« Create role »**
-2. Remplir les champs (voir tableau ci-dessous)
-3. **« Save »**
-
-**Rôles à créer :**
-
-| Role name | Description |
-| --- | --- |
-| `sujet` | Sujet du royaume de Valdoria — citoyen ordinaire avec accès minimal aux services du royaume |
-| `marchand` | Marchand du royaume de Valdoria — commerçant avec accès aux places de marché et registres commerciaux |
-
-**Résultat attendu :**
-- 2 nouveaux rôles apparaissent dans la liste des **« Realm roles »**
-- Total de rôles dans le realm : 5 (3 par défaut + 2 créés)
-
 **Note formateur :** Les descriptions sont importantes pour la documentation. Encouragez les participants à les remplir soigneusement. Le modèle simplifié (2 rôles de base + 1 composite) facilite la compréhension du concept d'héritage sans surcharger les débutants.
+
+#### Configurer `sujet` comme rôle par défaut
+
+**Point de vigilance :** Certains participants peuvent confondre `default-roles-valdoria` (qui gère les rôles par défaut de tout le realm) avec le rôle composite `gouverneur` (qui est attribué manuellement). Rappeler que `default-roles-valdoria` est un mécanisme automatique du realm, tandis que `gouverneur` est un rôle métier composite attribué individuellement.
+
+**Note formateur :** C'est un bon moment pour expliquer le concept de rôles par défaut. En production, on y place souvent les rôles de base que tout utilisateur doit posséder (ex : `user`, `basic-access`). Cela évite d'oublier d'attribuer manuellement ces rôles à chaque nouvel utilisateur.
 
 ---
 
@@ -99,40 +51,11 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 #### Créer `gouverneur`
 
-**Procédure :**
-
-1. **« Create role »**
-2. Role name : `gouverneur`
-3. Description : `Gouverneur du royaume de Valdoria — administrateur suprême de la province avec tous les droits`
-4. **« Save »**
-5. Onglet **« Associated roles »** > **« Assign role »**
-6. Cocher : `sujet` et `marchand`
-7. **« Assign »**
-
-**Vérification :**
-- Dans l'onglet **« Associated roles »**, les 2 rôles doivent être listés
-- Un badge indique le nombre de rôles associés : `2`
-
 **Point de vigilance :** Vérifiez que les participants cochent bien les deux rôles. L'héritage ne fonctionne que si les rôles sont explicitement associés dans l'onglet « Associated roles ».
-
-**Résultat attendu :**
-- Total de rôles dans le realm : 6 (3 par défaut + 2 simples + 1 composite)
 
 ---
 
 ### Étape 5 — Vérifier la hiérarchie des rôles
-
-**Vérification `gouverneur` :**
-- Menu **« Realm roles »** > clic sur `gouverneur`
-- Onglet **« Associated roles »** : 2 rôles listés (`sujet`, `marchand`)
-
-**Schéma hiérarchique :**
-
-```
-gouverneur (composite)
-├── sujet
-└── marchand
-```
 
 **Point de discussion :** Les rôles composites sont essentiels en production pour gérer des hiérarchies complexes. Exemple réel : un rôle `admin-application` pourrait inclure `view-users`, `manage-users`, `view-logs`, `manage-config`, etc. Sans rôles composites, il faudrait attribuer manuellement des dizaines de rôles à chaque administrateur.
 
@@ -144,36 +67,6 @@ gouverneur (composite)
 
 #### Sessions
 
-**Navigation :**
-- Menu **« Realm settings »** > onglet **« Sessions »**
-
-**Valeurs à modifier :**
-- **SSO Session Idle :** `15 minutes` (au lieu de 30 minutes)
-- **SSO Session Max :** `2 hours` (au lieu de 10 heures)
-
-**Valeurs à conserver :**
-- **SSO Session Idle Remember Me :** 30 jours
-- **SSO Session Max Remember Me :** 30 jours
-- **Offline Session Idle :** 30 jours
-- **Offline Session Max :** 60 jours
-
-**Bouton « Save »** en bas de la page.
-
-#### Tokens
-
-**Navigation :**
-- Menu **« Realm settings »** > onglet **« Tokens »**
-
-**Valeurs par défaut à observer (ne pas modifier) :**
-- **Access Token Lifespan :** 5 minutes
-- **Access Token Lifespan For Implicit Flow :** 15 minutes
-- **Client login timeout :** 1 minute
-- **Login timeout :** 30 minutes
-- **Login action timeout :** 5 minutes
-- **User-Initiated Action Lifespan :** 5 minutes
-- **Default Admin-Initiated Action Lifespan :** 12 heures
-- **Revoke Refresh Token :** OFF (les refresh tokens ne sont pas révoqués après usage)
-
 **Note formateur :** Les participants peuvent être tentés de modifier les durées de tokens. Expliquez que les valeurs par défaut sont adaptées à la production. Un Access Token de 5 minutes est un bon compromis entre sécurité (courte durée) et performance (moins de rafraîchissements).
 
 Le paramètre **Revoke Refresh Token** (OFF par défaut) permet de réutiliser un refresh token plusieurs fois jusqu'à son expiration. En mode ON, chaque rafraîchissement génère un nouveau refresh token (rotation), ce qui augmente la sécurité mais nécessite plus d'appels au serveur.
@@ -183,94 +76,13 @@ Le paramètre **Revoke Refresh Token** (OFF par défaut) permet de réutiliser u
 - **Access Token** : combien de temps une application peut utiliser un jeton avant de le rafraîchir
 - **Refresh Token** : permet de renouveler l'Access Token sans redemander le mot de passe
 
-Ces 3 mécanismes sont distincts mais complémentaires.
-
 ---
 
 ### Étape 7 — Configurer le réseau de messagers impériaux (SMTP)
 
 #### Configuration SMTP
 
-**Navigation :**
-- Menu **« Realm settings »** > onglet **« Email »**
-
-**Valeurs exactes à saisir :**
-
-| Champ | Valeur |
-| --- | --- |
-| **From** | `noreply@valdoria.empire` |
-| **From display name** | `Province de Valdoria` |
-| **Reply to** | *(vide)* |
-| **Reply to display name** | *(vide)* |
-| **Envelope from** | *(vide)* |
-| **Host** | `autheria-mailhog` |
-| **Port** | `1025` |
-| **Encryption** | *(disabled / vide)* |
-| **Authentication** | OFF (toggle désactivé) |
-
-**Bouton « Save »** en bas de la page.
-
-#### Test de connexion
-
-**Procédure complète :**
-
-1. Après sauvegarde, le bouton **« Test connection »** apparaît en haut de la page
-2. Clic sur **« Test connection »**
-3. Boîte de dialogue affiche : *« You need to configure your e-mail address first »*
-4. Clic sur **« Configure e-mail address »**
-5. **Redirection automatique vers le realm `master`** (profil de l'utilisateur `admin`)
-6. Dans le champ **« Email »**, saisir : `admin@empire.local`
-7. Clic sur **« Save »**
-8. **Retour sur le realm `valdoria`** via le menu déroulant en haut à gauche
-9. Navigation vers **« Realm settings »** > onglet **« Email »**
-10. Clic sur **« Test connection »**
-11. Boîte de dialogue affiche maintenant : `admin@empire.local`
-12. Clic sur **« Send test email »**
-13. Message de succès : *« Success! E-mail sent. »*
-
-**Vérification dans Mailhog :**
-
-1. Navigateur : `http://localhost:8025`
-2. Interface Mailhog affiche 1 email
-3. Détails de l'email :
-   - **From :** `Province de Valdoria <noreply@valdoria.empire>`
-   - **To :** `admin@empire.local`
-   - **Subject :** `Test message`
-   - **Body :** `This is a test message`
-
-**Erreurs fréquentes :**
-
-| Erreur | Cause | Solution |
-| --- | --- | --- |
-| `Connection refused` | Conteneur Mailhog non démarré | `docker compose ps` pour vérifier, puis `docker compose up -d` si nécessaire |
-| `Unknown host: autheria-mailhog` | Mauvais nom d'hôte | Vérifier l'orthographe exacte : `autheria-mailhog` (avec tiret) |
-| `Connection timeout` | Mauvais port | Vérifier le port : `1025` (SMTP), pas `8025` (web UI) |
-| Email non reçu dans Mailhog | Mauvaise URL Mailhog | Vérifier l'URL : `http://localhost:8025` (pas 1025) |
-
 **Note formateur :** Mailhog est un outil de développement uniquement. En production, Keycloak serait connecté à un serveur SMTP réel (SendGrid, AWS SES, serveur SMTP d'entreprise, etc.).
-
----
-
-## Points de vigilance formateur
-
-### Erreurs fréquentes des participants
-
-| Erreur | Explication |
-| --- | --- |
-| Créer les rôles dans le realm `master` au lieu de `valdoria` | Vérifier que le menu déroulant affiche bien `valdoria` avant de créer les rôles |
-| Oublier de sauvegarder un rôle avant d'ajouter les « Associated roles » | L'onglet « Associated roles » n'apparaît qu'après la première sauvegarde du rôle |
-| Confondre « Assign role » (pour les rôles composites) et « Assign users » (pour attribuer un rôle à un utilisateur) | Clarifier la différence : « Assign role » = créer un rôle composite ; « Assign users » sera vu à l'exercice 3 |
-| Utiliser `localhost` ou `mailhog` comme nom d'hôte SMTP | Le nom d'hôte Docker correct est `autheria-mailhog` (nom du service dans docker-compose.yml) |
-| Utiliser le port `8025` pour SMTP | `8025` est le port web de Mailhog. Le port SMTP est `1025` |
-| Oublier de retourner sur le realm `valdoria` après avoir configuré l'email de l'admin | Après avoir configuré l'email dans le realm `master`, il faut impérativement revenir sur `valdoria` pour tester le SMTP |
-| Tenter de se connecter à la console de compte `valdoria` avec `admin/admin` | L'utilisateur `admin` n'existe que dans le realm `master`. Aucun utilisateur n'existe encore dans `valdoria` |
-
-### Gestion du timing
-
-- Si la session prend du retard, la section « Pour aller plus loin » peut être sautée
-- L'étape 7 (SMTP) peut être abrégée : configuration uniquement, sans test complet (le SMTP sera naturellement testé dans l'exercice 3 lors de l'envoi d'emails de vérification)
-- Les étapes 3 et 4 (création des rôles) sont essentielles — ne pas les sauter
-- Durée estimée : 30 minutes (25 minutes pour les étapes principales + 5 minutes pour « Pour aller plus loin »)
 
 ---
 
@@ -336,85 +148,3 @@ Sujets à aborder avec les participants après l'exercice :
 >
 > Il est temps d'accueillir les premiers sujets de la province. Dans l'exercice suivant, vous créerez des utilisateurs, leur attribuerez des profils métier et observerez comment ces rôles apparaissent dans leurs laissez-passer numériques (jetons JWT).
 
----
-
-## Annexe — Commandes de vérification
-
-### Vérifier l'état des conteneurs
-
-```bash
-docker compose ps
-```
-
-Résultat attendu : 4 conteneurs en état `running`, dont `autheria-keycloak` et `autheria-mailhog`.
-
-### Consulter les logs de Keycloak
-
-```bash
-docker compose logs -f keycloak
-```
-
-Utile pour débugger les problèmes de configuration SMTP.
-
-### Consulter les logs de Mailhog
-
-```bash
-docker compose logs -f mailhog
-```
-
-Permet de voir les connexions SMTP entrantes.
-
-### Réinitialiser complètement l'environnement
-
-```bash
-docker compose down -v
-docker compose up -d
-```
-
-**Attention :** Cette commande supprime toutes les données (realms, utilisateurs, rôles). A utiliser uniquement en cas de problème majeur.
-
----
-
-## Annexe — Export JSON du realm `valdoria`
-
-Pour référence, voici à quoi ressemble un export partiel du realm `valdoria` après cet exercice :
-
-```json
-{
-  "realm": "valdoria",
-  "enabled": true,
-  "ssoSessionIdleTimeout": 900,
-  "ssoSessionMaxLifespan": 7200,
-  "accessTokenLifespan": 300,
-  "roles": {
-    "realm": [
-      {
-        "name": "sujet",
-        "description": "Citoyen ordinaire de Valdoria — accès minimal aux services publics",
-        "composite": false
-      },
-      {
-        "name": "marchand",
-        "description": "Marchand de Valdoria — commerçant avec accès aux places de marché et registres commerciaux",
-        "composite": false
-      },
-      {
-        "name": "gouverneur",
-        "description": "Gouverneur de Valdoria — administrateur suprême de la province avec tous les droits",
-        "composite": true,
-        "composites": {
-          "realm": ["sujet", "marchand"]
-        }
-      }
-    ]
-  },
-  "smtpServer": {
-    "host": "autheria-mailhog",
-    "port": "1025",
-    "from": "noreply@valdoria.empire",
-    "fromDisplayName": "Province de Valdoria"
-  }
-}
-```
-
-**Note formateur :** Cet export peut être utilisé pour réinitialiser rapidement un realm à l'état de fin d'exercice 2 (via **« Realm settings »** > **« Action »** > **« Partial import »**).
