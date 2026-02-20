@@ -4,6 +4,7 @@
   "description": "Formation pratique Keycloak — L'Empire d'Authéria",
   "private": true,
   "scripts": {
+    "frontend:install": "cd packages/front && npm install",
     "docker:up": "cd infrastructure && docker compose up --build -d",
     "docker:down": "cd infrastructure && docker compose down"
   }

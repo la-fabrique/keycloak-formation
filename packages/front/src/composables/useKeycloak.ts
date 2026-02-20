@@ -136,16 +136,27 @@ async function init(): Promise<void> {
   })
 
   try {
+    
+   keycloakInstance.onAuthLogout = () => {
+      authenticated.value = false
+      token.value = undefined
+      idToken.value = undefined
+      refreshToken.value = undefined
+      parsedToken.value = undefined
+      parsedIdToken.value = undefined
+      userProfile.value = { roles: [], attributes: {} }
+    }
+
     // [KEYCLOAK] "check-sso" : au chargement de l'app, on vérifie silencieusement
     // si l'utilisateur a déjà une session SSO active dans Keycloak.
     // Si oui → il est automatiquement reconnecté sans voir la page de login.
     // Si non → l'app s'affiche en mode non connecté (pas de redirection forcée).
-    const authenticated = await keycloakInstance.init({
+    const initSuccess = await keycloakInstance.init({
       onLoad: 'check-sso',
-      checkLoginIframe: false // Désactivé pour simplifier la config en environnement de formation.
+      checkLoginIframe: false // Désactivé pour simplifier la config en environnement de formation. Nécessite que Keycloak et App soient dans le même domaine
     })
 
-    if (authenticated) {
+    if (initSuccess) {
       updateTokens()
 
       // [KEYCLOAK] L'access token a une durée de vie courte (5 minutes par défaut).
