@@ -122,12 +122,12 @@ async function init(): Promise<void> {
       userProfile.value = { roles: [], attributes: {} }
     }
 
-    const authenticated = await keycloakInstance.init({
+    const initSuccess = await keycloakInstance.init({
       onLoad: 'check-sso',
       checkLoginIframe: true
     })
 
-    if (authenticated) {
+    if (initSuccess) {
       updateTokens()
 
       // Rafraîchissement automatique du token toutes les 30s
