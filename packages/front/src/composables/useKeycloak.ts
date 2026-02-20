@@ -2,33 +2,45 @@ import { ref, type Ref } from 'vue'
 import Keycloak from 'keycloak-js'
 import { KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID } from '../config'
 
+// [KEYCLOAK] Structure du payload d'un token JWT décodé.
+// Un JWT est composé de 3 parties séparées par des points : header.payload.signature
+// Le payload (partie centrale) contient ces claims, visibles dans la page Debug de l'app.
+// Les champs marqués "?" sont optionnels selon le type de token (access token vs ID token).
 interface ParsedToken {
-  sub?: string
-  aud?: string | string[]
-  exp?: number
-  iat?: number
+  sub?: string           // Identifiant unique de l'utilisateur dans Keycloak
+  aud?: string | string[] // Audience : à qui ce token est destiné
+  exp?: number           // Expiration (timestamp Unix)
+  iat?: number           // Date d'émission (issued at)
   realm_access?: {
-    roles: string[]
+    roles: string[]      // Rôles de royaume (ex : ["sujet", "marchand", "gouverneur"])
   }
   email?: string
   preferred_username?: string
   given_name?: string
   family_name?: string
-  [key: string]: unknown
+  [key: string]: unknown // Permet les claims personnalisés comme "villeOrigine"
 }
 
+// Profil utilisateur extrait du token pour l'affichage dans l'interface.
 interface UserProfile {
   username?: string
   email?: string
   firstName?: string
   lastName?: string
   roles: string[]
-  attributes: Record<string, unknown>
+  attributes: Record<string, unknown> // Claims personnalisés (ex : villeOrigine)
 }
 
-// État global (singleton)
+// [KEYCLOAK] keycloak-js est la librairie officielle Keycloak pour les SPA.
+// Elle gère le flux Authorization Code + PKCE : redirection vers Keycloak,
+// récupération du code, échange contre les tokens, et rafraîchissement automatique.
+// On utilise un singleton pour ne créer qu'une seule instance par session navigateur.
 let keycloakInstance: Keycloak | null = null
 
+// [KEYCLOAK] Le front reçoit 3 tokens distincts après authentification :
+// - token (access token) : présenté à l'API pour prouver les droits de l'utilisateur
+// - idToken (ID token) : contient l'identité de l'utilisateur (nom, email) pour l'app
+// - refreshToken : permet d'obtenir de nouveaux access tokens sans se reconnecter
 const authenticated = ref(false)
 const token = ref<string | undefined>()
 const idToken = ref<string | undefined>()
@@ -40,12 +52,16 @@ const userProfile = ref<UserProfile>({
   attributes: {}
 })
 
-/**
- * Décodage JWT basique (base64url)
- */
+// [KEYCLOAK] Un JWT est en réalité du JSON encodé en base64url, pas chiffré.
+// N'importe qui peut lire le contenu d'un token en le décodant — c'est pourquoi
+// on ne met jamais d'information secrète dans un token.
+// La sécurité repose sur la SIGNATURE : seul Keycloak peut produire une signature valide.
+// Cette fonction décode manuellement la partie payload (index [1]) du token.
 function parseJwt(token: string): ParsedToken | undefined {
   try {
+    // Un JWT a la forme "header.payload.signature" — on prend le payload (index 1).
     const base64Url = token.split('.')[1]
+    // Base64url utilise "-" et "_" à la place de "+" et "/" du base64 classique.
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
     const jsonPayload = decodeURIComponent(
       atob(base64)
@@ -59,13 +75,16 @@ function parseJwt(token: string): ParsedToken | undefined {
   }
 }
 
-/**
- * Met à jour les refs avec les tokens actuels
- */
+// Synchronise l'état Vue avec les tokens stockés par keycloak-js.
+// Appelée après chaque connexion ou rafraîchissement de token.
 function updateTokens() {
   if (!keycloakInstance) return
 
   authenticated.value = keycloakInstance.authenticated ?? false
+  // [KEYCLOAK] keycloak-js stocke les 3 tokens reçus de Keycloak après le flux OAuth.
+  // token = access token (pour appeler l'API)
+  // idToken = ID token (pour connaître l'identité de l'utilisateur dans l'app)
+  // refreshToken = refresh token (pour renouveler l'access token sans reconnexion)
   token.value = keycloakInstance.token
   idToken.value = keycloakInstance.idToken
   refreshToken.value = keycloakInstance.refreshToken
@@ -78,7 +97,10 @@ function updateTokens() {
     parsedIdToken.value = parseJwt(idToken.value)
   }
 
-  // Extraction du profil utilisateur
+  // [KEYCLOAK] On extrait les informations utiles de l'access token pour l'interface.
+  // Les "attributes" sont les claims NON standards — c'est-à-dire tout ce qu'on a ajouté
+  // via des mappers dans Keycloak (comme "villeOrigine" via le scope "attributs-valdorien").
+  // On filtre les claims standards pour n'afficher que les attributs personnalisés.
   if (keycloakInstance.tokenParsed) {
     const parsed = keycloakInstance.tokenParsed as ParsedToken
     userProfile.value = {
@@ -86,7 +108,9 @@ function updateTokens() {
       email: parsed.email,
       firstName: parsed.given_name,
       lastName: parsed.family_name,
+      // Les rôles viennent du claim realm_access.roles de l'access token.
       roles: parsed.realm_access?.roles ?? [],
+      // Tout ce qui n'est pas un claim standard OIDC = attribut personnalisé Keycloak.
       attributes: Object.keys(parsed)
         .filter(key => !['sub', 'aud', 'exp', 'iat', 'realm_access', 'email', 'preferred_username', 'given_name', 'family_name', 'azp', 'scope', 'sid', 'email_verified', 'name', 'typ', 'acr', 'allowed-origins', 'session_state', 'jti', 'iss'].includes(key))
         .reduce((acc, key) => {
@@ -97,22 +121,23 @@ function updateTokens() {
   }
 }
 
-/**
- * Initialise Keycloak
- */
+// [KEYCLOAK] Initialisation de keycloak-js au démarrage de l'application.
+// keycloak-js a besoin des coordonnées du serveur Keycloak et du client ID
+// pour savoir où rediriger l'utilisateur lors du login.
 async function init(): Promise<void> {
   if (keycloakInstance) {
     return // Déjà initialisé
   }
 
   keycloakInstance = new Keycloak({
-    url: KEYCLOAK_URL,
-    realm: KEYCLOAK_REALM,
-    clientId: KEYCLOAK_CLIENT_ID
+    url: KEYCLOAK_URL,           // Ex : http://localhost:8080
+    realm: KEYCLOAK_REALM,       // Ex : valdoria
+    clientId: KEYCLOAK_CLIENT_ID // Ex : comptoir-des-voyageurs
   })
 
   try {
-    keycloakInstance.onAuthLogout = () => {
+    
+   keycloakInstance.onAuthLogout = () => {
       authenticated.value = false
       token.value = undefined
       idToken.value = undefined
@@ -122,15 +147,22 @@ async function init(): Promise<void> {
       userProfile.value = { roles: [], attributes: {} }
     }
 
+    // [KEYCLOAK] "check-sso" : au chargement de l'app, on vérifie silencieusement
+    // si l'utilisateur a déjà une session SSO active dans Keycloak.
+    // Si oui → il est automatiquement reconnecté sans voir la page de login.
+    // Si non → l'app s'affiche en mode non connecté (pas de redirection forcée).
     const initSuccess = await keycloakInstance.init({
       onLoad: 'check-sso',
-      checkLoginIframe: true
+      checkLoginIframe: false // Désactivé pour simplifier la config en environnement de formation. Nécessite que Keycloak et App soient dans le même domaine
     })
 
     if (initSuccess) {
       updateTokens()
 
-      // Rafraîchissement automatique du token toutes les 30s
+      // [KEYCLOAK] L'access token a une durée de vie courte (5 minutes par défaut).
+      // Toutes les 30 secondes, on tente de le rafraîchir s'il expire dans moins de 30 secondes.
+      // keycloak-js utilise le refresh token pour obtenir un nouvel access token de Keycloak
+      // sans que l'utilisateur ait à se reconnecter.
       setInterval(() => {
         keycloakInstance?.updateToken(30).then(() => {
           updateTokens()
@@ -144,18 +176,20 @@ async function init(): Promise<void> {
   }
 }
 
-/**
- * Login
- */
+// [KEYCLOAK] Le login déclenche le flux Authorization Code + PKCE :
+// 1. L'app redirige vers la page de login Keycloak
+// 2. L'utilisateur s'authentifie sur Keycloak
+// 3. Keycloak redirige vers redirectUri avec un code d'autorisation
+// 4. keycloak-js échange ce code contre les tokens (access, ID, refresh)
 function login(): void {
   keycloakInstance?.login({
     redirectUri: `${window.location.origin}/callback`
   })
 }
 
-/**
- * Logout
- */
+// [KEYCLOAK] Le logout invalide la session SSO côté Keycloak.
+// Cela déconnecte l'utilisateur de TOUTES les applications partageant ce realm —
+// c'est le principe du Single Sign-Out (SSO).
 function logout(): void {
   keycloakInstance?.logout()
 }

@@ -6,12 +6,14 @@ import { artefacts, villes } from "../data/mock.js";
 
 const router = Router();
 
-/**
- * GET /villes/:ville/artefacts
- * Endpoint protégé - Retourne les artefacts d'une ville
- * Authentification requise + Rôle 'marchand' requis (RBAC)
- * + Accès limité à la ville d'origine sauf pour les gouverneurs (ABAC)
- */
+// [KEYCLOAK] GET /villes/:ville/artefacts — RBAC + ABAC combinés.
+// Trois middlewares s'enchaînent dans l'ordre :
+// 1. authenticateJWT : token valide ?
+// 2. requireRole("marchand") : a le rôle "marchand" ? (RBAC)
+// 3. requireVilleAccess : villeOrigine du token correspond à la ville demandée ? (ABAC)
+// Exemple : Brunhild (marchand, villeOrigine=Nordheim) peut accéder à /villes/nordheim/artefacts
+// mais PAS à /villes/sudbourg/artefacts → 403.
+// Alaric (gouverneur) passe l'ABAC directement grâce à l'exception gouverneur.
 router.get(
   "/villes/:ville/artefacts",
   authenticateJWT,
