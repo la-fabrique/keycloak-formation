@@ -4,11 +4,11 @@ import { requireRole } from "../middleware/rbac.js";
 
 const router = Router();
 
-/**
- * GET /info
- * Endpoint protégé - Retourne les informations de base de la Réserve
- * Authentification requise + Rôle 'sujet' requis (RBAC)
- */
+// [KEYCLOAK] GET /info — accessible à tous les sujets authentifiés.
+// Les deux middlewares s'enchaînent dans l'ordre :
+// 1. authenticateJWT : vérifie que le token est valide (signé par Keycloak, non expiré, bonne audience)
+// 2. requireRole("sujet") : vérifie que l'utilisateur a le rôle "sujet" dans realm_access.roles
+// Cedric, Brunhild et Alaric ont tous le rôle "sujet" → ils peuvent tous y accéder.
 router.get("/info", authenticateJWT, requireRole("sujet"), (req: Request, res: Response) => {
   res.json({
     nom: "Réserve de Valdoria",
