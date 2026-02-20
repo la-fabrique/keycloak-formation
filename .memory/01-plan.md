@@ -52,7 +52,7 @@ Formation de 2 jours (14 h) couvrant l'architecture, la configuration et l'explo
 - Intégration d'annuaires : Active Directory et OpenLDAP
 - Mapping d'attributs LDAP et configuration Kerberos
 - Intégration avec un IDP externe (SSO) pour l'interopérabilité
-- Utilisation de Keycloak en tant que client via Postman
+- Utilisation de Keycloak en tant que client (flux OAuth2)
 - Renforcement : politiques de mots de passe et MFA
 - Audit et vérification de conformité de l'installation
 - Questionnaire QCM de fin de formation
@@ -117,7 +117,7 @@ Formation de 2 jours (14 h) couvrant l'architecture, la configuration et l'explo
 | 14h00 – 14h45 | **Pratique** : Mapping d'attributs LDAP et configuration Kerberos |
 | 14h45 – 15h15 | Intégration avec un IDP externe (SSO) pour l'interopérabilité |
 | 15h15 – 15h30 | *Pause* |
-| 15h30 – 16h00 | **Pratique** : Utilisation de Keycloak en tant que client via Postman |
+| 15h30 – 16h00 | **Pratique** : Utilisation de Keycloak en tant que client (flux OAuth2) |
 | 16h00 – 16h30 | Renforcement de la sécurité : Politiques de mots de passe et MFA |
 | 16h30 – 16h45 | **Bonus** : Audit et vérification de la conformité de l'installation |
 | 16h45 – 17h00 | **Validation** : Questionnaire QCM de fin de formation et remise des attestations |
