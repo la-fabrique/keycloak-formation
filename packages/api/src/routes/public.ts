@@ -1,13 +1,15 @@
 import { Router, Request, Response } from "express";
+import { authenticateJWT } from "../middleware/auth.js";
+import { requireRole } from "../middleware/rbac.js";
 
 const router = Router();
 
 /**
  * GET /info
- * Endpoint public - Retourne les informations de base de la Réserve
- * Aucune authentification requise
+ * Endpoint protégé - Retourne les informations de base de la Réserve
+ * Authentification requise + Rôle 'sujet' requis (RBAC)
  */
-router.get("/info", (req: Request, res: Response) => {
+router.get("/info", authenticateJWT, requireRole("sujet"), (req: Request, res: Response) => {
   res.json({
     nom: "Réserve de Valdoria",
     id: "reserve-valdoria",

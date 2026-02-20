@@ -29,7 +29,9 @@ export const requireVilleAccess = (
 
   // Pour les autres utilisateurs, vérifier la ville d'origine
   const villeOrigine = req.user.villeOrigine;
-  const villeRequested = req.params.ville;
+  const raw = req.params.ville;
+  const villeRequested =
+    typeof raw === "string" ? raw : Array.isArray(raw) ? raw[0] ?? "" : "";
 
   if (!villeOrigine) {
     res.status(403).json({
@@ -39,7 +41,7 @@ export const requireVilleAccess = (
     return;
   }
 
-  if (villeOrigine !== villeRequested) {
+  if (String(villeOrigine).toLowerCase() !== villeRequested.toLowerCase()) {
     res.status(403).json({
       error: "Forbidden",
       message: `Accès refusé: vous ne pouvez consulter que les artefacts de ${villeOrigine}`,

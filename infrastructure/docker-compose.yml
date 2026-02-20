@@ -103,6 +103,7 @@ services:
     environment:
       PORT: 3001
       KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_ISSUER_URL: http://localhost:8080
       KEYCLOAK_REALM: valdoria
       KEYCLOAK_CLIENT_ID: reserve-valdoria
     ports:

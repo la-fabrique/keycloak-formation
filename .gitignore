@@ -5,6 +5,8 @@ infrastructure/.env
 packages/front/node_modules/
 packages/api/node_modules/
 
+packages/front/dist/
+
 # Docker volumes
 infrastructure/postgres_data/
 infrastructure/openldap_data/

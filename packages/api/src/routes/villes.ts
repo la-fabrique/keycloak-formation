@@ -20,8 +20,10 @@ router.get(
   (req: Request, res: Response) => {
     const ville = req.params.ville as string;
 
-    // Vérifier que la ville existe
-    if (!villes.includes(ville)) {
+    // Résolution insensible à la casse (cohérent avec l'ABAC)
+    const villeKey = villes.find((v) => v.toLowerCase() === ville.toLowerCase());
+
+    if (!villeKey) {
       res.status(404).json({
         error: "Not Found",
         message: `La ville '${ville}' n'existe pas`,
@@ -30,10 +32,10 @@ router.get(
       return;
     }
 
-    const artefactsVille = artefacts[ville] || [];
+    const artefactsVille = artefacts[villeKey] || [];
 
     res.json({
-      ville,
+      ville: villeKey,
       artefacts: artefactsVille,
       total: artefactsVille.length,
     });

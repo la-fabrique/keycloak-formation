@@ -21,6 +21,15 @@ const villeOrigine = ref<string>(
   (userProfile.value.attributes.villeOrigine as string) || ''
 )
 
+// Villes disponibles pour tester GET /villes/:ville/artefacts (aligné sur l'API)
+const villesDisponibles = ['valdoria-centre', 'nordheim', 'sudbourg'] as const
+const normalizedOrigine = villeOrigine.value ? villeOrigine.value.toLowerCase().replace(/\s/g, '-') : ''
+const villeTest = ref<string>(
+  normalizedOrigine && villesDisponibles.includes(normalizedOrigine as typeof villesDisponibles[number])
+    ? normalizedOrigine
+    : villesDisponibles[0]
+)
+
 /**
  * Appelle un endpoint de l'API
  */
@@ -72,7 +81,7 @@ async function callApi(
  * Teste l'endpoint /info (public)
  */
 function testInfo() {
-  callApi('/info', infoResponse, false)
+  callApi('/info', infoResponse)
 }
 
 /**
@@ -86,8 +95,7 @@ function testInventaire() {
  * Teste l'endpoint /villes/:ville/artefacts (RBAC + ABAC)
  */
 function testArtefacts() {
-  const ville = villeOrigine.value.toLowerCase().replace(/ /g, '-')
-  callApi(`/villes/${ville}/artefacts`, artefactsResponse)
+  callApi(`/villes/${villeTest.value}/artefacts`, artefactsResponse)
 }
 
 /**
@@ -141,7 +149,7 @@ function getStatusBadge(response: ApiResponse): string {
       </div>
       
       <p class="endpoint-description">
-        🌍 Endpoint public — Aucune authentification requise
+        🔐 RBAC — Rôle <code class="role-badge">sujet</code> requis
       </p>
 
       <button 
@@ -206,7 +214,7 @@ function getStatusBadge(response: ApiResponse): string {
       <div class="endpoint-header">
         <div>
           <h3>Artefacts de votre ville</h3>
-          <code class="endpoint-path">GET /villes/{{ villeOrigine.toLowerCase().replace(/ /g, '-') }}/artefacts</code>
+          <code class="endpoint-path">GET /villes/{{ villeTest }}/artefacts</code>
         </div>
         <span v-if="artefactsResponse.status !== 'idle'" :class="['status-badge', getStatusClass(artefactsResponse)]">
           {{ getStatusBadge(artefactsResponse) }}
@@ -215,12 +223,17 @@ function getStatusBadge(response: ApiResponse): string {
       
       <p class="endpoint-description">
         🔐 RBAC + ABAC — Rôle <code class="role-badge">marchand</code> requis<br>
-        📍 Filtrage par <code class="attribute-badge">villeOrigine</code> : {{ villeOrigine }}
+        📍 Filtrage par <code class="attribute-badge">villeOrigine</code> : {{ villeOrigine || '—' }}
       </p>
+
+      <label class="select-label">Ville à tester</label>
+      <select v-model="villeTest" class="ville-select">
+        <option v-for="v in villesDisponibles" :key="v" :value="v">{{ v }}</option>
+      </select>
 
       <button 
         @click="testArtefacts" 
-        :disabled="artefactsResponse.status === 'loading' || !villeOrigine"
+        :disabled="artefactsResponse.status === 'loading'"
         class="test-button"
       >
         {{ artefactsResponse.status === 'loading' ? 'Chargement...' : 'Tester l\'endpoint' }}
@@ -333,6 +346,28 @@ h3 {
   color: #5a4a3a;
   margin: 0 0 1rem 0;
   line-height: 1.6;
+}
+
+.select-label {
+  display: block;
+  color: #5a4a3a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.ville-select {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border: 1px solid #8b6f47;
+  border-radius: 4px;
+  background: white;
+  color: #3a2a1a;
+  cursor: pointer;
 }
 
 .role-badge,
