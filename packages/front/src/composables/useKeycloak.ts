@@ -112,9 +112,19 @@ async function init(): Promise<void> {
   })
 
   try {
+    keycloakInstance.onAuthLogout = () => {
+      authenticated.value = false
+      token.value = undefined
+      idToken.value = undefined
+      refreshToken.value = undefined
+      parsedToken.value = undefined
+      parsedIdToken.value = undefined
+      userProfile.value = { roles: [], attributes: {} }
+    }
+
     const authenticated = await keycloakInstance.init({
       onLoad: 'check-sso',
-      checkLoginIframe: false
+      checkLoginIframe: true
     })
 
     if (authenticated) {
