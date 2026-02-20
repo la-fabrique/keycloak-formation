@@ -232,7 +232,7 @@ Certaines missions ne nécessitent aucun humain. L'automate impérial exécute d
 
 1. Créer le client `automate-imperial` (type : confidential, service account activé)
 2. Attribuer le rôle `marchand` au compte de service (pour accéder à l'inventaire de la Réserve)
-3. Obtenir un jeton via le flux **Client Credentials** (curl ou script)
+3. Obtenir un jeton via le flux **Client Credentials** (package `cli`)
 4. Vérifier que le rôle `marchand` est bien présent dans le jeton
 5. Appeler `GET /inventaire` sur la Réserve avec ce jeton et constater l'accès autorisé
 

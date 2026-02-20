@@ -1,0 +1,17 @@
+{
+  "name": "automate-imperial",
+  "version": "1.0.0",
+  "description": "Automate impérial — compte de service pour la formation Keycloak",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "typescript": "^5.9.3",
+    "tsx": "^4.21.0"
+  }
+}
