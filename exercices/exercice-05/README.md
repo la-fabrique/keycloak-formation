@@ -139,27 +139,30 @@ A l'issue de cet exercice, vous serez capable de :
 
 **Point d'observation :** Alaric accède à tout car son token contient `"gouverneur"` dans `realm_access.roles`, et le rôle composite `gouverneur` inclut `marchand` et `sujet`.
 
-#### Tester avec Cedric (sujet uniquement)
+#### Tester avec Brunhild (marchande)
 
 11. Déconnectez-vous et reconnectez-vous avec :
-    - **Identifiant :** `cedric`
-    - **Mot de passe :** `cedric`
+    - **Identifiant :** `brunhild`
+    - **Mot de passe :** `brunhild`
 
 12. Retournez sur la page Debug et vérifiez dans l'Access Token :
-    - `realm_access.roles` : ne contient que `["sujet", ...]`
-    - `villeOrigine` : `Sudbourg`
+    - `realm_access.roles` : contient `["sujet", "marchand", ...]`
+    - `villeOrigine` : `Nordheim`
 
 13. Testez les endpoints :
 
 | Endpoint | Résultat | Pourquoi |
 |----------|----------|----------|
-| `GET /info` | ✅ 200 | Cedric a le rôle `sujet` |
-| `GET /inventaire` | ❌ 403 | Cedric n'a pas le rôle `marchand` |
-| `GET /villes/sudbourg/artefacts` | ❌ 403 | Cedric n'a pas non plus `marchand` (RBAC bloque avant ABAC) |
+| `GET /info` | ✅ 200 | Brunhild a le rôle `sujet` |
+| `GET /inventaire` | ✅ 200 | Brunhild a le rôle `marchand` |
+| `GET /villes/nordheim/artefacts` | ✅ 200 | Rôle `marchand` ✅ + `villeOrigine` = `Nordheim` ✅ |
+| `GET /villes/sudbourg/artefacts` | ❌ 403 | Rôle `marchand` ✅ mais `villeOrigine` ≠ `sudbourg` — ABAC bloque |
 
-**Point d'observation :** Le 403 sur `/inventaire` vient du **RBAC** : l'API vérifie le rôle avant même de regarder la ville. Cedric est bien authentifié (token valide = 401 exclu), mais il n'a pas les droits (403).
+**Point d'observation :** C'est ici que l'**ABAC entre en jeu**. Brunhild a le bon rôle pour les deux villes, mais le claim `villeOrigine` de son token vaut `Nordheim` : l'API refuse l'accès à `sudbourg`. Contrairement au 403 de quelqu'un sans rôle, ici le problème vient de l'attribut, pas du rôle.
 
-> **Checkpoint :** Vous avez observé concrètement les différences d'accès entre un gouverneur et un simple sujet, et compris la distinction 401 / 403.
+Comparez avec Alaric (gouverneur) qui obtient 200 sur toutes les villes : l'exception gouverneur dans `abac.ts` court-circuite la vérification de `villeOrigine`.
+
+> **Checkpoint :** Vous avez observé la différence entre RBAC (bloque sur le rôle) et ABAC (bloque sur l'attribut), et compris pourquoi Brunhild voit ses artefacts mais pas ceux des autres villes.
 
 ---
 
