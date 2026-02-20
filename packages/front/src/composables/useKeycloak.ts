@@ -138,7 +138,9 @@ async function init(): Promise<void> {
  * Login
  */
 function login(): void {
-  keycloakInstance?.login()
+  keycloakInstance?.login({
+    redirectUri: `${window.location.origin}/callback`
+  })
 }
 
 /**

@@ -27,7 +27,7 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 - **Client authentication OFF** = client **public** (pas de secret). Si activé par erreur, le client devient confidentiel et l'onglet « Credentials » apparaît — ce n'est pas ce que l'on veut pour un SPA.
 - **Standard flow uniquement** : tous les autres flux doivent être décochés. Direct access grants expose un flux moins sécurisé (Resource Owner Password Credentials), inutile ici.
 - **PKCE S256** : configurable dans l'étape « Capability config » du wizard. Si absent, le participant peut aller dans l'onglet **« Advanced »** du client après création (section « Proof Key for Code Exchange Code Challenge Method »).
-- **Valid redirect URIs** : le `/*` est indispensable. Sans lui, seule la racine exacte est autorisée et Keycloak rejettera les redirections après login.
+- **Valid redirect URIs** : on cible précisément `http://localhost:5173/callback`. Eviter le wildcard `/*` est une bonne pratique OIDC : cela limite la surface d'attaque en cas d'open redirect.
 - **Web origins** : indispensable pour les appels AJAX (CORS). Si absent, le navigateur bloquera les requêtes vers Keycloak depuis le front-end.
 
 ---
