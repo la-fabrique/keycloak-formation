@@ -9,6 +9,7 @@ export const config = {
   port: process.env.PORT || 3001,
   keycloak: {
     url: process.env.KEYCLOAK_URL || "http://localhost:8080",
+    issuerUrl: process.env.KEYCLOAK_ISSUER_URL || process.env.KEYCLOAK_URL || "http://localhost:8080",
     realm: process.env.KEYCLOAK_REALM || "valdoria",
     clientId: process.env.KEYCLOAK_CLIENT_ID || "reserve-valdoria",
   },
@@ -25,5 +26,5 @@ export const getJwksUri = (): string => {
  * Issuer attendu dans les tokens JWT
  */
 export const getIssuer = (): string => {
-  return `${config.keycloak.url}/realms/${config.keycloak.realm}`;
+  return `${config.keycloak.issuerUrl}/realms/${config.keycloak.realm}`;
 };
