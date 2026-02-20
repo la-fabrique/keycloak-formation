@@ -50,7 +50,7 @@ A l'issue de cet exercice, vous serez capable de :
 2. Cliquez sur **« Se connecter »**
 3. Sur la page de login Keycloak, connectez-vous avec :
    - **Identifiant :** `alaric`
-   - **Mot de passe :** `alaric`
+   - **Mot de passe :** `valdoria123`
 4. Vous êtes redirigé vers l'application
 
 **Point d'observation :** Keycloak vient de déclencher le flux **Authorization Code + PKCE** :
@@ -143,7 +143,7 @@ A l'issue de cet exercice, vous serez capable de :
 
 11. Déconnectez-vous et reconnectez-vous avec :
     - **Identifiant :** `brunhild`
-    - **Mot de passe :** `brunhild`
+    - **Mot de passe :** `valdoria123`
 
 12. Retournez sur la page Debug et vérifiez dans l'Access Token :
     - `realm_access.roles` : contient `["sujet", "marchand", ...]`

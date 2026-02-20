@@ -184,29 +184,34 @@ Les architectes enrichissent d'abord les profils des sujets avec l'attribut **vi
 
 ---
 
-### Exercice 5 — Explorer les voies de commerce
+### Exercice 5 — Lire les parchemins de la Réserve
 
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-La province possède plusieurs voies de commerce, chacune adaptée à un type de sujet. Les architectes testent les différentes voies d'accès pour en comprendre les usages et les limites : comment un sujet obtient-il son laissez-passer ? Comment la Réserve vérifie-t-elle sa validité ?
+Les architectes ont construit le Comptoir des voyageurs et sa Réserve. Les parchemins magiques (tokens JWT) circulent entre les deux. Il est temps de les lire : comprendre ce qu'ils contiennent, pourquoi ils contiennent ces informations, et comment la Réserve les interprète pour décider qui peut entrer — et jusqu'où.
 
 **Objectifs pédagogiques**
 
-- Distinguer les principaux flux OIDC (Authorization Code, Client Credentials)
-- Comprendre le rôle des secrets client
-- Manipuler les jetons dans Postman
-- Observer l'audience (`aud`) et les rôles dans les différents jetons
+- Identifier la différence entre access token, ID token et refresh token dans une application réelle
+- Retrouver dans un token les claims configurés dans Keycloak (rôles, attributs, audience)
+- Comprendre comment une API applique du RBAC (rôles) et de l'ABAC (attributs) à partir du token
+- Faire le lien entre la configuration Keycloak (exercices 1 à 4) et le comportement de l'application
 
 **Étapes**
 
-1. Depuis Postman, exécuter un flux **Authorization Code** via le client `comptoir-des-voyageurs` : observer la redirection, le code, puis l'échange contre un jeton
-2. Examiner le contenu du jeton d'accès (access token) et du jeton d'identité (ID token) — vérifier que l'audience pointe vers `reserve-valdoria`
-3. Tester le **refresh token** : rafraîchir le jeton d'accès sans se reconnecter
-4. Appeler le **endpoint d'introspection** pour valider un jeton côté serveur
-5. Comparer les claims présentes selon le flux utilisé
+1. Se connecter avec `alaric` (gouverneur) sur le Comptoir et observer les trois tokens dans la page Debug
+2. Identifier dans l'access token : `iss`, `aud`, `azp`, `realm_access.roles`, `villeOrigine`, `exp`
+3. Comparer access token et ID token : rôles et attributs présents dans l'un, absents de l'autre
+4. Observer que le refresh token n'est pas décodable (opaque côté app)
+5. Tester les endpoints (`/info`, `/inventaire`, `/villes/valdoria-centre/artefacts`, `/villes/nordheim/artefacts`) avec Alaric → tout accessible (gouverneur)
+6. Se reconnecter avec `brunhild` (marchande, villeOrigine=Nordheim) : tester les mêmes endpoints
+   - `/inventaire` ✅ (rôle `marchand`)
+   - `/villes/nordheim/artefacts` ✅ (rôle + villeOrigine correspondante)
+   - `/villes/sudbourg/artefacts` ❌ (rôle OK, mais villeOrigine ≠ sudbourg → ABAC bloque)
+7. Lire le code correspondant dans `auth.ts`, `rbac.ts`, `abac.ts` et les routes pour relier chaque comportement à sa ligne de code
 
-**Point clé** — Le choix du flux OIDC dépend du contexte : application web interactive, application mobile, ou service automatisé. Le flux Authorization Code avec PKCE est aujourd'hui le standard recommandé.
+**Point clé** — Le token JWT est le passeport de l'utilisateur : l'API n'appelle jamais Keycloak lors des requêtes, elle fait confiance à la signature. Le RBAC (rôles) contrôle l'accès à une fonctionnalité, l'ABAC (attributs) contrôle l'accès à une donnée spécifique. Brunhild illustre parfaitement cette complémentarité : elle a le rôle mais pas la ville.
 
 ---
 
