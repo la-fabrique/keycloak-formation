@@ -72,7 +72,7 @@ async function callApi(
  * Teste l'endpoint /info (public)
  */
 function testInfo() {
-  callApi('/info', infoResponse, false)
+  callApi('/info', infoResponse)
 }
 
 /**
@@ -141,7 +141,7 @@ function getStatusBadge(response: ApiResponse): string {
       </div>
       
       <p class="endpoint-description">
-        🌍 Endpoint public — Aucune authentification requise
+        🔐 RBAC — Rôle <code class="role-badge">sujet</code> requis
       </p>
 
       <button 
