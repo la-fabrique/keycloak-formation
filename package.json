@@ -4,7 +4,7 @@
   "description": "Formation pratique Keycloak — L'Empire d'Authéria",
   "private": true,
   "scripts": {
-    "docker:up": "cd infrastructure && docker compose up -d",
+    "docker:up": "cd infrastructure && docker compose up --build -d",
     "docker:down": "cd infrastructure && docker compose down"
   }
 }
