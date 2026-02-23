@@ -1,7 +1,6 @@
 # Exercice 2 — Fonder la Province de Valdoria
 
 > **Module 1 — Fondations et environnement**
-> Durée estimée : 30 minutes | Difficulté : ★★☆☆☆ (débutant-intermédiaire)
 
 ---
 

@@ -1,7 +1,6 @@
 # Exercice 7 — La Guilde des Marchands
 
 > **Module 3 — Identités, groupes et scopes**
-> Difficulté : ★★☆☆☆
 
 ---
 

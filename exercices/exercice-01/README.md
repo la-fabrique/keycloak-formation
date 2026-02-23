@@ -1,7 +1,6 @@
 # Exercice 1 — Fonder la capitale
 
 > **Module 1 — Fondations et environnement**
-> Durée estimée : 30 minutes | Difficulté : ★☆☆☆☆ (débutant)
 
 ---
 
