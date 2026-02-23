@@ -161,7 +161,7 @@ npm start
 
 ### Étape 5 — Observer le token
 
-1. Copiez la valeur du token affiché (entre `[1]` et `[2]` dans les logs, ou ajoutez un `console.log(access_token)` dans `src/index.ts`)
+1. Dans `packages/cli/src/index.ts`, décommentez la ligne 35 (`console.log(access_token)`), relancez le CLI si besoin, puis copiez la valeur du token affichée dans les logs
 2. Collez-le sur **https://jwt.io**
 3. Dans le payload décodé, repérez :
 

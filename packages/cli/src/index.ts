@@ -31,6 +31,9 @@ if (!tokenResponse.ok) {
 
 const { access_token } = (await tokenResponse.json()) as { access_token: string };
 
+// A décommenter pour afficher le token brut dans les logs
+console.log(access_token)
+
 // --- Étape 2 : décoder et afficher les rôles du token ---
 
 const payload = JSON.parse(

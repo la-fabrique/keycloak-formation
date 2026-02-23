@@ -14,3 +14,5 @@ infrastructure/openldap_data/
 # OS files
 .DS_Store
 Thumbs.db
+packages/cli/.env
+packages/cli/node_modules
