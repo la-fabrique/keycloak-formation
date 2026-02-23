@@ -5,7 +5,7 @@ import { inventaire } from "../data/mock.js";
 
 const router = Router();
 
-// [KEYCLOAK] GET /inventaire — réservé aux marchands (RBAC).
+// [FORMATION KEYCLOAK] GET /inventaire — réservé aux marchands (RBAC).
 // requireRole("marchand") lit le claim realm_access.roles dans le token.
 // - Cedric (rôle "sujet" uniquement) → 403 Forbidden
 // - Brunhild (rôle "marchand") → 200 OK

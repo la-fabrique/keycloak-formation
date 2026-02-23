@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-// [KEYCLOAK] RBAC = Role-Based Access Control (contrôle d'accès basé sur les rôles).
+// [FORMATION KEYCLOAK] RBAC = Role-Based Access Control (contrôle d'accès basé sur les rôles).
 // Ce middleware vérifie que l'utilisateur possède le rôle requis pour accéder à une route.
 // Les rôles sont lus depuis le claim "realm_access.roles" de l'access token —
 // exactement la section qu'on voit dans la page Debug : realm_access > roles.
@@ -20,7 +20,7 @@ export const requireRole = (...roles: string[]) => {
     // On lit les rôles depuis le payload du token, déjà décodé par authenticateJWT.
     const userRoles = req.user.realm_access?.roles || [];
 
-    // [KEYCLOAK] On cherche si l'utilisateur possède AU MOINS UN des rôles requis.
+    // [FORMATION KEYCLOAK] On cherche si l'utilisateur possède AU MOINS UN des rôles requis.
     // Exemple : requireRole("marchand") → l'utilisateur doit avoir le rôle "marchand".
     // Grâce aux rôles composites (exercice 2), un "gouverneur" hérite de "marchand",
     // donc il passera aussi ce contrôle même si on ne vérifie que "marchand".

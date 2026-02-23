@@ -4,7 +4,7 @@ import { requireRole } from "../middleware/rbac.js";
 
 const router = Router();
 
-// [KEYCLOAK] GET /info — accessible à tous les sujets authentifiés.
+// [FORMATION KEYCLOAK] GET /info — accessible à tous les sujets authentifiés.
 // Les deux middlewares s'enchaînent dans l'ordre :
 // 1. authenticateJWT : vérifie que le token est valide (signé par Keycloak, non expiré, bonne audience)
 // 2. requireRole("sujet") : vérifie que l'utilisateur a le rôle "sujet" dans realm_access.roles

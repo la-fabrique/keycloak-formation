@@ -2,7 +2,7 @@ import { ref, type Ref } from 'vue'
 import Keycloak from 'keycloak-js'
 import { KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID } from '../config'
 
-// [KEYCLOAK] Structure du payload d'un token JWT décodé.
+// [FORMATION KEYCLOAK] Structure du payload d'un token JWT décodé.
 // Un JWT est composé de 3 parties séparées par des points : header.payload.signature
 // Le payload (partie centrale) contient ces claims, visibles dans la page Debug de l'app.
 // Les champs marqués "?" sont optionnels selon le type de token (access token vs ID token).
@@ -31,13 +31,13 @@ interface UserProfile {
   attributes: Record<string, unknown> // Claims personnalisés (ex : villeOrigine)
 }
 
-// [KEYCLOAK] keycloak-js est la librairie officielle Keycloak pour les SPA.
+// [FORMATION KEYCLOAK] keycloak-js est la librairie officielle Keycloak pour les SPA.
 // Elle gère le flux Authorization Code + PKCE : redirection vers Keycloak,
 // récupération du code, échange contre les tokens, et rafraîchissement automatique.
 // On utilise un singleton pour ne créer qu'une seule instance par session navigateur.
 let keycloakInstance: Keycloak | null = null
 
-// [KEYCLOAK] Le front reçoit 3 tokens distincts après authentification :
+// [FORMATION KEYCLOAK] Le front reçoit 3 tokens distincts après authentification :
 // - token (access token) : présenté à l'API pour prouver les droits de l'utilisateur
 // - idToken (ID token) : contient l'identité de l'utilisateur (nom, email) pour l'app
 // - refreshToken : permet d'obtenir de nouveaux access tokens sans se reconnecter
@@ -52,7 +52,7 @@ const userProfile = ref<UserProfile>({
   attributes: {}
 })
 
-// [KEYCLOAK] Un JWT est en réalité du JSON encodé en base64url, pas chiffré.
+// [FORMATION KEYCLOAK] Un JWT est en réalité du JSON encodé en base64url, pas chiffré.
 // N'importe qui peut lire le contenu d'un token en le décodant — c'est pourquoi
 // on ne met jamais d'information secrète dans un token.
 // La sécurité repose sur la SIGNATURE : seul Keycloak peut produire une signature valide.
@@ -81,7 +81,7 @@ function updateTokens() {
   if (!keycloakInstance) return
 
   authenticated.value = keycloakInstance.authenticated ?? false
-  // [KEYCLOAK] keycloak-js stocke les 3 tokens reçus de Keycloak après le flux OAuth.
+  // [FORMATION KEYCLOAK] keycloak-js stocke les 3 tokens reçus de Keycloak après le flux OAuth.
   // token = access token (pour appeler l'API)
   // idToken = ID token (pour connaître l'identité de l'utilisateur dans l'app)
   // refreshToken = refresh token (pour renouveler l'access token sans reconnexion)
@@ -97,7 +97,7 @@ function updateTokens() {
     parsedIdToken.value = parseJwt(idToken.value)
   }
 
-  // [KEYCLOAK] On extrait les informations utiles de l'access token pour l'interface.
+  // [FORMATION KEYCLOAK] On extrait les informations utiles de l'access token pour l'interface.
   // Les "attributes" sont les claims NON standards — c'est-à-dire tout ce qu'on a ajouté
   // via des mappers dans Keycloak (comme "villeOrigine" via le scope "attributs-valdorien").
   // On filtre les claims standards pour n'afficher que les attributs personnalisés.
@@ -121,7 +121,7 @@ function updateTokens() {
   }
 }
 
-// [KEYCLOAK] Initialisation de keycloak-js au démarrage de l'application.
+// [FORMATION KEYCLOAK] Initialisation de keycloak-js au démarrage de l'application.
 // keycloak-js a besoin des coordonnées du serveur Keycloak et du client ID
 // pour savoir où rediriger l'utilisateur lors du login.
 async function init(): Promise<void> {
@@ -147,7 +147,7 @@ async function init(): Promise<void> {
       userProfile.value = { roles: [], attributes: {} }
     }
 
-    // [KEYCLOAK] "check-sso" : au chargement de l'app, on vérifie silencieusement
+    // [FORMATION KEYCLOAK] "check-sso" : au chargement de l'app, on vérifie silencieusement
     // si l'utilisateur a déjà une session SSO active dans Keycloak.
     // Si oui → il est automatiquement reconnecté sans voir la page de login.
     // Si non → l'app s'affiche en mode non connecté (pas de redirection forcée).
@@ -159,7 +159,7 @@ async function init(): Promise<void> {
     if (initSuccess) {
       updateTokens()
 
-      // [KEYCLOAK] L'access token a une durée de vie courte (5 minutes par défaut).
+      // [FORMATION KEYCLOAK] L'access token a une durée de vie courte (5 minutes par défaut).
       // Toutes les 30 secondes, on tente de le rafraîchir s'il expire dans moins de 30 secondes.
       // keycloak-js utilise le refresh token pour obtenir un nouvel access token de Keycloak
       // sans que l'utilisateur ait à se reconnecter.
@@ -176,7 +176,7 @@ async function init(): Promise<void> {
   }
 }
 
-// [KEYCLOAK] Le login déclenche le flux Authorization Code + PKCE :
+// [FORMATION KEYCLOAK] Le login déclenche le flux Authorization Code + PKCE :
 // 1. L'app redirige vers la page de login Keycloak
 // 2. L'utilisateur s'authentifie sur Keycloak
 // 3. Keycloak redirige vers redirectUri avec un code d'autorisation
@@ -187,7 +187,7 @@ function login(): void {
   })
 }
 
-// [KEYCLOAK] Le logout invalide la session SSO côté Keycloak.
+// [FORMATION KEYCLOAK] Le logout invalide la session SSO côté Keycloak.
 // Cela déconnecte l'utilisateur de TOUTES les applications partageant ce realm —
 // c'est le principe du Single Sign-Out (SSO).
 function logout(): void {

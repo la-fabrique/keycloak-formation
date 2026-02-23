@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 import { getJwksUri, getIssuer, config } from "../config.js";
 
-// [KEYCLOAK] Keycloak signe les tokens JWT avec une clé privée RSA.
+// [FORMATION KEYCLOAK] Keycloak signe les tokens JWT avec une clé privée RSA.
 // Pour vérifier un token, l'API doit récupérer la clé publique correspondante
 // depuis l'endpoint JWKS de Keycloak (/.well-known/openid-configuration → jwks_uri).
 // jwks-rsa gère ce téléchargement automatiquement et met la clé en cache 10 minutes.
@@ -13,7 +13,7 @@ const client = jwksClient({
   cacheMaxAge: 600000, // 10 minutes
 });
 
-// [KEYCLOAK] Chaque token JWT contient un "kid" (Key ID) dans son header.
+// [FORMATION KEYCLOAK] Chaque token JWT contient un "kid" (Key ID) dans son header.
 // Cette fonction demande à Keycloak la clé publique correspondant à ce kid,
 // ce qui permet à l'API de vérifier la signature sans appeler Keycloak à chaque requête.
 const getKey = (header: jwt.JwtHeader, callback: jwt.SigningKeyCallback) => {
@@ -27,7 +27,7 @@ const getKey = (header: jwt.JwtHeader, callback: jwt.SigningKeyCallback) => {
   });
 };
 
-// [KEYCLOAK] Structure du payload de l'access token émis par Keycloak.
+// [FORMATION KEYCLOAK] Structure du payload de l'access token émis par Keycloak.
 // Ces champs correspondent exactement à ce qu'on voit dans la page Debug de l'app :
 // - sub : identifiant unique de l'utilisateur dans Keycloak
 // - preferred_username : le nom d'utilisateur (ex : "alaric")
@@ -58,7 +58,7 @@ declare global {
   }
 }
 
-// [KEYCLOAK] Ce middleware est le gardien de l'API.
+// [FORMATION KEYCLOAK] Ce middleware est le gardien de l'API.
 // Il est appelé avant chaque route protégée et effectue 4 vérifications :
 // 1. Présence du token dans le header Authorization: Bearer <token>
 // 2. Signature valide (le token a bien été émis par Keycloak, pas falsifié)
@@ -72,7 +72,7 @@ export const authenticateJWT = (
 ): void => {
   const authHeader = req.headers.authorization;
 
-  // [KEYCLOAK] L'access token est transmis dans le header HTTP "Authorization"
+  // [FORMATION KEYCLOAK] L'access token est transmis dans le header HTTP "Authorization"
   // avec le préfixe "Bearer ". C'est la convention standard OAuth 2.0.
   // Sans token = 401 Unauthorized (non authentifié).
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -90,15 +90,15 @@ export const authenticateJWT = (
     token,
     getKey,
     {
-      // [KEYCLOAK] L'audience doit correspondre au client ID de l'API ("reserve-valdoria").
+      // [FORMATION KEYCLOAK] L'audience doit correspondre au client ID de l'API ("reserve-valdoria").
       // Si ce claim est absent ou différent, jwt.verify renvoie une erreur.
       // C'est ce qu'on configure dans l'exercice 4 avec le mapper "audience resolve".
       audience: config.keycloak.clientId,
-      // [KEYCLOAK] L'issuer doit correspondre à l'URL du realm Keycloak.
+      // [FORMATION KEYCLOAK] L'issuer doit correspondre à l'URL du realm Keycloak.
       // Format : http://localhost:8080/realms/valdoria
       // Cela garantit que le token vient bien de notre Keycloak, pas d'un autre serveur.
       issuer: getIssuer(),
-      // [KEYCLOAK] RS256 = signature asymétrique RSA. Keycloak signe avec sa clé privée,
+      // [FORMATION KEYCLOAK] RS256 = signature asymétrique RSA. Keycloak signe avec sa clé privée,
       // l'API vérifie avec la clé publique récupérée via JWKS.
       algorithms: ["RS256"],
     },

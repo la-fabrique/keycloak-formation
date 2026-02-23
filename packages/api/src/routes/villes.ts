@@ -6,7 +6,7 @@ import { artefacts, villes } from "../data/mock.js";
 
 const router = Router();
 
-// [KEYCLOAK] GET /villes/:ville/artefacts — RBAC + ABAC combinés.
+// [FORMATION KEYCLOAK] GET /villes/:ville/artefacts — RBAC + ABAC combinés.
 // Trois middlewares s'enchaînent dans l'ordre :
 // 1. authenticateJWT : token valide ?
 // 2. requireRole("marchand") : a le rôle "marchand" ? (RBAC)

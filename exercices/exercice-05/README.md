@@ -170,6 +170,8 @@ Comparez avec Alaric (gouverneur) qui obtient 200 sur toutes les villes : l'exce
 
 Maintenant que vous avez observé le comportement, voici le code qui le produit.
 
+**Astuce lecture :** Dans votre IDE, faites une recherche sur `[FORMATION KEYCLOAK]` pour retrouver tous les messages et commentaires ajoutés spécifiquement pour la formation.
+
 #### La vérification du token : `auth.ts`
 
 Ouvrez le fichier : `packages/api/src/middleware/auth.ts`

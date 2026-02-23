@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-// [KEYCLOAK] ABAC = Attribute-Based Access Control (contrôle d'accès basé sur les attributs).
+// [FORMATION KEYCLOAK] ABAC = Attribute-Based Access Control (contrôle d'accès basé sur les attributs).
 // Là où le RBAC dit "tu peux accéder à cette ressource si tu as ce rôle",
 // l'ABAC dit "tu peux accéder à cette ressource si tes attributs correspondent".
 // Ici : un marchand ne peut voir que les artefacts de SA ville d'origine.
@@ -19,7 +19,7 @@ export const requireVilleAccess = (
   }
 
   const userRoles = req.user.realm_access?.roles || [];
-  // [KEYCLOAK] Exception métier : le gouverneur supervise toute la province.
+  // [FORMATION KEYCLOAK] Exception métier : le gouverneur supervise toute la province.
   // On vérifie son rôle (RBAC) pour lui accorder un accès élargi (toutes les villes).
   // C'est une combinaison RBAC + ABAC : le rôle détermine si la règle attribut s'applique.
   const isGouverneur = userRoles.includes("gouverneur");
@@ -29,7 +29,7 @@ export const requireVilleAccess = (
     return;
   }
 
-  // [KEYCLOAK] Pour les autres utilisateurs, on compare :
+  // [FORMATION KEYCLOAK] Pour les autres utilisateurs, on compare :
   // - "villeOrigine" : l'attribut dans le token (ex : "Nordheim"), injecté par le mapper
   // - req.params.ville : la ville demandée dans l'URL (ex : GET /villes/nordheim/artefacts)
   const villeOrigine = req.user.villeOrigine;
