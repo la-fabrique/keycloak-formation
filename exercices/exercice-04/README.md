@@ -43,7 +43,7 @@ A l'issue de cet exercice, vous serez capable de :
 >
 > Ils sécurisent ensuite la **Réserve** — l'API qui détient les ressources précieuses du royaume. La Réserve ne laisse entrer que les sujets porteurs d'un laissez-passer valide. Certaines salles de la Réserve (comme l'inventaire) ne sont accessibles qu'aux marchands.
 >
-> Les architectes apprennent une règle fondamentale : **le Comptoir demande des laissez-passer au nom de la Réserve**. C'est le concept d'**audience** : un jeton émis pour le Comptoir est destiné à être utilisé auprès de la Réserve.
+> Les administrateurs apprennent une règle fondamentale : **le Comptoir demande des laissez-passer au nom de la Réserve**. C'est le concept d'**audience** : un jeton émis pour le Comptoir est destiné à être utilisé auprès de la Réserve.
 
 ---
 

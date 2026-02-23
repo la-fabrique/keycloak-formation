@@ -38,9 +38,9 @@ A l'issue de cet exercice, vous serez capable de :
 
 > La province de Valdoria possède désormais ses institutions. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs profils métier.
 >
-> Les architectes créent les trois premiers habitants de Valdoria : un gouverneur pour administrer la province, une marchande pour gérer le commerce, et un simple sujet pour représenter les citoyens ordinaires.
+> Les administrateurs créent les trois premiers habitants de Valdoria : un gouverneur pour administrer la province, une marchande pour gérer le commerce, et un simple sujet pour représenter les citoyens ordinaires.
 >
-> Chaque sujet reçoit un **laissez-passer numérique** (jeton JWT) qui matérialise son identité. Les architectes découvrent l'**atelier de prévisualisation des laissez-passer** (outil Evaluate) qui leur permet d'observer le contenu des jetons avant même qu'un sujet ne se connecte.
+> Chaque sujet reçoit un **laissez-passer numérique** (jeton JWT) qui matérialise son identité. Les administrateurs découvrent l'**atelier de prévisualisation des laissez-passer** (outil Evaluate) qui leur permet d'observer le contenu des jetons avant même qu'un sujet ne se connecte.
 >
 > Ils apprennent également qu'il existe deux types de droits : les **profils métier** (rôles de royaume) qui définissent la fonction dans la société, et les **permissions sur les services** (rôles de client) qui contrôlent l'accès à chaque application.
 

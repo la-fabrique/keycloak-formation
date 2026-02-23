@@ -121,4 +121,4 @@ Utilisez cette checklist pour vérifier rapidement chaque participant :
 
 > Les premiers sujets de Valdoria sont créés, leurs profils métier attribués et leurs traits personnels enregistrés.
 >
-> Dans l'exercice suivant, les architectes ouvriront le **Comptoir des voyageurs** (application front-end) et sécuriseront la **Réserve** (API), et configureront les mappers pour que les jetons transportent les rôles et attributs nécessaires.
+> Dans l'exercice suivant, les administrateurs ouvriront le **Comptoir des voyageurs** (application front-end) et sécuriseront la **Réserve** (API), et configureront les mappers pour que les jetons transportent les rôles et attributs nécessaires.

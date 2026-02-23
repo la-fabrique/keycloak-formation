@@ -34,7 +34,7 @@ A l'issue de cet exercice, vous serez capable de :
 
 ## Contexte narratif
 
-> Les architectes de l'Empire ont construit le Comptoir des voyageurs et sa Réserve. Les parchemins magiques (tokens JWT) circulent entre les deux.
+> Les administrateurs de l'Empire ont construit le Comptoir des voyageurs et sa Réserve. Les parchemins magiques (tokens JWT) circulent entre les deux.
 >
 > Il est temps de **lire ces parchemins** : comprendre ce qu'ils contiennent, pourquoi ils contiennent ces informations, et comment la Réserve les interprète pour décider qui peut entrer — et jusqu'où.
 

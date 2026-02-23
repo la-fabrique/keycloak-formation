@@ -51,7 +51,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | ------------------------------------- | ------------ |
 | ● Attributs et rôles des utilisateurs | Ex. 3, 4     |
 | ● Impersonate (usage)                 | Exposé       |
-| ● Gestion des groupes                 | Exposé       |
+| ● Gestion des groupes                 | Ex. 7        |
 | ● Gestion des sessions                | Ex. 2        |
 
 
@@ -125,7 +125,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 ---
 
-## Synthèse Ex. 1 à 6
+## Synthèse Ex. 1 à 7
 
 
 | Ex. | Thème                                         | Couverture                           |
@@ -136,5 +136,6 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | 4   | Clients SPA + RS, mappers, audience, Evaluate | Clients, OIDC, jetons, config client |
 | 5   | Parchemins (tokens, Debug, RBAC/ABAC)         | Test d'un client, lecture des jetons  |
 | 6   | Automate impérial (M2M)                       | Rôles de comptes de service, Client Credentials |
+| 7   | Guilde des Marchands (groupes)                | Groupes, héritage de rôles           |
 
 
