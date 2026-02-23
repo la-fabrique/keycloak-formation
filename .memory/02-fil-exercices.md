@@ -2,7 +2,7 @@
 
 ## Présentation du scénario
 
-Les stagiaires incarnent les **Architectes de la Sécurité** de l'Empire d'Authéria.
+Les stagiaires incarnent les **Administrateurs Impériaux** de l'Empire d'Authéria.
 Leur mission : bâtir, étape par étape, le système de gestion des identités et des accès (IAM) qui protégera l'ensemble de l'empire, en commençant par sa province principale : **Valdoria**.
 
 Chaque exercice correspond à une étape de construction de cet IAM impérial, depuis la fondation de la capitale jusqu'à la fortification des murailles.
@@ -75,7 +75,7 @@ Les stagiaires incarnent un membre de la **Garde Impériale** (`super-administra
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria, joyau de l'Empire d'Authéria. Les architectes créent cette nouvelle province et établissent ses titres impériaux : les rôles qui structureront toute la société valdorienne et détermineront l'accès aux ressources du royaume.
+Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria, joyau de l'Empire d'Authéria. Les administrateurs créent cette nouvelle province et établissent ses titres impériaux : les rôles qui structureront toute la société valdorienne et détermineront l'accès aux ressources du royaume.
 
 **Objectifs pédagogiques**
 
@@ -123,7 +123,7 @@ Les modèles de rôles plus complexes (avec rôles métier spécialisés) seront
 **Module 1 — Fondations et environnement**
 
 **Contexte narratif**
-La province de Valdoria possède désormais ses titres impériaux. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs rôles. Les architectes créent les premiers habitants et leur ajoutent un trait personnel — la ville d'origine — pour illustrer la différence entre un rôle (ce qu'on est autorisé à faire) et un attribut (ce qui nous décrit).
+La province de Valdoria possède désormais ses titres impériaux. Il est temps d'accueillir les premiers sujets et de leur attribuer leurs rôles. Les administrateurs créent les premiers habitants et leur ajoutent un trait personnel — la ville d'origine — pour illustrer la différence entre un rôle (ce qu'on est autorisé à faire) et un attribut (ce qui nous décrit).
 
 **Objectifs pédagogiques**
 
@@ -152,9 +152,9 @@ La province de Valdoria possède désormais ses titres impériaux. Il est temps 
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-La province a besoin d'un point de service pour accueillir ses sujets et protéger ses ressources. Les architectes ouvrent le **Comptoir des voyageurs** (l'application front-end où les sujets se présentent) et sécurisent la **Réserve** (l'API qui détient les ressources du royaume). Le Comptoir demande des laissez-passer (jetons) **au nom de la Réserve** — c'est le concept d'audience.
+La province a besoin d'un point de service pour accueillir ses sujets et protéger ses ressources. Les administrateurs ouvrent le **Comptoir des voyageurs** (l'application front-end où les sujets se présentent) et sécurisent la **Réserve** (l'API qui détient les ressources du royaume). Le Comptoir demande des laissez-passer (jetons) **au nom de la Réserve** — c'est le concept d'audience.
 
-Les architectes enrichissent d'abord les profils des sujets avec l'attribut **ville d'origine**, puis configurent les clients et les mappers pour injecter toutes les informations nécessaires dans les jetons. Ils utilisent l'**atelier de prévisualisation des laissez-passer** (outil Evaluate) pour vérifier que tout est correctement configuré avant même de connecter une vraie application.
+Les administrateurs enrichissent d'abord les profils des sujets avec l'attribut **ville d'origine**, puis configurent les clients et les mappers pour injecter toutes les informations nécessaires dans les jetons. Ils utilisent l'**atelier de prévisualisation des laissez-passer** (outil Evaluate) pour vérifier que tout est correctement configuré avant même de connecter une vraie application.
 
 **Objectifs pédagogiques**
 
@@ -189,7 +189,7 @@ Les architectes enrichissent d'abord les profils des sujets avec l'attribut **vi
 **Module 2 — Gestion des clients**
 
 **Contexte narratif**
-Les architectes ont construit le Comptoir des voyageurs et sa Réserve. Les parchemins magiques (tokens JWT) circulent entre les deux. Il est temps de les lire : comprendre ce qu'ils contiennent, pourquoi ils contiennent ces informations, et comment la Réserve les interprète pour décider qui peut entrer — et jusqu'où.
+Les administrateurs ont construit le Comptoir des voyageurs et sa Réserve. Les parchemins magiques (tokens JWT) circulent entre les deux. Il est temps de les lire : comprendre ce qu'ils contiennent, pourquoi ils contiennent ces informations, et comment la Réserve les interprète pour décider qui peut entrer — et jusqu'où.
 
 **Objectifs pédagogiques**
 
@@ -251,7 +251,7 @@ Certaines missions ne nécessitent aucun humain. L'automate impérial exécute d
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-La province grandit. Pour gérer efficacement des centaines de sujets, les architectes créent des guildes et organisent la population en une structure hiérarchique. Plutôt que d'attribuer les titres impériaux un par un, ils les associent directement aux guildes.
+La province grandit. Pour gérer efficacement des centaines de sujets, les administrateurs créent des guildes et organisent la population en une structure hiérarchique. Plutôt que d'attribuer les titres impériaux un par un, ils les associent directement aux guildes.
 
 **Objectifs pédagogiques**
 
@@ -278,7 +278,7 @@ La province grandit. Pour gérer efficacement des centaines de sujets, les archi
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-Les parchemins officiels déterminent quelles informations figurent sur le laissez-passer de chaque sujet. Les architectes apprennent à enrichir ces documents pour que la Réserve puisse exploiter l'attribut `villeOrigine` : sur l'endpoint `GET /villes/{id}/artefacts`, l'API doit connaître la ville du sujet pour filtrer les résultats.
+Les parchemins officiels déterminent quelles informations figurent sur le laissez-passer de chaque sujet. Les administrateurs apprennent à enrichir ces documents pour que la Réserve puisse exploiter l'attribut `villeOrigine` : sur l'endpoint `GET /villes/{id}/artefacts`, l'API doit connaître la ville du sujet pour filtrer les résultats.
 
 **Objectifs pédagogiques**
 
@@ -380,7 +380,7 @@ Valdoria ouvre une ambassade avec un empire lointain. Grâce au traité diplomat
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-L'empire est fonctionnel, mais vulnérable. Les architectes renforcent les défenses : mots de passe robustes, authentification multi-facteurs et détection des intrusions.
+L'empire est fonctionnel, mais vulnérable. Les administrateurs renforcent les défenses : mots de passe robustes, authentification multi-facteurs et détection des intrusions.
 
 **Objectifs pédagogiques**
 

@@ -34,11 +34,11 @@
 
 ## Contexte narratif
 
-> La province de Valdoria prospère. Mais attribuer les titres impériaux un par un à chaque nouveau marchand devient fastidieux pour les architectes.
+> La province de Valdoria prospère. Mais attribuer les titres impériaux un par un à chaque nouveau marchand devient fastidieux pour les administrateurs.
 >
 > L'Empire décide de s'organiser en **guildes** : des corporations qui regroupent les sujets selon leur métier. Désormais, tout sujet admis dans la **Guilde des Marchands** hérite automatiquement du titre de `marchand` — sans qu'il soit nécessaire de le lui attribuer individuellement.
 >
-> Votre mission : créer la guilde, lui attribuer le titre de `marchand`, puis accueillir **Siegfried**, un nouveau marchand. Vérifiez qu'il bénéficie bien des mêmes droits que **Brunhild**, membre de la guilde depuis l'exercice 3.
+> Votre mission : créer la guilde, lui attribuer le titre de `marchand`, puis accueillir **Siegfried**, un nouveau marchand. Vérifiez qu'il bénéficie bien des mêmes droits que **Brunhild**, marchand depuis l'exercice 3.
 
 ---
 
@@ -49,21 +49,22 @@
 Un groupe est un **conteneur d'utilisateurs** auquel on peut attribuer des rôles. Tous les membres du groupe héritent automatiquement de ces rôles.
 
 ```
+brunhild        ──(rôle direct)──▶  marchand ✅   (n'appartient pas à la guilde)
+
 guilde-marchands  ──(rôle)──▶  marchand
        │
-       ├── brunhild   ──hérite──▶  marchand ✅
-       └── siegfried  ──hérite──▶  marchand ✅
+       └── siegfried  ──hérite──▶  marchand ✅   (obtient le rôle via la guilde)
 ```
 
-L'avantage : pour donner le rôle `marchand` à dix nouveaux utilisateurs, il suffit de les ajouter au groupe — pas d'attribution individuelle.
+Brunhild a le rôle `marchand` **en direct** (comme dans l'exercice 3) et n'appartient pas à la guilde. Siegfried appartient à la guilde et obtient donc le rôle `marchand` via elle. L'avantage du groupe : pour donner le rôle à plusieurs nouveaux utilisateurs, il suffit de les ajouter au groupe — pas d'attribution individuelle.
 
 ### Différence avec l'attribution directe de rôle (exercice 3)
 
-Dans l'exercice 3, le rôle `marchand` a été attribué **directement** à `brunhild`. Ici, on va plutôt :
-1. Attribuer le rôle au **groupe** `guilde-marchands`
-2. Ajouter `brunhild` et `siegfried` dans ce groupe
+Dans l'exercice 3, le rôle `marchand` a été attribué **directement** à `brunhild`. Ici, on illustre les deux cas :
+1. **Brunhild** : rôle `marchand` attribué directement (inchangé par rapport à l'exercice 3).
+2. **Siegfried** : on attribue le rôle au **groupe** `guilde-marchands`, puis on ajoute Siegfried dans ce groupe — il obtient le rôle via la guilde.
 
-Le résultat dans le token est identique — c'est le mécanisme qui change.
+Le résultat dans le token est identique — c'est le mécanisme qui change (direct vs hérité du groupe).
 
 ---
 
@@ -76,7 +77,8 @@ Le résultat dans le token est identique — c'est le mécanisme qui change.
 3. Dans le menu de gauche, allez dans **Groups**
 4. Cliquez **Create group**
 5. Nommez le groupe : `guilde-marchands`
-6. Cliquez **Create**
+6. Ajouter la description : `Guilde des marchands
+7. Cliquez **Create**
 
 ---
 
@@ -84,7 +86,7 @@ Le résultat dans le token est identique — c'est le mécanisme qui change.
 
 1. Dans la liste des groupes, cliquez sur **`guilde-marchands`**
 2. Allez dans l'onglet **Role mapping**
-3. Cliquez **Assign role**
+3. Cliquez **Assign role** \ **Realm roles**
 4. Sélectionnez le rôle **`marchand`** (realm role)
 5. Cliquez **Assign**
 
@@ -92,20 +94,7 @@ Le résultat dans le token est identique — c'est le mécanisme qui change.
 
 ---
 
-### Étape 3 — Ajouter `brunhild` dans le groupe
-
-> `brunhild` a déjà le rôle `marchand` attribué directement (exercice 3). On l'ajoute également au groupe pour illustrer que les deux mécanismes coexistent.
-
-1. Dans le menu de gauche, allez dans **Users**
-2. Cliquez sur l'utilisateur **`brunhild`**
-3. Allez dans l'onglet **Groups**
-4. Cliquez **Join Group**
-5. Sélectionnez **`guilde-marchands`**
-6. Cliquez **Join**
-
----
-
-### Étape 4 — Créer l'utilisateur `siegfried`
+### Étape 3 — Créer l'utilisateur `siegfried`
 
 1. Dans le menu de gauche, allez dans **Users**
 2. Cliquez **Create new user**
@@ -118,14 +107,14 @@ Le résultat dans le token est identique — c'est le mécanisme qui change.
 4. Cliquez **Create**
 5. Allez dans l'onglet **Credentials**
 6. Cliquez **Set password**
-7. Définissez un mot de passe (ex : `siegfried`) et désactivez **Temporary**
+7. Définissez le mot de passe `valdoria123` et désactivez **Temporary**
 8. Cliquez **Save**
 
 > **Note :** Siegfried n'a aucun rôle attribué directement. Il aura uniquement `sujet` (rôle par défaut du realm) avant d'être ajouté au groupe.
 
 ---
 
-### Étape 5 — Ajouter `siegfried` dans le groupe
+### Étape 4 — Ajouter `siegfried` dans le groupe
 
 1. Toujours sur la fiche de `siegfried`, allez dans l'onglet **Groups**
 2. Cliquez **Join Group**
@@ -136,16 +125,17 @@ Le résultat dans le token est identique — c'est le mécanisme qui change.
 
 ---
 
-### Étape 6 — Vérifier l'héritage de rôles dans la console
+### Étape 5 — Vérifier l'héritage de rôles dans la console
 
 1. Depuis la fiche de `siegfried`, allez dans l'onglet **Role mapping**
-2. Observez la section **Effective roles** : le rôle `marchand` doit y apparaître, hérité du groupe `guilde-marchands`
+2. Décochez **Hide inherited roles** pour afficher les rôles hérités des groupes
+3. Observez: le rôle `marchand` doit y apparaître, hérité du groupe `guilde-marchands`
 
 **Checkpoint :** Le rôle `marchand` est bien présent dans les rôles effectifs de Siegfried, sans avoir été attribué directement.
 
 ---
 
-### Étape 7 — Vérifier l'accès dans l'application
+### Étape 6 — Vérifier l'accès dans l'application
 
 1. Ouvrez le Comptoir des voyageurs : **http://localhost:5173**
 2. Connectez-vous avec **`siegfried`** et son mot de passe
