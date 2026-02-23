@@ -1,7 +1,6 @@
 # Exercice 5 — Lire les parchemins de la Réserve
 
 > **Module 2 — Gestion des clients**
-> Difficulté : ★★☆☆☆ (lecture guidée)
 
 ---
 

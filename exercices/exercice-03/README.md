@@ -1,7 +1,6 @@
 # Exercice 3 — Peupler Valdoria et attribuer les profils métier
 
 > **Module 1 — Fondations et environnement**
-> Durée estimée : 30 minutes | Difficulté : ★★☆☆☆ (débutant-intermédiaire)
 
 ---
 

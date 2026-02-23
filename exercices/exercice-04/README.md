@@ -1,7 +1,6 @@
 # Exercice 4 — Ouvrir le Comptoir des voyageurs et sa Réserve
 
 > **Module 2 — Gestion des clients**
-> Durée estimée : 45 minutes | Difficulté : ★★★☆☆ (intermédiaire)
 
 ---
 

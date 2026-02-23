@@ -1,7 +1,6 @@
 # Exercice 6 — L'Automate impérial
 
 > **Module 2 — Gestion des clients**
-> Difficulté : ★★☆☆☆
 
 ---
 
