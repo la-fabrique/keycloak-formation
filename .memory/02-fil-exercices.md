@@ -246,61 +246,34 @@ Certaines missions ne nécessitent aucun humain. L'automate impérial exécute d
 
 ---
 
-### Exercice 7 — Organiser les guildes
+### Exercice 7 — La Guilde des Marchands
 
 **Module 3 — Identités, groupes et scopes**
 
 **Contexte narratif**
-La province grandit. Pour gérer efficacement des centaines de sujets, les administrateurs créent des guildes et organisent la population en une structure hiérarchique. Plutôt que d'attribuer les titres impériaux un par un, ils les associent directement aux guildes.
+La province de Valdoria prospère. Attribuer les titres impériaux un par un à chaque nouveau marchand devient fastidieux. L'Empire s'organise en guildes : tout sujet admis dans la Guilde des Marchands hérite automatiquement du titre `marchand`. Mission : créer la guilde, lui attribuer le rôle, accueillir **Siegfried** (nouveau marchand) et vérifier qu'il a les mêmes droits que Brunhild.
 
 **Objectifs pédagogiques**
 
-- Créer et organiser des groupes (hiérarchiques)
-- Assigner des rôles à des groupes plutôt qu'à des utilisateurs individuels
-- Comprendre l'héritage de rôles via les groupes
-- Gérer les sessions utilisateur
+- Créer un groupe dans Keycloak
+- Assigner un rôle de royaume à un groupe
+- Comprendre l'héritage de rôles (un membre du groupe hérite des rôles du groupe)
+- Vérifier l'héritage en appelant une route protégée avec le token du nouvel utilisateur
 
 **Étapes**
 
-1. Créer les groupes : `guilde-marchands`, `guilde-voyageurs`, `conseil-de-valdoria` (sous-groupe de `guilde-marchands`)
-2. Attribuer le rôle `marchand` au groupe `guilde-marchands` et `voyageur` au groupe `guilde-voyageurs`
-3. Importer une dizaine d'utilisateurs (import JSON ou création manuelle)
-4. Affecter les utilisateurs aux groupes
-5. Se connecter avec un utilisateur d'une guilde et vérifier qu'il hérite du rôle du groupe
-6. Observer les sessions actives dans la console d'administration
+1. Créer le groupe `guilde-marchands` (avec description)
+2. Attribuer le rôle `marchand` au groupe (Role mapping du groupe)
+3. Créer l'utilisateur `siegfried` (credentials : `valdoria123`)
+4. Ajouter Siegfried au groupe `guilde-marchands` (onglet Groups de l'utilisateur)
+5. Vérifier l'héritage dans la console : Role mapping de Siegfried avec « Hide inherited roles » désactivé
+6. Vérifier l'accès dans l'application : se connecter au Comptoir avec Siegfried, contrôler le token (realm_access.roles contient `marchand`) et accéder à la page Inventaire
 
-**Point clé** — Les groupes permettent de gérer les droits à grande échelle. Un rôle attribué à un groupe est automatiquement hérité par tous ses membres et sous-groupes.
-
----
-
-### Exercice 8 — Rédiger les parchemins officiels
-
-**Module 3 — Identités, groupes et scopes**
-
-**Contexte narratif**
-Les parchemins officiels déterminent quelles informations figurent sur le laissez-passer de chaque sujet. Les administrateurs apprennent à enrichir ces documents pour que la Réserve puisse exploiter l'attribut `villeOrigine` : sur l'endpoint `GET /villes/{id}/artefacts`, l'API doit connaître la ville du sujet pour filtrer les résultats.
-
-**Objectifs pédagogiques**
-
-- Comprendre le rôle des Client Scopes et des Mappers
-- Configurer un mapper pour injecter l'attribut `villeOrigine` dans le jeton
-- Observer comment la Réserve utilise cet attribut pour filtrer les données
-
-**Étapes**
-
-1. Vérifier que l'attribut `villeOrigine` est bien défini sur les utilisateurs (exercice 3)
-2. Créer un Client Scope `attributs-valdorien`
-3. Ajouter un mapper de type « User Attribute » pour projeter `villeOrigine` dans le jeton
-4. Associer le scope `attributs-valdorien` au client `comptoir-des-voyageurs`
-5. Se connecter et comparer le jeton **avant** et **après** l'ajout du scope : l'attribut `villeOrigine` apparaît dans les claims
-6. Tester `GET /villes/nordheim/artefacts` avec Brunhild (`villeOrigine: Nordheim`) → résultats filtrés
-7. Tester le même endpoint avec Cedric (`villeOrigine: Sudbourg`) → résultats différents, car la Réserve utilise l'attribut du jeton pour filtrer
-
-**Point clé** — Les Client Scopes et les Mappers contrôlent finement le contenu des jetons. Le rôle `marchand` ouvre la porte (autorisation), tandis que l'attribut `villeOrigine` indique à la Réserve quelles données montrer (filtrage contextuel). C'est la complémentarité entre RBAC (rôles) et ABAC (attributs).
+**Point clé** — Les groupes permettent de gérer les droits à l'échelle. Un rôle attribué à un groupe est hérité par tous ses membres ; il apparaît dans le token JWT comme un rôle direct. L'API ne distingue pas rôle direct et rôle hérité du groupe.
 
 ---
 
-### Exercice 9 — Se faire passer pour un sujet
+### Exercice 8 — Se faire passer pour un sujet
 
 **Module 3 — Identités, groupes et scopes**
 
@@ -324,7 +297,7 @@ Le service de renseignement impérial a besoin de voir la province à travers le
 
 ---
 
-### Exercice 10 — Forger une alliance avec une Province voisine
+### Exercice 9 — Forger une alliance avec une Province voisine
 
 **Module 4 — Intégrations externes et durcissement**
 
@@ -350,7 +323,7 @@ La province voisine dispose de son propre registre de population. Plutôt que de
 
 ---
 
-### Exercice 11 — Signer un traité diplomatique
+### Exercice 10 — Signer un traité diplomatique
 
 **Module 4 — Intégrations externes et durcissement**
 
@@ -375,7 +348,7 @@ Valdoria ouvre une ambassade avec un empire lointain. Grâce au traité diplomat
 
 ---
 
-### Exercice 12 — Fortifier les murailles
+### Exercice 11 — Fortifier les murailles
 
 **Module 4 — Intégrations externes et durcissement**
 
