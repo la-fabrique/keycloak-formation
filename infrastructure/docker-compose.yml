@@ -63,14 +63,14 @@ services:
     networks:
       - autheria-network
 
-  # --- OpenLDAP (Province alliée — utilisé au Jour 2) ---
+  # --- OpenLDAP (Office du Maître des Registres — utilisé au Jour 2) ---
   openldap:
     image: osixia/openldap:1.5.0
     container_name: autheria-openldap
     environment:
-      LDAP_ORGANISATION: "Province Voisine"
-      LDAP_DOMAIN: "voisin.autheria.local"
-      LDAP_BASE_DN: "dc=voisin,dc=autheria,dc=local"
+      LDAP_ORGANISATION: "Office du Maitre des Registres"
+      LDAP_DOMAIN: "registre.valdoria.local"
+      LDAP_BASE_DN: "dc=registre,dc=valdoria,dc=local"
       LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-admin}
       LDAP_TLS: "false"
     ports:
@@ -79,7 +79,7 @@ services:
       - openldap_data:/var/lib/ldap
       - openldap_config:/etc/ldap/slapd.d
       # Note: Le bootstrap.ldif doit être injecté après le démarrage avec :
-      # docker exec -i autheria-openldap ldapadd -x -D "cn=admin,dc=voisin,dc=autheria,dc=local" -w admin < openldap/bootstrap.ldif
+      # docker exec -i autheria-openldap ldapadd -x -D "cn=admin,dc=registre,dc=valdoria,dc=local" -w admin < openldap/bootstrap.ldif
     networks:
       - autheria-network
 

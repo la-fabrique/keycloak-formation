@@ -49,10 +49,9 @@ npm run docker:down
 | 06 | Déployer l'automate impérial | Module 2 — Clients | J1 après-midi |
 | 07 | Organiser les guildes | Module 3 — Identités | J2 matin |
 | 08 | Rédiger les parchemins officiels | Module 3 — Identités | J2 matin |
-| 09 | Se faire passer pour un sujet | Module 3 — Identités | J2 matin |
-| 10 | Forger une alliance avec une province voisine | Module 4 — Intégrations | J2 après-midi |
-| 11 | Signer un traité diplomatique | Module 4 — Intégrations | J2 après-midi |
-| 12 | Fortifier les murailles | Module 4 — Intégrations | J2 après-midi |
+| 09 | Déléguer au Maître des Registres | Module 4 — Intégrations | J2 après-midi |
+| 10 | Signer un traité diplomatique | Module 4 — Intégrations | J2 après-midi |
+| 11 | Fortifier les murailles | Module 4 — Intégrations | J2 après-midi |
 
 ## Services disponibles
 
@@ -61,4 +60,4 @@ npm run docker:down
 | Keycloak (admin) | http://localhost:8080 | `admin` / `admin` |
 | Mailhog (emails) | http://localhost:8025 | — |
 | PostgreSQL | `localhost:5432` | `keycloak` / `keycloak` |
-| OpenLDAP | `localhost:389` | `cn=admin,dc=voisin,dc=autheria,dc=local` / `admin` |
+| OpenLDAP | `localhost:389` | `cn=admin,dc=registre,dc=valdoria,dc=local` / `admin` |
