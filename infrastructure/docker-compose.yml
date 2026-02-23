@@ -73,13 +73,39 @@ services:
       LDAP_BASE_DN: "dc=registre,dc=valdoria,dc=local"
       LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-admin}
       LDAP_TLS: "false"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "false"
+    command: ["--copy-service", "--loglevel", "debug"]
     ports:
       - "389:389"
     volumes:
-      - openldap_data:/var/lib/ldap
-      - openldap_config:/etc/ldap/slapd.d
-      # Note: Le bootstrap.ldif doit être injecté après le démarrage avec :
-      # docker exec -i autheria-openldap ldapadd -x -D "cn=admin,dc=registre,dc=valdoria,dc=local" -w admin < openldap/bootstrap.ldif
+      - openldap_data:/var/lib/ldap:rw
+      - openldap_config:/etc/ldap/slapd.d:rw
+      - ./openldap/50-bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif:rw
+    networks:
+      - autheria-network
+
+  # --- LDAP Account Manager (interface d'administration OpenLDAP) ---
+  ldap-account-manager:
+    image: ghcr.io/ldapaccountmanager/lam:9.4
+    container_name: autheria-lam
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      LAM_PASSWORD: ${LAM_PASSWORD:-lam}
+      LAM_LANG: fr_FR
+      LAM_SKIP_PRECONFIGURE: "false"
+      LAM_CONFIGURATION_DATABASE: files
+      LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-admin}
+      LDAP_SERVER: ldap://openldap:389
+      LDAP_BASE_DN: dc=registre,dc=valdoria,dc=local
+      LDAP_USERS_DN: ou=people,dc=registre,dc=valdoria,dc=local
+      LDAP_GROUPS_DN: ou=groups,dc=registre,dc=valdoria,dc=local
+      LDAP_USER: cn=admin,dc=registre,dc=valdoria,dc=local
+    volumes:
+      - lam_config:/var/lib/ldap-account-manager/config
+    depends_on:
+      - openldap
     networks:
       - autheria-network
 
@@ -117,6 +143,7 @@ volumes:
   postgres_data:
   openldap_data:
   openldap_config:
+  lam_config:
 
 networks:
   autheria-network:
