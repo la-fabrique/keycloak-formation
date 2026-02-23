@@ -113,7 +113,7 @@ Notre formation Keycloak se basera sur la dernière version de l'outil, Keycloak
 ### UTILISATION DE KEYCLOAK EN TANT QUE CLIENT
 
 ● Comprendre la configuration côté client  
-● Configuration dans Postman
+● Configuration et test d'un client
 
 ### INTEGRATION DES UTILISATEURS D'UN ANNUAIRE EXISTANT
 

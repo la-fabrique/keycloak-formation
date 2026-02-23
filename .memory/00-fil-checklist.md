@@ -71,7 +71,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | Point | Ex. / Exposé |
 |-------|--------------|
 | ● Configuration côté client | Ex. 4 + Exposé |
-| ● Configuration dans Postman | Exposé |
+| ● Configuration et test d'un client | Exposé |
 
 ### Intégration annuaire existant
 

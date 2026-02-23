@@ -174,4 +174,4 @@ L'exercice 4 a permis de :
 - ✅ Utiliser l'outil Evaluate pour prévisualiser et valider les jetons
 - ✅ Comprendre comment l'API utilise les rôles et attributs du jeton
 
-**L'exercice 5** abordera les flux OIDC en pratique : obtenir un jeton via Authorization Code, tester le refresh token et l'introspection via Postman.
+**L'exercice 5** abordera les flux OIDC en pratique : obtenir un jeton via Authorization Code, tester le refresh token et l'introspection.
