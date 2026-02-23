@@ -109,7 +109,9 @@ Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Po
 4. Sélectionnez **Impersonate**
 5. Confirmez l'action si une fenêtre de confirmation apparaît
 
-Keycloak ouvre automatiquement une nouvelle session dans votre navigateur **au nom de Brunhild** et vous redirige vers le Comptoir des voyageurs.
+Keycloak ouvre automatiquement une nouvelle session dans votre navigateur **au nom de Brunhild** et affiche la **console Account** : **http://localhost:8080/realms/valdoria/account**.
+
+Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retournez sur **http://localhost:5173/** et actualisez la page.
 
 ---
 
@@ -132,11 +134,11 @@ Keycloak ouvre automatiquement une nouvelle session dans votre navigateur **au n
 
 1. Revenez à la console d'administration Keycloak (ouvrez un nouvel onglet : **http://localhost:8080/admin**)
 2. Dans le realm **valdoria**, allez dans **Sessions** (menu de gauche)
-3. Observez : deux sessions sont actives
-   - La session de l'administrateur
-   - La session impersonnée de **brunhild**
+3. Observez : la session impersonnée de **brunhild** est bien présente.
 
-**Point d'observation :** L'impersonation crée une session distincte, traçable dans la console. Elle peut être révoquée indépendamment.
+**Note :** La session de l'administrateur n'apparaît pas ici : elle est rattachée au realm **master**. Dans le realm valdoria, on ne voit que les sessions des utilisateurs de ce realm (dont la session créée par l'impersonation).
+
+**Point d'observation :** L'impersonation crée une session distincte dans le realm, traçable dans la console. Elle peut être révoquée indépendamment.
 
 ---
 
@@ -172,4 +174,3 @@ Cette approche est plus maintenable : pour habiliter un nouvel agent de support,
 | Le Comptoir ne s'ouvre pas après l'impersonation | L'URL de redirection n'est pas configurée | Vérifiez que `http://localhost:5173` est dans les **Valid redirect URIs** du client `comptoir-des-voyageurs` |
 | Le rôle `marchand` est absent du token | Brunhild n'a pas le rôle `marchand` | Vérifiez le **Role mapping** de Brunhild (exercice 3) |
 | `villeOrigine` est absent du token | Le scope `attributs-valdorien` n'est pas assigné | Vérifiez la configuration du client `comptoir-des-voyageurs` (exercice 4) |
-| Impossible de trouver `impersonation` dans les rôles | Mauvais filtre sélectionné | Dans **Assign role**, basculez sur **Filter by clients** et cherchez `realm-management` |
