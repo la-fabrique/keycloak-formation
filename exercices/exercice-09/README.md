@@ -135,6 +135,13 @@ Le **Group Mapper** convertit l'appartenance à un groupe LDAP en appartenance �
 7. Cliquez **Test authentication** pour vérifier les identifiants
 8. Cliquez **Save**
 
+**Vérification :**
+
+1. Dans le menu de gauche, allez dans **Users**
+2. Recherchez `al` dans la barre de recherche
+3. Vous devez voir apparaître deux utilisateurs : **aldric** et **alaric**
+4. Cliquez sur **aldric** pour ouvrir ses détails — vous pouvez constater que le champ **Federation link** indique `Office du Maître des Registres`, confirmant que cet utilisateur provient bien de l'annuaire LDAP
+
 **Point d'observation :** Keycloak est maintenant connecté à l'annuaire de l'Office du Maître des Registres. Les utilisateurs ne sont pas encore synchronisés — il faut d'abord configurer les mappers.
 
 ---
@@ -173,6 +180,12 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 
 3. Cliquez **Save**
 
+**Vérification :**
+
+1. En haut à droite, cliquez sur **Action** puis **Sync all users** pour recharger le cache Keycloak avec les nouveaux attributs
+2. Dans le menu de gauche, allez dans **Users** et cliquez sur **alaric**
+3. Vérifiez que l'attribut **villeOrigine** est bien renseigné dans ses détails
+
 **Point d'observation :** L'attribut `l` (locality) est un attribut standard LDAP. Le mapper le traduit en `villeOrigine` côté Keycloak, le même attribut utilisé par le Comptoir des voyageurs et la Réserve depuis l'exercice 4.
 
 ---
@@ -196,6 +209,12 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 
 3. Cliquez **Save**
 
+**Vérification :**
+
+1. En haut à droite, cliquez sur **Action** puis **Sync all users**
+2. Dans le menu de gauche, allez dans **Users** et cliquez sur **thorin**
+3. Vérifiez qu'il est bien membre du groupe **guilde-marchands**
+
 **Point d'observation :** Le groupe LDAP `guilde-marchands` porte le même nom que le groupe Keycloak créé à l'exercice 7. Lors de la synchronisation, Keycloak reconnaîtra le groupe existant et y ajoutera les membres LDAP. Thorin héritera ainsi automatiquement du rôle `marchand` associé au groupe.
 
 ---
@@ -218,33 +237,17 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 
 3. Cliquez **Save**
 
+**Vérification :**
+
+1. En haut à droite, cliquez sur **Action** puis **Sync all users**
+2. Dans le menu de gauche, allez dans **Users** et cliquez sur **aldric**
+3. Allez dans l'onglet **Role mapping** et vérifiez qu'il possède bien le rôle **gouverneur**
+
 **Point d'observation :** Ce mapper convertit les groupes LDAP sous `ou=groups` en rôles de royaume. Le groupe LDAP `gouverneur` porte le même nom que le realm role `gouverneur` créé à l'exercice 2 : Keycloak fera la correspondance automatiquement. Aldric, membre de ce groupe LDAP, recevra le rôle `gouverneur` (et par héritage composite, les rôles `sujet` et `marchand`).
 
 ---
 
-### Étape 7 — Lancer la synchronisation
-
-1. Retournez sur la page principale de la fédération **Office du Maître des Registres**
-2. Dans le menu déroulant **Action** (en haut à droite), sélectionnez **Sync all users**
-3. Un message de confirmation indique le nombre d'utilisateurs importés
-
-**Point d'observation :** Les trois sujets de l'annuaire (`elara`, `thorin`, `aldric`) apparaissent désormais dans le realm `valdoria`.
-
----
-
-### Étape 8 — Observer le comportement de la liste des utilisateurs
-
-1. Dans le menu de gauche, allez dans **Users**
-2. Constatez que la liste des utilisateurs n'affiche plus tous les comptes par défaut : il faut désormais **effectuer une recherche** pour afficher les résultats
-3. Tapez **`al`** dans le champ de recherche
-4. Observez les résultats : deux utilisateurs apparaissent — **`alaric`** (créé manuellement à l'exercice 3) et **`aldric`** (fédéré depuis l'annuaire LDAP)
-5. Cliquez sur **`aldric`** et observez le champ **Federation link** : il indique **Office du Maître des Registres**
-
-**Point d'observation :** Keycloak distingue visuellement les utilisateurs locaux des utilisateurs fédérés grâce au lien de fédération. Ce lien indique l'origine de l'utilisateur et le provider qui le gère.
-
----
-
-### Étape 9 — Vérifier `elara` dans la console Keycloak
+### Étape 7 — Vérifier `elara` dans la console Keycloak
 
 1. Retournez dans **Users** et recherchez **`elara`**
 2. Cliquez sur **`elara`**
@@ -260,7 +263,7 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 
 ---
 
-### Étape 10 — Vérifier `thorin` via le Comptoir des voyageurs
+### Étape 8 — Vérifier `thorin` via le Comptoir des voyageurs
 
 1. Ouvrez le Comptoir des voyageurs : **http://localhost:5173**
 2. Connectez-vous avec **`thorin`** / `valdoria123`
@@ -274,7 +277,7 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 
 ---
 
-### Étape 11 — Vérifier `aldric` dans la console Keycloak
+### Étape 9 — Vérifier `aldric` dans la console Keycloak
 
 1. Retournez dans la console Keycloak
 2. Dans **Users**, cliquez sur **`aldric`**
