@@ -21,7 +21,7 @@ Chaque exercice correspond à une étape de construction de cet IAM impérial, d
 | Attribut utilisateur    | Trait du sujet (ex : ville d'origine)     |
 | Client Scope / Mapper   | Parchemin officiel                        |
 | Service Account (M2M)   | Automate impérial                         |
-| Annuaire LDAP           | Province alliée                           |
+| Annuaire LDAP           | Office du Maître des Registres            |
 | IDP externe (SSO)       | Ambassade étrangère                       |
 | Politique de sécurité   | Fortification                             |
 
@@ -297,29 +297,34 @@ Le service de renseignement impérial a besoin de voir la province à travers le
 
 ---
 
-### Exercice 9 — Forger une alliance avec une Province voisine
+### Exercice 9 — Déléguer au Maître des Registres
 
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-La province voisine dispose de son propre registre de population. Plutôt que de recréer tous ces comptes, Valdoria établit une alliance : les sujets de la province voisine sont reconnus automatiquement.
+Valdoria confie la gestion de ses sujets à l'**Office du Maître des Registres**, une administration provinciale qui tient à jour un annuaire centralisé (OpenLDAP). Plutôt que de recréer manuellement tous ces comptes dans Keycloak, les administrateurs connectent le registre à la province : les sujets, leurs attributs et leurs guildes sont reconnus automatiquement.
 
 **Objectifs pédagogiques**
 
-- Connecter Keycloak à un annuaire LDAP externe
-- Configurer le mapping des attributs LDAP
-- Comprendre la synchronisation et le mode lecture seule
+- Connecter Keycloak à un annuaire LDAP (User Federation)
+- Configurer les mappers d'attributs LDAP (`mail` → `email`, `l` → `villeOrigine`)
+- Mapper un groupe LDAP vers un groupe Keycloak (Group Mapper : `guilde-marchands`)
+- Mapper un groupe LDAP vers un rôle de royaume (Role Mapper : `gouverneur`)
+- Lancer une synchronisation complète et vérifier les utilisateurs fédérés
 
 **Étapes**
 
-1. Vérifier que le conteneur OpenLDAP est actif dans l'environnement Docker
+1. Vérifier que le conteneur OpenLDAP est actif et injecter les données initiales (`bootstrap.ldif`)
 2. Configurer une fédération d'utilisateurs LDAP dans le realm `valdoria`
-3. Mapper les attributs : `uid` → `username`, `mail` → `email`
-4. Lancer une synchronisation complète
-5. Vérifier qu'un utilisateur LDAP apparaît dans Keycloak
-6. Tenter de modifier cet utilisateur dans Keycloak et constater le mode lecture seule
+3. Configurer les mappers d'attributs : `mail` → `email`, `l` → `villeOrigine`
+4. Configurer le Group Mapper : groupe LDAP `guilde-marchands` → groupe Keycloak `guilde-marchands`
+5. Configurer le Role Mapper : groupe LDAP `gouverneur` → realm role `gouverneur`
+6. Lancer une synchronisation complète
+7. Vérifier `elara` dans Keycloak : rôle `sujet` (par défaut)
+8. Vérifier `thorin` via le Comptoir : token contient `marchand` et `villeOrigine: Nordheim`, accès Inventaire
+9. Vérifier `aldric` dans la console Keycloak : rôle `gouverneur` présent
 
-**Point clé** — La fédération LDAP permet d'intégrer un annuaire existant sans migration. Keycloak interroge l'annuaire en temps réel ou par synchronisation périodique.
+**Point clé** — La fédération LDAP permet d'intégrer un annuaire existant sans migration. Les mappers de groupe et de rôle permettent de convertir automatiquement la structure LDAP en autorisations Keycloak : un groupe LDAP peut devenir un groupe Keycloak (Group Mapper) ou un rôle de royaume (Role Mapper).
 
 ---
 

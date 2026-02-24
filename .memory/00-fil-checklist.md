@@ -1,7 +1,7 @@
-# Checklist fil rouge — Couverture des objectifs (Ex. 1 à 6)
+# Checklist fil rouge — Couverture des objectifs (Ex. 1 à 9)
 
-Croisement des points ● de la formation (`.memory/00-presentation.md`) avec les exercices 1 à 6.  
-**Ex. n** = exercice 1 à 6 | **Exposé** = théorie / démo | **—** = non couvert par un exo (exposé ou à prévoir).
+Croisement des points ● de la formation (`.memory/00-presentation.md`) avec les exercices 1 à 9.
+**Ex. n** = exercice 1 à 9 | **Exposé** = théorie / démo | **—** = non couvert par un exo (exposé ou à prévoir).
 
 ---
 
@@ -14,7 +14,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | ● Créer une architecture efficace IAM avec Keycloak                   | Ex. 1, 2, 3, 4 |
 | ● Comprendre les protocoles de sécurité et quand les utiliser         | Ex. 4 + Exposé |
 | ● Concevoir et configurer la gestion des rôles                        | Ex. 2, 3, 4    |
-| ● Intégrer Keycloak avec des annuaires existants                      | Exposé         |
+| ● Intégrer Keycloak avec des annuaires existants                      | Ex. 9          |
 | ● Intégrer des IDP externes (SSO)                                     | Exposé         |
 | ● Politiques de sécurité additionnelles                               | Exposé         |
 
@@ -50,7 +50,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | Point                                 | Ex. / Exposé |
 | ------------------------------------- | ------------ |
 | ● Attributs et rôles des utilisateurs | Ex. 3, 4     |
-| ● Impersonate (usage)                 | Exposé       |
+| ● Impersonate (usage)                 | Ex. 8        |
 | ● Gestion des groupes                 | Ex. 7        |
 | ● Gestion des sessions                | Ex. 2        |
 
@@ -60,8 +60,8 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 | Point                        | Ex. / Exposé |
 | ---------------------------- | ------------ |
-| ● Intégration AD / LDAP      | Exposé       |
-| ● Mapping des attributs LDAP | Exposé       |
+| ● Intégration AD / LDAP      | Ex. 9        |
+| ● Mapping des attributs LDAP | Ex. 9        |
 
 
 *(Création utilisateurs et attribution de rôles : Ex. 3.)*
@@ -92,8 +92,8 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 | Point                        | Ex. / Exposé |
 | ---------------------------- | ------------ |
-| ● Intégration AD / OpenLDAP  | Exposé       |
-| ● Mapping des attributs LDAP | Exposé       |
+| ● Intégration AD / OpenLDAP  | Ex. 9        |
+| ● Mapping des attributs LDAP | Ex. 9        |
 | ● Configuration Kerberos     | Exposé       |
 
 
@@ -125,7 +125,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 ---
 
-## Synthèse Ex. 1 à 7
+## Synthèse Ex. 1 à 9
 
 
 | Ex. | Thème                                         | Couverture                           |
@@ -137,5 +137,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | 5   | Parchemins (tokens, Debug, RBAC/ABAC)         | Test d'un client, lecture des jetons  |
 | 6   | Automate impérial (M2M)                       | Rôles de comptes de service, Client Credentials |
 | 7   | Guilde des Marchands (groupes)                | Groupes, héritage de rôles           |
+| 8   | Impersonation (support)                       | Impersonate, diagnostic de droits    |
+| 9   | Maître des Registres (LDAP)                   | Fédération LDAP, mappers attributs/groupe/rôle |
 
 
