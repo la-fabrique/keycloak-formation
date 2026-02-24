@@ -126,8 +126,7 @@ Tout habitant de Valdoria est automatiquement un sujet de la province. Configuro
 
 9. Dans la liste des **« Realm roles »**, cliquez sur le rôle **`default-roles-valdoria`**
    > Redirection vers `Realm sttings`/`User registration`
-10. Cliquez sur l'onglet **« Associated roles »**
-11. Cliquez sur **« Assign role »**
+11. Cliquez sur **« Assign role »** / **« Realm roles »** 
 12. Dans la liste qui apparaît, **cochez le rôle** `sujet`
 13. Cliquez sur **« Assign »**
 

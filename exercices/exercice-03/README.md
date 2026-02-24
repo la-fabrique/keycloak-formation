@@ -162,7 +162,7 @@ Les rôles définissent les permissions, les attributs définissent les caracté
 3. Remplissez les champs :
    - **Name :** `villeOrigine`
    - **Display :** `Ville d'origine` 
-5. Cliquez sur **« Save »**
+5. Cliquez sur **« Create »**
 
 #### 3.3 Renseigner l'attribut pour chaque utilisateur
 

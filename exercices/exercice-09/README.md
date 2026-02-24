@@ -228,13 +228,25 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 2. Dans le menu déroulant **Action** (en haut à droite), sélectionnez **Sync all users**
 3. Un message de confirmation indique le nombre d'utilisateurs importés
 
-**Point d'observation :** Les trois sujets de l'annuaire (`elara`, `thorin`, `aldric`) apparaissent désormais dans la liste des utilisateurs du realm `valdoria`.
+**Point d'observation :** Les trois sujets de l'annuaire (`elara`, `thorin`, `aldric`) apparaissent désormais dans le realm `valdoria`.
 
 ---
 
-### Étape 8 — Vérifier `elara` dans la console Keycloak
+### Étape 8 — Observer le comportement de la liste des utilisateurs
 
 1. Dans le menu de gauche, allez dans **Users**
+2. Constatez que la liste des utilisateurs n'affiche plus tous les comptes par défaut : il faut désormais **effectuer une recherche** pour afficher les résultats
+3. Tapez **`al`** dans le champ de recherche
+4. Observez les résultats : deux utilisateurs apparaissent — **`alaric`** (créé manuellement à l'exercice 3) et **`aldric`** (fédéré depuis l'annuaire LDAP)
+5. Cliquez sur **`aldric`** et observez le champ **Federation link** : il indique **Office du Maître des Registres**
+
+**Point d'observation :** Keycloak distingue visuellement les utilisateurs locaux des utilisateurs fédérés grâce au lien de fédération. Ce lien indique l'origine de l'utilisateur et le provider qui le gère.
+
+---
+
+### Étape 9 — Vérifier `elara` dans la console Keycloak
+
+1. Retournez dans **Users** et recherchez **`elara`**
 2. Cliquez sur **`elara`**
 3. Vérifiez son profil :
    - **Email** : `elara@valdoria.empire` ✅
@@ -248,7 +260,7 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 
 ---
 
-### Étape 9 — Vérifier `thorin` via le Comptoir des voyageurs
+### Étape 10 — Vérifier `thorin` via le Comptoir des voyageurs
 
 1. Ouvrez le Comptoir des voyageurs : **http://localhost:5173**
 2. Connectez-vous avec **`thorin`** / `valdoria123`
@@ -262,7 +274,7 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 
 ---
 
-### Étape 10 — Vérifier `aldric` dans la console Keycloak
+### Étape 11 — Vérifier `aldric` dans la console Keycloak
 
 1. Retournez dans la console Keycloak
 2. Dans **Users**, cliquez sur **`aldric`**

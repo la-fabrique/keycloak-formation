@@ -80,32 +80,7 @@ services:
       - openldap_config:/etc/ldap/slapd.d
     networks:
       - autheria-network
-
-  # --- LDAP Account Manager (interface d'administration OpenLDAP) ---
-  ldap-account-manager:
-    image: ghcr.io/ldapaccountmanager/lam:9.4
-    container_name: autheria-lam
-    restart: unless-stopped
-    ports:
-      - "8081:80"
-    environment:
-      LAM_PASSWORD: ${LAM_PASSWORD:-lam}
-      LAM_LANG: fr_FR
-      LAM_SKIP_PRECONFIGURE: "false"
-      LAM_CONFIGURATION_DATABASE: files
-      LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-admin}
-      LDAP_SERVER: ldap://openldap:389
-      LDAP_BASE_DN: dc=registre,dc=valdoria,dc=local
-      LDAP_USERS_DN: ou=people,dc=registre,dc=valdoria,dc=local
-      LDAP_GROUPS_DN: ou=groups,dc=registre,dc=valdoria,dc=local
-      LDAP_USER: cn=admin,dc=registre,dc=valdoria,dc=local
-    volumes:
-      - lam_config:/var/lib/ldap-account-manager/config
-    depends_on:
-      - openldap
-    networks:
-      - autheria-network
-
+  
   # --- Comptoir des voyageurs (Application front-end) ---
   comptoir:
     build:

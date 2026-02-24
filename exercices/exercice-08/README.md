@@ -92,7 +92,6 @@ Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Po
 
 1. Toujours sur la fiche de `support-imperial`, allez dans l'onglet **Role mapping**
 2. Cliquez **Assign role**
-3. Dans le filtre en haut, sélectionnez **Filter by clients**
 4. Recherchez `realm-management` dans la liste
 5. Sélectionnez le rôle **`impersonation`**
 6. Cliquez **Assign**
