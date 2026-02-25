@@ -328,28 +328,35 @@ Valdoria confie la gestion de ses sujets à l'**Office du Maître des Registres*
 
 ---
 
-### Exercice 10 — Signer un traité diplomatique
+### Exercice 10 — Signer le traité diplomatique
 
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-Valdoria ouvre une ambassade avec un empire lointain. Grâce au traité diplomatique (SSO), les sujets de cet empire peuvent entrer dans Valdoria avec leur propre identité.
+La Confédération d'Ostmark (`Ostmark`), empire marchand de l'est, signe un traité diplomatique avec Valdoria. Les sujets ostmarkiens — notamment **Ragnar**, marchand (`tradesman`) — peuvent désormais entrer dans Valdoria avec leur propre identité. Keycloak joue le rôle de broker : il délègue l'authentification à Ostmark et traduit les titres ostmarkiens en rôles valdoriens.
 
 **Objectifs pédagogiques**
 
-- Configurer un Identity Provider (IDP) externe
-- Comprendre le fonctionnement du SSO fédéré
-- Tester l'authentification déléguée
+- Créer un realm Keycloak externe (`Ostmark`) simulant un empire tiers
+- Configurer un **Identity Provider OIDC** dans Valdoria
+- Comprendre le rôle de **broker d'identité** joué par Keycloak
+- Configurer un **IDP Mapper** (`tradesman` → `marchand`)
+- Vérifier qu'un sujet ostmarkien obtient les bons droits dans Valdoria
 
 **Étapes**
 
-1. Configurer Google comme IDP externe dans le realm `valdoria` (ou, en alternative, configurer un second realm Keycloak comme IDP)
-2. Activer le bouton « Se connecter avec Google » sur la page de login
-3. Tester la connexion : un utilisateur s'authentifie via Google et obtient un compte dans Valdoria
-4. Observer le profil créé automatiquement (first login flow)
-5. Vérifier les attributs mappés depuis l'IDP externe
+1. Créer le realm `Ostmark` (La Confédération d'Ostmark) avec l'utilisateur `ragnar` et le rôle `tradesman`
+2. Créer le client `valdoria-broker` dans `Ostmark` (confidentiel, redirect URI vers le broker Valdoria)
+3. Configurer l'IDP `ostmark` (OpenID Connect) dans le realm `valdoria`
+4. Configurer l'IDP Mapper : rôle hardcodé `marchand` pour tous les sujets d'Ostmark
+5. Tester la connexion de Ragnar via le Comptoir des voyageurs → vérifier `marchand` dans le token et accès à l'inventaire
 
-**Point clé** — L'intégration d'un IDP externe permet le SSO inter-organisations. Keycloak agit comme un broker d'identité : il délègue l'authentification tout en gardant le contrôle des autorisations.
+**Lexique :**
+- `Ostmark` = La Confédération d'Ostmark
+- `ragnar` = marchand ostmarkien (mot de passe : `ostmark123`)
+- `tradesman` = titre ostmarkien → mappé vers `marchand` (valdorien)
+
+**Point clé** — Keycloak broker d'identité : il délègue l'authentification à Ostmark sans abandonner le contrôle des autorisations. Le token final est émis par Valdoria, avec les rôles valdoriens. Les IDP Mappers traduisent les identités étrangères.
 
 ---
 

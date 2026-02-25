@@ -102,8 +102,8 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 | Point                                | Ex. / Exposé |
 | ------------------------------------ | ------------ |
-| ● Configuration de l'intégration     | Exposé       |
-| ● Méthodes SSO pour les applications | Exposé       |
+| ● Configuration de l'intégration     | Ex. 10       |
+| ● Méthodes SSO pour les applications | Ex. 10       |
 
 
 ### Renforcer la sécurité
@@ -125,7 +125,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 ---
 
-## Synthèse Ex. 1 à 9
+## Synthèse Ex. 1 à 10
 
 
 | Ex. | Thème                                         | Couverture                           |
@@ -139,5 +139,6 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | 7   | Guilde des Marchands (groupes)                | Groupes, héritage de rôles           |
 | 8   | Impersonation (support)                       | Impersonate, diagnostic de droits    |
 | 9   | Maître des Registres (LDAP)                   | Fédération LDAP, mappers attributs/groupe/rôle |
+| 10  | Traité diplomatique (IDP externe)             | Identity Provider OIDC, broker, IDP Mappers |
 
 
