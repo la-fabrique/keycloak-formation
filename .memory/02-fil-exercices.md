@@ -395,13 +395,3 @@ L'empire est fonctionnel, mais vulnérable. Les administrateurs renforcent les d
 | J2 matin | Module 3 — Identités | Ex. 7 à 9 | Organiser les guildes, enrichir les laissez-passer |
 | J2 après-midi | Module 4 — Intégrations | Ex. 10 à 12 | Alliances, diplomatie et fortification |
 
----
-
-## Idées de gamification
-
-- **Cartes de titre** : distribuer des cartes physiques (voyageur, marchand, gouverneur) à chaque stagiaire pour matérialiser les attributions de rôles.
-- **Incident impérial** : injecter un problème de configuration à résoudre en équipe.
-  > *« Un voyageur accède à l'inventaire de la Réserve. Trouvez la faille et corrigez-la. »*
-- **Défi chronométré** : lancer un mini-challenge en fin de module.
-  > *« Faites en sorte que Cedric puisse consulter les artefacts de Nordheim en moins de 10 minutes. »*
-- **Parchemin récapitulatif** : chaque stagiaire maintient un journal de bord avec les commandes et configurations clés réalisées.
