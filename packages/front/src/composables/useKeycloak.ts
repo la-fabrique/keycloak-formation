@@ -151,9 +151,13 @@ async function init(): Promise<void> {
     // si l'utilisateur a déjà une session SSO active dans Keycloak.
     // Si oui → il est automatiquement reconnecté sans voir la page de login.
     // Si non → l'app s'affiche en mode non connecté (pas de redirection forcée).
+    // redirectUri : sans cela, keycloak-js utilise par défaut l'URL courante (ex. http://localhost:5173/)
+    // comme redirect_uri pour le check-sso, ce qui oblige à autoriser toutes les routes dans Keycloak.
+    // En fixant /callback, check-sso et login() utilisent la même URI → une seule à déclarer côté realm.
     const initSuccess = await keycloakInstance.init({
       onLoad: 'check-sso',
-      checkLoginIframe: false // Désactivé pour simplifier la config en environnement de formation. Nécessite que Keycloak et App soient dans le même domaine
+      checkLoginIframe: false, // Désactivé pour simplifier la config en environnement de formation. Nécessite que Keycloak et App soient dans le même domaine
+      redirectUri: `${window.location.origin}/callback`
     })
 
     if (initSuccess) {

@@ -8,7 +8,7 @@
 
 À l'issue de cet exercice, vous serez capable de :
 
-- Créer un **realm externe** simulant un empire tiers (`OtherAuth` — La Confédération d'Ostmark)
+- Créer un **realm externe** simulant un empire tiers (`Ostmark` — La Confédération d'Ostmark)
 - Configurer un **Identity Provider OIDC** dans Valdoria pour déléguer l'authentification à Ostmark
 - Comprendre le rôle de **broker d'identité** joué par Keycloak
 - Configurer un **IDP Mapper** pour traduire un rôle étranger (`tradesman`) en rôle local (`marchand`)
@@ -37,7 +37,7 @@
 
 > La Province de Valdoria a bâti son système d'identité de toutes pièces : ses guildes, ses registres, ses automates impériaux. Mais le monde ne s'arrête pas aux frontières de l'empire.
 >
-> Une délégation arrive de la **Confédération d'Ostmark** (`OtherAuth`), empire marchand de l'est. Ses sujets disposent déjà de leurs propres laissez-passer ostmarkiens — il serait fastidieux de les obliger à recréer un compte dans Valdoria.
+> Une délégation arrive de la **Confédération d'Ostmark** (`Ostmark`), empire marchand de l'est. Ses sujets disposent déjà de leurs propres laissez-passer ostmarkiens — il serait fastidieux de les obliger à recréer un compte dans Valdoria.
 >
 > Les deux empires signent un **traité diplomatique** : désormais, tout sujet d'Ostmark peut se présenter au Comptoir des voyageurs avec son identité ostmarkienne. Valdoria délègue l'authentification à l'ambassade d'Ostmark, tout en conservant le contrôle de ses propres autorisations.
 >
@@ -60,7 +60,7 @@ Comptoir des voyageurs (Valdoria)
         │
         │  redirect vers l'ambassade
         ▼
-Keycloak realm OtherAuth  ←── authentification réelle ici
+Keycloak realm Ostmark  ←── authentification réelle ici
         │
         │  token ostmarkien (contient : tradesman)
         ▼
@@ -88,7 +88,7 @@ Un **IDP Mapper** permet de traduire des informations contenues dans le token d'
 
 ## Étapes
 
-### Étape 1 — Créer le realm `OtherAuth` (La Confédération d'Ostmark)
+### Étape 1 — Créer le realm `Ostmark` (La Confédération d'Ostmark)
 
 Ce realm simule l'empire tiers. Il sera l'IDP externe de Valdoria.
 
@@ -96,22 +96,22 @@ Ce realm simule l'empire tiers. Il sera l'IDP externe de Valdoria.
 2. Assurez-vous d'être dans le realm **master** (menu déroulant en haut à gauche)
 3. Cliquez sur le menu déroulant des realms, puis **Create realm**
 4. Renseignez :
-   - **Realm name** : `OtherAuth`
+   - **Realm name** : `Ostmark`
    - **Display name** : `La Confédération d'Ostmark`
 5. Cliquez **Create**
 
 ---
 
-### Étape 2 — Créer le sujet de test `ragnar` dans `OtherAuth`
+### Étape 2 — Créer le sujet de test `ragnar` dans `Ostmark`
 
-1. Sélectionnez le realm **OtherAuth**
+1. Sélectionnez le realm **Ostmark**
 2. Dans le menu de gauche, allez dans **Users**
 3. Cliquez **Create new user**
 4. Renseignez :
    - **Username** : `ragnar`
    - **Email** : `ragnar@ostmark.conf`
    - **First name** : Ragnar
-   - **Last name** : Ostmark
+   - **Last name** : The tradesman
    - **Email verified** : ON
 5. Cliquez **Create**
 6. Allez dans l'onglet **Credentials**
@@ -122,7 +122,7 @@ Ce realm simule l'empire tiers. Il sera l'IDP externe de Valdoria.
 
 ### Étape 3 — Attribuer le rôle `tradesman` à Ragnar
 
-1. Toujours dans le realm **OtherAuth**, allez dans **Realm roles**
+1. Toujours dans le realm **Ostmark**, allez dans **Realm roles**
 2. Cliquez **Create role**
 3. Renseignez :
    - **Role name** : `tradesman`
@@ -138,7 +138,7 @@ Ce realm simule l'empire tiers. Il sera l'IDP externe de Valdoria.
 
 Valdoria doit s'enregistrer comme client auprès d'Ostmark pour pouvoir lui déléguer l'authentification.
 
-1. Toujours dans le realm **OtherAuth**, allez dans **Clients**
+1. Toujours dans le realm **Ostmark**, allez dans **Clients**
 2. Cliquez **Create client**
 3. Renseignez :
 
@@ -146,14 +146,32 @@ Valdoria doit s'enregistrer comme client auprès d'Ostmark pour pouvoir lui dél
    |-----------|--------|
    | **Client type** | `OpenID Connect` |
    | **Client ID** | `valdoria-broker` |
+   | **Name** | `Valdoria Broker` |
+   | **Description** | `Client utilisé par Valdoria pour déléguer l'authentification à Ostmark` |
 
 4. Cliquez **Next**
-5. Activez **Client authentication** (ON) → le client sera confidentiel
+5. Configurez les options de capacité :
+
+   | Option | Valeur | Raison |
+   |--------|--------|--------|
+   | **Client authentication** | `ON` | Client confidentiel (avec secret) |
+   | **Standard flow** | `ON` | Nécessaire pour le flux Authorization Code utilisé par le broker |
+   | **Direct access grants** | `OFF` | Pas de connexion directe par identifiant/mot de passe |
+   | **Implicit flow** | `OFF` | Non recommandé, le standard flow suffit |
+   | **Service accounts roles** | `OFF` | Pas d'appel machine-to-machine nécessaire |
+   | **OAuth 2.0 Device Authorization Grant** | `OFF` | Non utilisé |
+   | **OIDC CIBA Grant** | `OFF` | Non utilisé |
+
 6. Cliquez **Next**
-7. Dans **Valid redirect URIs**, ajoutez :
-   ```
-   http://localhost:8080/realms/valdoria/broker/ostmark/endpoint
-   ```
+7. Renseignez les URLs d'accès :
+
+   | Paramètre | Valeur |
+   |-----------|--------|
+   | **Root URL** | `` |
+   | **Home URL** | `` |
+   | **Valid redirect URIs** | `http://localhost:8080/realms/valdoria/broker/ostmark/endpoint/logout_response` |
+   | **Web origins** | `http://localhost:8080` |
+
 8. Cliquez **Save**
 9. Allez dans l'onglet **Credentials** et **copiez le Client Secret** — vous en aurez besoin à l'étape suivante.
 
@@ -170,27 +188,24 @@ Valdoria doit s'enregistrer comme client auprès d'Ostmark pour pouvoir lui dél
    |-----------|--------|
    | **Alias** | `ostmark` |
    | **Display name** | `La Confédération d'Ostmark` |
-   | **Discovery endpoint** | `http://keycloak:8080/realms/OtherAuth/.well-known/openid-configuration` |
+   | **Discovery endpoint** | `http://localhost:8080/realms/Ostmark/.well-known/openid-configuration` |
 
-5. Cliquez sur **Import** (ou **Import external IdP config**) pour charger automatiquement les URLs depuis le Discovery endpoint
+   > **Observation :** Si le Discovery endpoint est correctement renseigné, Keycloak complète automatiquement les métadonnées du provider (Authorization URL, Token URL, etc.). Vous pouvez le vérifier en cliquant sur **Show metadata**.
 
-   > **Si l'import automatique échoue** (résolution DNS), renseignez manuellement :
-   > - **Authorization URL** : `http://localhost:8080/realms/OtherAuth/protocol/openid-connect/auth`
-   > - **Token URL** : `http://localhost:8080/realms/OtherAuth/protocol/openid-connect/token`
-   > - **Issuer** : `http://localhost:8080/realms/OtherAuth`
-
-6. Renseignez ensuite :
+5. Renseignez ensuite :
 
    | Paramètre | Valeur |
    |-----------|--------|
    | **Client ID** | `valdoria-broker` |
    | **Client Secret** | *(le secret copié à l'étape 4)* |
-   | **Client Authentication** | `Client secret sent as post` |
+   | **Client Authentication** | `Client secret sent in the request body` |
+
+8. Cliquez **Add**
 
 7. Dans la section **Advanced** :
    - **Trust Email** : ON (pour éviter une vérification email au premier login)
 
-8. Cliquez **Add**
+8. Cliquez **Save**
 
 **Vérification :**
 
@@ -198,11 +213,25 @@ Valdoria doit s'enregistrer comme client auprès d'Ostmark pour pouvoir lui dél
 2. Déconnectez-vous si vous êtes connecté, puis cliquez **Se connecter**
 3. Sur la page de login Keycloak, vérifiez qu'un bouton **La Confédération d'Ostmark** est apparu
 
-**Point d'observation :** Valdoria reconnaît désormais l'ambassade d'Ostmark. Mais si Ragnar se connecte maintenant, il n'obtiendra que le rôle `sujet` par défaut — le traité ne prévoit pas encore la traduction des titres ostmarkiens.
+**Point d'observation :** Valdoria reconnaît désormais l'ambassade d'Ostmark. Si Ragnar se connecte maintenant, il n'obtiendra que le rôle `sujet` par défaut — le traité ne prévoit pas encore la traduction des titres ostmarkiens.
 
 ---
 
-### Étape 6 — Configurer l'IDP Mapper (`tradesman` → `marchand`)
+### Étape 6 — Exposer les rôles dans l'ID Token (realm Ostmark)
+
+Par défaut, Keycloak inclut les rôles dans l'**access token** mais pas dans l'**ID token**. Or, l'Identity Provider Mapper de Valdoria se base sur l'ID token pour lire les rôles d'Ostmark. Il faut donc activer cette option.
+
+1. Basculez sur le realm **Ostmark**
+2. Allez dans **Client scopes** → cliquez sur **`roles`**
+3. Allez dans l'onglet **Mappers** → cliquez sur **`realm roles`**
+4. Passez **Add to ID token** sur `ON`
+5. Cliquez **Save**
+
+> **Pourquoi cette étape ?** Le mapper `Claim to Role` de Valdoria inspecte le claim `realm_access.roles` de l'ID token reçu d'Ostmark. Sans cette option, ce claim est absent de l'ID token et le mapping de rôle ne fonctionne pas.
+
+---
+
+### Étape 7 — Configurer l'IDP Mapper (`tradesman` → `marchand`)
 
 1. Dans le realm **valdoria**, allez dans **Identity providers**
 2. Cliquez sur **`ostmark`** pour ouvrir sa configuration
@@ -213,23 +242,25 @@ Valdoria doit s'enregistrer comme client auprès d'Ostmark pour pouvoir lui dél
    | Paramètre | Valeur |
    |-----------|--------|
    | **Name** | `tradesman-vers-marchand` |
-   | **Sync mode override** | `Inherit` |
-   | **Mapper type** | `Hardcoded Role` |
+   | **Sync mode override** | `Force` |
+   | **Mapper type** | `Claim to Role` |
+   | **Claim** | `realm_access.roles` |
+   | **Claim Value** | `tradesman` |
    | **Role** | `marchand` |
 
 6. Cliquez **Save**
 
-> **Comment fonctionne ce mapper ?** À chaque connexion via l'IDP `ostmark`, Keycloak attribue automatiquement le rôle `marchand` à l'utilisateur fédéré. Dans un cas réel, on utiliserait un mapper de type **Role** conditionnel basé sur un claim du token. Ici, pour simplifier, on attribue le rôle à tous les sujets d'Ostmark — ce qui représente bien le traité : Ostmark ne fait transiter que ses marchands vers Valdoria.
+> **Comment fonctionne ce mapper ?** Lorsqu'un utilisateur se connecte via l'IDP `ostmark`, Keycloak inspecte le claim `realm_access.roles` de l'ID token reçu. Si ce claim contient la valeur `tradesman`, le rôle local `marchand` est attribué à l'utilisateur dans Valdoria. Ainsi, seuls les marchands d'Ostmark obtiennent les privilèges marchands — conformément au traité.
 
 ---
 
-### Étape 7 — Tester le traité : connexion de Ragnar
+### Étape 8 — Tester le traité : connexion de Ragnar
 
 1. Ouvrez le Comptoir des voyageurs : **http://localhost:5173**
 2. Déconnectez-vous si une session est active
 3. Cliquez **Se connecter**
 4. Sur la page de login Keycloak, cliquez sur **La Confédération d'Ostmark**
-5. Vous êtes redirigé vers la page de login du realm `OtherAuth`
+5. Vous êtes redirigé vers la page de login du realm `Ostmark`
 6. Connectez-vous avec **`ragnar`** / `ostmark123`
 7. Keycloak redirige automatiquement vers le Comptoir des voyageurs
 
@@ -270,20 +301,26 @@ Valdoria doit s'enregistrer comme client auprès d'Ostmark pour pouvoir lui dél
 
 Les sujets ostmarkiens peuvent également transmettre leur ville d'origine. Configurons un mapper d'attribut pour que `city` dans le token Ostmark alimente `villeOrigine` dans Valdoria.
 
-#### Ajouter l'attribut `city` à Ragnar dans `OtherAuth`
+#### Déclarer l'attribut `city` dans le profil utilisateur d'`Ostmark`
 
-1. Dans le realm **OtherAuth**, allez dans **Users**, cliquez sur **ragnar**
-2. Allez dans l'onglet **Attributes**
-3. Ajoutez l'attribut :
-   - **Key** : `city`
-   - **Value** : `Ostheim`
+1. Dans le realm **Ostmark**, allez dans **Realm settings**
+2. Allez dans l'onglet **User profile**
+3. Cliquez **Create attribute**
+4. Renseignez :
+   - **Attribute name** : `city`
+5. Cliquez **Save**
+
+#### Renseigner l'attribut `city` à Ragnar
+
+1. Dans le realm **Ostmark**, allez dans **Users**, cliquez sur **ragnar**
+2. Mettre à jour **City** : `Ostheim`
 4. Cliquez **Save**
 
 #### Configurer le mapper `city` dans le client `valdoria-broker`
 
 Pour que `city` soit inclus dans le token envoyé par Ostmark à Valdoria, il faut créer un mapper côté client.
 
-1. Dans le realm **OtherAuth**, allez dans **Clients**, cliquez sur **`valdoria-broker`**
+1. Dans le realm **Ostmark**, allez dans **Clients**, cliquez sur **`valdoria-broker`**
 2. Allez dans l'onglet **Client scopes**
 3. Cliquez sur **`valdoria-broker-dedicated`**
 4. Dans l'onglet **Mappers**, cliquez **Configure a new mapper**
@@ -309,7 +346,7 @@ Pour que `city` soit inclus dans le token envoyé par Ostmark à Valdoria, il fa
    | Paramètre | Valeur |
    |-----------|--------|
    | **Name** | `city-vers-villeOrigine` |
-   | **Sync mode override** | `Inherit` |
+   | **Sync mode override** | `Force` |
    | **Mapper type** | `Attribute Importer` |
    | **Claim** | `city` |
    | **User Attribute Name** | `villeOrigine` |
@@ -322,8 +359,6 @@ Pour que `city` soit inclus dans le token envoyé par Ostmark à Valdoria, il fa
    > La reconnexion est nécessaire pour que le mapper s'applique à la session.
 2. Dans la page **Debug**, vérifiez que l'access token contient désormais :
    - **`villeOrigine`** : `Ostheim` ✅
-3. Naviguez vers `/villes/ostheim/artefacts` via la page **Artefacts** du Comptoir
-4. Ragnar accède aux artefacts d'Ostheim ✅ (ABAC : rôle `marchand` + `villeOrigine` correspondante)
 
 **Point d'observation :** L'ABAC fonctionne de bout en bout, même pour un utilisateur fédéré. La ville d'Ostheim n'existe pas dans Valdoria — mais la Réserve ne vérifie que le claim `villeOrigine` du token, indépendamment de son origine.
 
@@ -338,4 +373,4 @@ Pour que `city` soit inclus dans le token envoyé par Ostmark à Valdoria, il fa
 | Ragnar n'a pas le rôle `marchand` après connexion | Le mapper `tradesman-vers-marchand` n'est pas configuré | Vérifiez l'onglet **Mappers** de l'IDP `ostmark` (étape 6) |
 | Erreur **Invalid redirect URI** lors de la connexion Ostmark | L'URI de redirection du client `valdoria-broker` est incorrecte | Vérifiez que `http://localhost:8080/realms/valdoria/broker/ostmark/endpoint` est dans les **Valid redirect URIs** du client (étape 4) |
 | Ragnar n'est pas créé dans Valdoria après connexion | Problème de first login flow | Vérifiez dans **Authentication > Flows** que le flow **First Broker Login** est actif |
-| `villeOrigine` absent du token (Pour aller plus loin) | Le mapper côté `OtherAuth` n'inclut pas `city` dans le token | Vérifiez le mapper dans le client `valdoria-broker` (onglet Client scopes) |
+| `villeOrigine` absent du token (Pour aller plus loin) | Le mapper côté `Ostmark` n'inclut pas `city` dans le token | Vérifiez le mapper dans le client `valdoria-broker` (onglet Client scopes) |

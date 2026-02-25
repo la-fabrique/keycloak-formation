@@ -333,11 +333,11 @@ Valdoria confie la gestion de ses sujets à l'**Office du Maître des Registres*
 **Module 4 — Intégrations externes et durcissement**
 
 **Contexte narratif**
-La Confédération d'Ostmark (`OtherAuth`), empire marchand de l'est, signe un traité diplomatique avec Valdoria. Les sujets ostmarkiens — notamment **Ragnar**, marchand (`tradesman`) — peuvent désormais entrer dans Valdoria avec leur propre identité. Keycloak joue le rôle de broker : il délègue l'authentification à Ostmark et traduit les titres ostmarkiens en rôles valdoriens.
+La Confédération d'Ostmark (`Ostmark`), empire marchand de l'est, signe un traité diplomatique avec Valdoria. Les sujets ostmarkiens — notamment **Ragnar**, marchand (`tradesman`) — peuvent désormais entrer dans Valdoria avec leur propre identité. Keycloak joue le rôle de broker : il délègue l'authentification à Ostmark et traduit les titres ostmarkiens en rôles valdoriens.
 
 **Objectifs pédagogiques**
 
-- Créer un realm Keycloak externe (`OtherAuth`) simulant un empire tiers
+- Créer un realm Keycloak externe (`Ostmark`) simulant un empire tiers
 - Configurer un **Identity Provider OIDC** dans Valdoria
 - Comprendre le rôle de **broker d'identité** joué par Keycloak
 - Configurer un **IDP Mapper** (`tradesman` → `marchand`)
@@ -345,14 +345,14 @@ La Confédération d'Ostmark (`OtherAuth`), empire marchand de l'est, signe un t
 
 **Étapes**
 
-1. Créer le realm `OtherAuth` (La Confédération d'Ostmark) avec l'utilisateur `ragnar` et le rôle `tradesman`
-2. Créer le client `valdoria-broker` dans `OtherAuth` (confidentiel, redirect URI vers le broker Valdoria)
+1. Créer le realm `Ostmark` (La Confédération d'Ostmark) avec l'utilisateur `ragnar` et le rôle `tradesman`
+2. Créer le client `valdoria-broker` dans `Ostmark` (confidentiel, redirect URI vers le broker Valdoria)
 3. Configurer l'IDP `ostmark` (OpenID Connect) dans le realm `valdoria`
 4. Configurer l'IDP Mapper : rôle hardcodé `marchand` pour tous les sujets d'Ostmark
 5. Tester la connexion de Ragnar via le Comptoir des voyageurs → vérifier `marchand` dans le token et accès à l'inventaire
 
 **Lexique :**
-- `OtherAuth` = La Confédération d'Ostmark
+- `Ostmark` = La Confédération d'Ostmark
 - `ragnar` = marchand ostmarkien (mot de passe : `ostmark123`)
 - `tradesman` = titre ostmarkien → mappé vers `marchand` (valdorien)
 
