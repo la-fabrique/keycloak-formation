@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "c4-architecture@claude-code-workflows": true
+  }
+}
