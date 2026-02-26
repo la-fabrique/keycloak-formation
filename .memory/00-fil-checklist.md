@@ -1,7 +1,7 @@
-# Checklist fil rouge — Couverture des objectifs (Ex. 1 à 9)
+# Checklist fil rouge — Couverture des objectifs (Ex. 1 à 11)
 
-Croisement des points ● de la formation (`.memory/00-presentation.md`) avec les exercices 1 à 9.
-**Ex. n** = exercice 1 à 9 | **Exposé** = théorie / démo | **—** = non couvert par un exo (exposé ou à prévoir).
+Croisement des points ● de la formation (`.memory/00-presentation.md`) avec les exercices 1 à 11.
+**Ex. n** = exercice 1 à 11 | **Exposé** = théorie / démo | **—** = non couvert par un exo (exposé ou à prévoir).
 
 ---
 
@@ -15,8 +15,8 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | ● Comprendre les protocoles de sécurité et quand les utiliser         | Ex. 4 + Exposé |
 | ● Concevoir et configurer la gestion des rôles                        | Ex. 2, 3, 4    |
 | ● Intégrer Keycloak avec des annuaires existants                      | Ex. 9          |
-| ● Intégrer des IDP externes (SSO)                                     | Exposé         |
-| ● Politiques de sécurité additionnelles                               | Exposé         |
+| ● Intégrer des IDP externes (SSO)                                     | Ex. 10         |
+| ● Politiques de sécurité additionnelles                               | Ex. 11         |
 
 
 ---
@@ -111,8 +111,8 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 | Point                                     | Ex. / Exposé |
 | ----------------------------------------- | ------------ |
-| ● Politiques et exigences de mot de passe | Exposé       |
-| ● MFA et autres mesures                   | Exposé       |
+| ● Politiques et exigences de mot de passe | Ex. 11       |
+| ● MFA et autres mesures                   | Ex. 11       |
 
 
 ### Bonus
@@ -125,7 +125,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 
 ---
 
-## Synthèse Ex. 1 à 10
+## Synthèse Ex. 1 à 11
 
 
 | Ex. | Thème                                         | Couverture                           |
@@ -140,5 +140,6 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | 8   | Impersonation (support)                       | Impersonate, diagnostic de droits    |
 | 9   | Maître des Registres (LDAP)                   | Fédération LDAP, mappers attributs/groupe/rôle |
 | 10  | Traité diplomatique (IDP externe)             | Identity Provider OIDC, broker, IDP Mappers |
+| 11  | Fortifier les murailles (durcissement)        | Politique MDP, WebAuthn MFA, détection force brute |
 
 
