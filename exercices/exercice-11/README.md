@@ -93,7 +93,7 @@ Keycloak détecte les tentatives d'attaque par force brute (essais répétés de
    | Règle | Valeur |
    |-------|--------|
    | **Minimum length** | `8` |
-   | **Upper case** | `1` |
+   | **Uppercase Characters** | `1` |
    | **Digits** | `1` |
    | **Special characters** | `1` |
 
@@ -119,12 +119,21 @@ Keycloak détecte les tentatives d'attaque par force brute (essais répétés de
 2. Cliquez sur l'onglet **Policies**, puis **WebAuthn Policy**
 3. Vérifiez que les paramètres sont les suivants (valeurs par défaut suffisantes) :
 
-   | Paramètre | Valeur |
-   |-----------|--------|
-   | **Relying Party Name** | `keycloak` |
-   | **Signature Algorithms** | `ES256` |
-   | **Attestation Conveyance Preference** | `none` |
-   | **User Verification Requirement** | `preferred` |
+   | Paramètre | Valeur | Commentaire |
+   |-----------|--------|-------------|
+   | **Relying Party Name** | `Valdoria WebAuthn` | Nom affiché à l'utilisateur lors de l'enregistrement de la clé |
+   | **Relying Party ID** | _(vide)_ | Domaine associé à la clé ; vide = domaine courant du serveur |
+   | **Signature Algorithms** | `ES256`, `RS256` | Algorithmes acceptés pour signer le challenge |
+   | **Attestation Conveyance Preference** | `none` | Ne demande pas de preuve d'authenticité du device |
+   | **Authenticator Attachment** | _(not specified)_ | Pas de restriction : clé USB, Touch ID, Windows Hello… |
+   | **Require Discoverable Credential** | _(not specified)_ | Si activé, la clé peut identifier l'utilisateur sans login préalable |
+   | **User Verification Requirement** | `preferred` | Demande un PIN ou biométrie si le device le supporte |
+   | **Timeout** | _(vide)_  | Délai en secondes pour l'enregistrement ; 0 = valeur par défaut du navigateur |
+   | **Avoid Same Authenticator Registration** | `disabled` | Autorise l'enregistrement multiple du même authenticator |
+   | **Acceptable AAGUIDs** | _(vide)_ | Liste blanche de modèles d'authenticator autorisés ; vide = tous acceptés |
+   | **Extra Origins** | _(vide)_ | Origines supplémentaires autorisées pour les requêtes WebAuthn |
+
+> ES256 est plus récent, mais il est possible de conserver le RS256 qui est plus largement supporté. 
 
 4. Cliquez **Save**
 
@@ -133,22 +142,19 @@ Keycloak détecte les tentatives d'attaque par force brute (essais répétés de
 1. Dans le menu de gauche, allez dans **Authentication**
 2. Cliquez sur l'onglet **Flows**
 3. Cliquez sur **browser** pour ouvrir le flux de connexion par défaut
-4. Cliquez **Duplicate** (en haut à droite) pour créer une copie modifiable
-   - Nommez-la `browser-mfa`, cliquez **Duplicate**
-5. Dans le flux `browser-mfa`, localisez l'étape **Browser - Conditional OTP**
-6. Cliquez sur les **trois points** à droite de cette étape → **Delete**
-7. Cliquez sur **Add step** au niveau de **Browser Forms** (le sous-flux)
+4. Cliquez **Actions-** - **Duplicate** (en haut à droite) pour créer une copie modifiable
+   - Nommez-la `browser-valdoria`, cliquez **Duplicate**
+5. Dans le flux `browser-valdoria`, localisez le sous-flux **browser-valdoria Browser - Conditional 2FA**
+6. Cliquez sur les **Delete** à droite de cette étape
+7. Cliquez sur **Add** - **Add execution** au niveau de **browser-valdoria forms** (le sous-flux)
 8. Dans la liste, sélectionnez **WebAuthn Authenticator**, cliquez **Add**
 9. Définissez son niveau comme **Required**
 
    > **Résultat :** après le mot de passe, Keycloak exigera systématiquement une validation WebAuthn.
 
-10. Cliquez **Save**
-
 #### Activer le nouveau flux sur le realm
 
-1. Toujours dans **Authentication**, allez dans l'onglet **Bindings**
-2. Pour **Browser flow**, sélectionnez **`browser-mfa`** dans le menu déroulant
+10. Cliquez sur **Actions-** - **Bind flow** (en haut à droite), sélectionnez **`Browser flow`** dans le menu déroulant
 3. Cliquez **Save**
 
 ---
@@ -159,11 +165,11 @@ Keycloak détecte les tentatives d'attaque par force brute (essais répétés de
 2. Déconnectez-vous si une session est active
 3. Cliquez **Se connecter**
 4. Connectez-vous avec **`alaric`** / `valdoria123`
-5. Keycloak affiche une page **Register Security Key** (enregistrement WebAuthn)
+5. Keycloak affiche une page **PasskeyRegistration** (enregistrement WebAuthn)
 6. Cliquez **Register**
 7. Le navigateur ouvre une fenêtre de sélection d'authentificateur :
-   - **Sur smartphone** : choisissez l'option permettant de scanner un QR code ou d'utiliser votre téléphone comme authentificateur, puis validez avec votre biométrie ou PIN d'écran de verrouillage
-   - **Sur ordinateur avec capteur intégré** : validez avec Touch ID ou Windows Hello si disponible
+   - **Sur ordinateur avec capteur intégré** : validez avec Touch ID ou Windows Hello si disponible,
+   - **Sinon** : Un QR code s'affiche pour valider avec votre smartphone
 8. Une fois l'enregistrement confirmé, donnez un nom à la clé (ex : `Mon téléphone`) et validez
 9. Keycloak vous connecte au Comptoir des voyageurs ✅
 
@@ -194,15 +200,14 @@ Keycloak détecte les tentatives d'attaque par force brute (essais répétés de
 1. Dans la console Keycloak, realm **valdoria**
 2. Dans le menu de gauche, allez dans **Realm settings**
 3. Cliquez sur l'onglet **Security defenses**
-4. Dans la section **Brute force detection**, activez **Enabled**
+4. Dans la section **Brute force mode**, selectionnez **Lockout permanently**
 5. Configurez les paramètres suivants :
 
    | Paramètre | Valeur | Explication |
    |-----------|--------|-------------|
    | **Max login failures** | `5` | Nombre de tentatives échouées avant verrouillage |
-   | **Wait increment** | `30 Seconds` | Durée initiale de verrouillage |
-   | **Max wait** | `5 Minutes` | Durée maximale de verrouillage |
-   | **Failure reset time** | `15 Minutes` | Délai avant remise à zéro du compteur d'échecs |
+   | **Quick login check milliseconds** | `1000` | Fenêtre (ms) pour détecter un login trop rapide (bot) |
+   | **Minimum quick login wait** | `1 Minute` | Durée de verrouillage si deux tentatives en moins de 1000 ms |
 
 6. Cliquez **Save**
 
@@ -214,13 +219,13 @@ Keycloak détecte les tentatives d'attaque par force brute (essais répétés de
 2. Cliquez **Se connecter**
 3. Entrez **`cedric`** comme nom d'utilisateur
 4. Entrez un **mauvais mot de passe** et validez — répétez **5 fois**
-5. Constatez que Keycloak affiche un message d'erreur de verrouillage ✅
+5. Keycloak continue d'afficher le même message d'erreur générique (`Invalid username or password`) — c'est volontaire pour ne pas révéler à un attaquant que le compte est verrouillé
 
 **Vérification dans la console d'administration :**
 
 1. Retournez dans la console Keycloak, realm **valdoria**
 2. Allez dans **Users**, cliquez sur **cedric**
-3. L'onglet **Details** affiche **User enabled : OFF** (ou une indication de verrouillage) ✅
+3. L'onglet **Details** affiche **User enabled : OFF** — le compte est bien verrouillé ✅
 
 **Débloquer un utilisateur verrouillé :**
 
@@ -240,11 +245,11 @@ Keycloak détecte les tentatives d'attaque par force brute (essais répétés de
 ---
 
 ## Dépannage
-
+browser-valdoria
 | Problème | Cause probable | Solution |
 |----------|---------------|----------|
 | Le mot de passe faible est accepté | La politique n'a pas été sauvegardée | Vérifiez dans **Authentication > Policies > Password policy** que les règles sont bien listées |
-| La page d'enregistrement WebAuthn n'apparaît pas après le mot de passe | Le flux `browser-mfa` n'est pas activé dans les Bindings | Vérifiez **Authentication > Bindings > Browser flow** |
+| La page d'enregistrement WebAuthn n'apparaît pas après le mot de passe | Le flux `browser-valdoria` n'est pas activé dans les Bindings | Vérifiez **Authentication > Bindings > Browser flow** |
 | Le navigateur ne propose pas d'authentificateur WebAuthn | Version de navigateur trop ancienne ou contexte non-HTTPS | Sur localhost, WebAuthn fonctionne sans HTTPS ; mettez à jour le navigateur |
 | Le smartphone n'apparaît pas comme option | Le navigateur du PC et le smartphone ne sont pas sur le même réseau | Utilisez un navigateur Chrome récent et assurez-vous que la connexion Bluetooth ou réseau local est active |
 | Le compte n'est pas verrouillé après 5 échecs | La détection de force brute n'est pas sauvegardée | Vérifiez **Realm settings > Security defenses > Brute force detection > Enabled** |
