@@ -1,0 +1,314 @@
+openapi: 3.1.0
+info:
+  title: Réserve de Valdoria API
+  description: >
+    Protected REST API demonstrating Keycloak-based JWT authentication,
+    role-based access control (RBAC), and attribute-based access control (ABAC)
+    for the Keycloak formation exercises. All protected endpoints require a valid
+    Bearer token issued by the Keycloak `valdoria` realm with audience
+    `reserve-valdoria`.
+  version: 1.0.0
+  contact:
+    name: Keycloak Formation
+
+servers:
+  - url: http://localhost:3001
+    description: Local Docker Compose environment
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        JWT access token issued by Keycloak (`valdoria` realm, audience
+        `reserve-valdoria`). Must be obtained via Authorization Code + PKCE
+        (browser) or Client Credentials (M2M) flow.
+
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+          example: ok
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-02-26T10:00:00.000Z"
+
+    InfoResponse:
+      type: object
+      required:
+        - nom
+        - id
+        - description
+      properties:
+        nom:
+          type: string
+          example: Réserve de Valdoria
+        id:
+          type: string
+          example: reserve-valdoria
+        description:
+          type: string
+          example: API protégée de la Réserve de Valdoria
+
+    InventaireItem:
+      type: object
+      required:
+        - id
+        - nom
+        - quantite
+        - unite
+      properties:
+        id:
+          type: string
+          example: epices-rares
+        nom:
+          type: string
+          example: Épices rares de l'Est
+        quantite:
+          type: integer
+          example: 150
+        unite:
+          type: string
+          example: sacs
+
+    InventaireResponse:
+      type: object
+      required:
+        - inventaire
+        - total
+      properties:
+        inventaire:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventaireItem'
+        total:
+          type: integer
+          example: 5
+
+    Artefact:
+      type: object
+      required:
+        - id
+        - nom
+        - description
+      properties:
+        id:
+          type: string
+          example: relique-ancienne
+        nom:
+          type: string
+          example: Relique ancienne
+        description:
+          type: string
+          example: Artefact mystérieux d'origine inconnue
+
+    ArtefactsResponse:
+      type: object
+      required:
+        - ville
+        - artefacts
+        - total
+      properties:
+        ville:
+          type: string
+          example: valdoria
+        artefacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artefact'
+        total:
+          type: integer
+          example: 3
+
+    ErrorUnauthorized:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: Unauthorized
+        message:
+          type: string
+          example: Token d'authentification manquant ou invalide
+
+    ErrorForbidden:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: Forbidden
+        message:
+          type: string
+          example: Rôle insuffisant pour accéder à cette ressource
+
+    ErrorCityNotFound:
+      type: object
+      required:
+        - error
+        - message
+        - villes_disponibles
+      properties:
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Ville inconnue
+        villes_disponibles:
+          type: array
+          items:
+            type: string
+          example:
+            - valdoria
+            - ostmark
+            - nordheim
+
+paths:
+  /health:
+    get:
+      summary: Liveness health check
+      description: >
+        Unauthenticated endpoint returning the API liveness status. Used by
+        Docker health probes and monitoring tooling. No token required.
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: API is running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /info:
+    get:
+      summary: API identification metadata
+      description: >
+        Returns identifying information about the API. Requires a valid Keycloak
+        JWT with at minimum the `sujet` realm role.
+      operationId: getInfo
+      tags:
+        - Public
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: API metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfoResponse'
+        '401':
+          description: Missing or invalid Bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: Token valid but `sujet` role absent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+
+  /inventaire:
+    get:
+      summary: Full trade goods inventory
+      description: >
+        Returns the complete list of trade goods held in the Réserve de
+        Valdoria. Requires the `marchand` role or the `gouverneur` composite
+        role (which inherits `marchand`).
+      operationId: getInventaire
+      tags:
+        - Inventory
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Inventory list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventaireResponse'
+        '401':
+          description: Missing or invalid Bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: Token valid but `marchand` role absent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+
+  /villes/{ville}/artefacts:
+    get:
+      summary: Artifacts for a specific city
+      description: >
+        Returns the list of artifacts associated with a specific city. Subject
+        to both RBAC (`marchand` role required) and ABAC (the `villeOrigine`
+        claim in the JWT must match the `:ville` path parameter). Users holding
+        the `gouverneur` role bypass the ABAC check and may access any city.
+        Returns a structured 404 with the list of valid city keys when the
+        requested city is unknown.
+      operationId: getVilleArtefacts
+      tags:
+        - Artifacts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: ville
+          in: path
+          required: true
+          description: >
+            City key. Must match one of the known cities in the dataset.
+            The user's `villeOrigine` JWT claim must equal this value unless the
+            user holds the `gouverneur` role.
+          schema:
+            type: string
+            example: valdoria
+      responses:
+        '200':
+          description: Artifacts for the requested city
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtefactsResponse'
+        '401':
+          description: Missing or invalid Bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: >
+            Token valid but `marchand` role absent, or `villeOrigine` claim does
+            not match the requested city (ABAC violation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        '404':
+          description: Requested city not found in the dataset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCityNotFound'
