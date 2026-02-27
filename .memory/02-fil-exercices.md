@@ -167,6 +167,7 @@ Les administrateurs enrichissent d'abord les profils des sujets avec l'attribut 
 - Créer et configurer un client **confidentiel (Resource Server)** pour l'API
 - Configurer des **mappers** pour injecter les rôles de royaume et attributs dans les jetons
 - Configurer l'**audience** (`aud`) pour indiquer la destination des jetons
+- Comprendre la configuration du logout (post logout redirect URIs) et le Single Sign-Out
 - Utiliser l'outil **Evaluate** pour prévisualiser et valider le contenu des jetons
 - Simuler le contrôle d'accès de l'API en analysant les jetons
 
@@ -201,6 +202,7 @@ Les administrateurs ont construit le Comptoir des voyageurs et sa Réserve. Les 
 - Identifier la différence entre access token, ID token et refresh token dans une application réelle
 - Retrouver dans un token les claims configurés dans Keycloak (rôles, attributs, audience)
 - Comprendre comment une API applique du RBAC (rôles) et de l'ABAC (attributs) à partir du token
+- Tester la déconnexion et observer l'invalidation de session (Single Logout)
 - Faire le lien entre la configuration Keycloak (exercices 1 à 4) et le comportement de l'application
 
 **Étapes**
@@ -209,12 +211,13 @@ Les administrateurs ont construit le Comptoir des voyageurs et sa Réserve. Les 
 2. Identifier dans l'access token : `iss`, `aud`, `azp`, `realm_access.roles`, `villeOrigine`, `exp`
 3. Comparer access token et ID token : rôles et attributs présents dans l'un, absents de l'autre
 4. Observer que le refresh token n'est pas décodable (opaque côté app)
-5. Tester les endpoints (`/info`, `/inventaire`, `/villes/valdoria-centre/artefacts`, `/villes/nordheim/artefacts`) avec Alaric → tout accessible (gouverneur)
-6. Se reconnecter avec `brunhild` (marchande, villeOrigine=Nordheim) : tester les mêmes endpoints
+5. Tester la déconnexion (bouton « Quitter ») : observer la redirection vers Keycloak puis le retour à l'app ; comprendre l'invalidation de session (Single Sign-Out)
+6. Tester les endpoints (`/info`, `/inventaire`, `/villes/valdoria-centre/artefacts`, `/villes/nordheim/artefacts`) avec Alaric → tout accessible (gouverneur)
+7. Se reconnecter avec `brunhild` (marchande, villeOrigine=Nordheim) : tester les mêmes endpoints
   - `/inventaire` ✅ (rôle `marchand`)
   - `/villes/nordheim/artefacts` ✅ (rôle + villeOrigine correspondante)
   - `/villes/sudbourg/artefacts` ❌ (rôle OK, mais villeOrigine ≠ sudbourg → ABAC bloque)
-7. Lire le code correspondant dans `auth.ts`, `rbac.ts`, `abac.ts` et les routes pour relier chaque comportement à sa ligne de code
+8. Lire le code correspondant dans `auth.ts`, `rbac.ts`, `abac.ts` et les routes pour relier chaque comportement à sa ligne de code
 
 **Point clé** — Le token JWT est le passeport de l'utilisateur : l'API n'appelle jamais Keycloak lors des requêtes, elle fait confiance à la signature. Le RBAC (rôles) contrôle l'accès à une fonctionnalité, l'ABAC (attributs) contrôle l'accès à une donnée spécifique. Brunhild illustre parfaitement cette complémentarité : elle a le rôle mais pas la ville.
 

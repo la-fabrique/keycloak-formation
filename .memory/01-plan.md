@@ -27,6 +27,7 @@ Formation de 2 jours (14 h) couvrant l'architecture, la configuration et l'explo
 - Création et sécurisation d'un client applicatif
 - Étude détaillée des flux d'authentification (OIDC Flows)
 - Test des flux et gestion des secrets de clients
+- Déconnexion et Single Logout (objectif, front-channel / back-channel)
 - Rôles de comptes de service et automatisation
 - Mise en œuvre des accès machine-to-machine
 

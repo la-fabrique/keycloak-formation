@@ -15,6 +15,7 @@ A l'issue de cet exercice, vous serez capable de :
 - Configurer un **mapper** pour injecter des attributs personnalisés dans les jetons
 - Utiliser l'outil **Evaluate** pour vérifier le contenu des jetons avant déploiement
 - Comprendre le concept d'**audience** (`aud`) dans les jetons JWT
+- Comprendre la configuration du logout (post logout redirect URIs) et le Single Sign-Out
 
 ---
 
@@ -98,11 +99,18 @@ Le Comptoir des voyageurs est l'application front-end qui permet aux sujets de s
 
 **Point d'observation :**
 - **Valid redirect URIs** : liste blanche des URLs vers lesquelles Keycloak peut rediriger après authentification. On cible précisément `/callback` plutôt qu'un wildcard `/*` pour limiter la surface d'attaque (bonne pratique OIDC).
+- **Valid post logout redirect URIs** : liste blanche des URLs vers lesquelles Keycloak peut rediriger l'utilisateur *après* déconnexion. Quand un sujet clique sur « Quitter » dans le Comptoir, l'application appelle l'endpoint de logout Keycloak ; Keycloak invalide la session SSO (Single Sign-Out) puis redirige le navigateur vers une de ces URIs. Sans cette configuration, la redirection post-logout serait refusée.
 - **Web origins** : autorise le front-end à appeler les endpoints Keycloak en AJAX (gestion CORS).
 
 > **Checkpoint :** Le client `comptoir-des-voyageurs` est créé. Vous êtes redirigé vers la page de détails du client.
 
-<!-- TODO: Vérifier les ports exacts utilisés par l'app front-end (src/front) — ajuster si nécessaire -->
+**Exposé — Déconnexion et Single Logout (pour le formateur)**  
+- **Objectif du logout fédéré :** une déconnexion depuis une application doit invalider la session côté Keycloak pour que tous les clients du même realm soient déconnectés (Single Sign-Out).  
+- **Front-channel :** Keycloak redirige le navigateur vers l'endpoint de logout puis vers les URLs de redirection post-logout des clients (ex. le Comptoir) ; c'est le mécanisme utilisé par les SPA.  
+- **Back-channel :** le serveur Keycloak appelle en HTTP les endpoints de logout des clients (pour les APIs ou applications serveur)
+
+
+**Optionnel — Tester la déconnexion :** Une fois le Comptoir accessible (après avoir terminé la configuration des clients et des mappers), vous pouvez vous connecter, cliquer sur « Quitter » dans l'en-tête, puis observer la redirection vers Keycloak puis le retour sur l'application. L'étape détaillée se trouve à l'exercice 5.
 
 ---
 

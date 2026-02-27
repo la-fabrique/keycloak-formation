@@ -85,6 +85,7 @@ Croisement des points ● de la formation (`.memory/00-presentation.md`) avec le
 | ----------------------------------- | -------------- |
 | ● Configuration côté client         | Ex. 4 + Exposé |
 | ● Configuration et test d'un client | Ex. 4 (config), Ex. 5 (test) |
+| ● Déconnexion (Single Logout)       | Ex. 4 (config), Ex. 5 (test) |
 
 
 ### Intégration annuaire existant

@@ -11,6 +11,7 @@ A l'issue de cet exercice, vous serez capable de :
 - Identifier la différence entre **access token**, **ID token** et **refresh token** dans une application réelle
 - Retrouver dans un token les claims configurés dans Keycloak (rôles, attributs, audience)
 - Comprendre comment une API utilise un token pour appliquer du **RBAC** et de l'**ABAC**
+- Tester la déconnexion et observer l'invalidation de session (Single Logout)
 - Faire le lien entre la configuration Keycloak (exercices 1 à 4) et le comportement de l'application
 
 ---
@@ -109,7 +110,24 @@ A l'issue de cet exercice, vous serez capable de :
 
 ---
 
-### Étape 2 — Tester les endpoints et observer les règles d'accès
+### Étape 2 — Tester la déconnexion (Single Logout)
+
+Une fois connecté au Comptoir, vous allez tester le bouton « Quitter » et comprendre comment Keycloak invalide la session (Single Sign-Out).
+
+> Pour observer le traffic reseau, vous devez ouvrir les outils de dev de votre navigateur , vous positionner dans l'onglet reseau et activer la préservation des logs
+
+1. Depuis l'application (connecté avec Alaric ou après toute étape où vous êtes connecté), cliquez sur le bouton **« Quitter »** dans l'en-tête.
+2. **Observer :** vous êtes redirigé vers Keycloak (URL du type `/realms/valdoria/protocol/openid-connect/logout`), puis immédiatement renvoyé vers l'application (grâce aux **Valid post logout redirect URIs** configurées à l'exercice 4).
+3. **Comprendre :** la session Keycloak a été invalidée. Si vous aviez plusieurs onglets ou applications utilisant le même realm, ils seraient tous déconnectés — c'est le principe du **Single Sign-Out**.
+4. *(Optionnel)* Dans la console d'administration Keycloak : **Sessions** du realm `valdoria` — après déconnexion, la session d'Alaric n'apparaît plus.
+
+**Point clé —** Le bouton « Quitter » appelle l'endpoint Keycloak `/realms/valdoria/protocol/openid-connect/logout`. Keycloak invalide la session côté serveur et redirige le navigateur vers une URI autorisée (post logout redirect). Le Comptoir nettoie son état local (tokens, utilisateur) via le callback `onAuthLogout` dans `useKeycloak.ts`.
+
+> **Checkpoint :** Vous avez vérifié que la déconnexion invalide bien la session SSO et que la redirection post-logout fonctionne.
+
+---
+
+### Étape 3 — Tester les endpoints et observer les règles d'accès
 
 #### Tester avec Alaric (gouverneur)
 
@@ -165,7 +183,7 @@ Comparez avec Alaric (gouverneur) qui obtient 200 sur toutes les villes : l'exce
 
 ---
 
-### Étape 3 — Lire le code qui applique ces règles
+### Étape 4 — Lire le code qui applique ces règles
 
 Maintenant que vous avez observé le comportement, voici le code qui le produit.
 
