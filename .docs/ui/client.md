@@ -40,6 +40,8 @@ Documentation exhaustive des paramètres de configuration d'un client dans l'int
 
 | Paramètre | Explications détaillées |
 | :--- | :--- |
+| Login theme | Thème visuel (templates, CSS, textes) appliqué aux pages Keycloak pour ce client (écran de connexion, erreurs, etc.). Permet d'aligner l'apparence sur la marque ou le realm ; si non défini, le thème du realm est utilisé. |
+| Consent screen text | Texte affiché sur l'écran de consentement lorsque « Consent required » est activé. Décrit les données ou accès demandés par le client pour informer l'utilisateur avant qu'il n'accepte. |
 | Consent required | Si activé, Keycloak affiche un écran de consentement demandant à l'utilisateur d'accepter l'accès aux données (scope, client). Souvent désactivé pour les applications internes ou de confiance. |
 | Display client on screen | Contrôle l'affichage du nom du client sur les écrans Keycloak (login, consentement, etc.). Utile pour la transparence vis-à-vis de l'utilisateur. |
 
@@ -48,5 +50,6 @@ Documentation exhaustive des paramètres de configuration d'un client dans l'int
 | Paramètre | Explications détaillées |
 | :--- | :--- |
 | Front channel logout | Active le logout via le navigateur : Keycloak peut demander au client de terminer la session en ouvrant des requêtes (ex. iframe) vers les URLs enregistrées. Permet de déconnecter l'utilisateur de l'application quand il se déconnecte de Keycloak. |
+| Front-channel logout URL | URL vers laquelle Keycloak envoie la requête de front-channel logout (redirection ou iframe). Le client doit écouter cette URL pour invalider sa session locale lorsque l'utilisateur se déconnecte de Keycloak. |
 | Front-channel logout session required | Si activé, le front-channel logout n'est envoyé au client que si une session Keycloak existe encore. Permet d'éviter des appels inutiles quand l'utilisateur est déjà déconnecté. |
 | Logout confirmation | Si activé, Keycloak affiche une page de confirmation (« Êtes-vous sûr de vouloir vous déconnecter ? ») avant de terminer la session. Si désactivé, la déconnexion est immédiate. |
