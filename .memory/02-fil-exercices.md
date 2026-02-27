@@ -9,21 +9,23 @@ Chaque exercice correspond à une étape de construction de cet IAM impérial, d
 
 ### Lexique de l'Empire
 
-| Concept Keycloak        | Métaphore Authéria                        |
-| ----------------------- | ----------------------------------------- |
-| Realm                   | Province de l'empire                      |
-| Realm `master`          | la (province) capitale de l'empire et son château (super-admin)    |
-| Client applicatif (front) | Comptoir des voyageurs (application accessible aux sujets) |
-| Client applicatif (API)   | Réserve (API protégée, ressources du royaume) |
-| Rôle (Realm role)       | Titre impérial (sujet, marchand, gouverneur) |
-| Groupe                  | Guilde (ex : guilde des marchands)        |
-| Utilisateur             | Sujet de l'empire                         |
-| Attribut utilisateur    | Trait du sujet (ex : ville d'origine)     |
-| Client Scope / Mapper   | Parchemin officiel                        |
-| Service Account (M2M)   | Automate impérial                         |
-| Annuaire LDAP           | Office du Maître des Registres            |
-| IDP externe (SSO)       | Ambassade étrangère                       |
-| Politique de sécurité   | Fortification                             |
+
+| Concept Keycloak          | Métaphore Authéria                                              |
+| ------------------------- | --------------------------------------------------------------- |
+| Realm                     | Province de l'empire                                            |
+| Realm `master`            | la (province) capitale de l'empire et son château (super-admin) |
+| Client applicatif (front) | Comptoir des voyageurs (application accessible aux sujets)      |
+| Client applicatif (API)   | Réserve (API protégée, ressources du royaume)                   |
+| Rôle (Realm role)         | Titre impérial (sujet, marchand, gouverneur)                    |
+| Groupe                    | Guilde (ex : guilde des marchands)                              |
+| Utilisateur               | Sujet de l'empire                                               |
+| Attribut utilisateur      | Trait du sujet (ex : ville d'origine)                           |
+| Client Scope / Mapper     | Parchemin officiel                                              |
+| Service Account (M2M)     | Automate impérial                                               |
+| Annuaire LDAP             | Office du Maître des Registres                                  |
+| IDP externe (SSO)         | Ambassade étrangère                                             |
+| Politique de sécurité     | Fortification                                                   |
+
 
 ### Environnement technique
 
@@ -100,14 +102,17 @@ Le Château de l'empereur accorde une charte pour fonder la Province de Valdoria
 **Rôles créés :**
 
 *Rôles de base (simples) :*
+
 - `sujet` : Citoyen ordinaire de Valdoria
 - `marchand` : Commerçant de l'empire
 
 *Rôles composites (hiérarchiques) :*
+
 - `gouverneur` : Hérite de `sujet` + `marchand` → Administrateur suprême de la province
 
 **Pédagogie du modèle simplifié :**
 Cette structure volontairement épurée (3 rôles au total) facilite la compréhension des concepts fondamentaux :
+
 - L'isolation des rôles entre realms
 - L'héritage via les rôles composites
 - La hiérarchie administrative
@@ -135,9 +140,9 @@ La province de Valdoria possède désormais ses titres impériaux. Il est temps 
 **Étapes**
 
 1. Créer trois utilisateurs de test dans le realm `valdoria` :
-   - `alaric` le gouverneur (ville d'origine : Valdoria-Centre) → rôle composite
-   - `brunhild` la marchande (ville d'origine : Nordheim) → rôle simple
-   - `cedric` le sujet (ville d'origine : Sudbourg) → rôle de base
+  - `alaric` le gouverneur (ville d'origine : Valdoria-Centre) → rôle composite
+  - `brunhild` la marchande (ville d'origine : Nordheim) → rôle simple
+  - `cedric` le sujet (ville d'origine : Sudbourg) → rôle de base
 2. Attribuer à chaque utilisateur son rôle correspondant (`gouverneur`, `marchand`, `sujet`)
 3. Ajouter l'attribut `villeOrigine` via le User Profile du realm, puis renseigner la valeur pour chaque utilisateur
 4. Vérifier les profils utilisateurs et l'héritage des rôles pour alaric
@@ -175,9 +180,9 @@ Les administrateurs enrichissent d'abord les profils des sujets avec l'attribut 
 6. Configurer l'audience via `audience resolve` : créer un client role `access` sur `reserve-valdoria`, l'inclure dans le rôle composite `sujet`
 7. Utiliser l'outil Evaluate pour prévisualiser les jetons et vérifier rôles, `villeOrigine` et `aud: reserve-valdoria`
 8. Simuler le contrôle d'accès de la Réserve :
-   - Alaric (gouverneur → inclut `marchand`) peut accéder à `/inventaire` ✅
-   - Brunhild (`marchand`) peut accéder à `/inventaire` ✅
-   - Cedric (`sujet`, sans `marchand`) ne peut **pas** accéder à `/inventaire` ❌
+  - Alaric (gouverneur → inclut `marchand`) peut accéder à `/inventaire` ✅
+  - Brunhild (`marchand`) peut accéder à `/inventaire` ✅
+  - Cedric (`sujet`, sans `marchand`) ne peut **pas** accéder à `/inventaire` ❌
 9. Observer comment l'attribut `villeOrigine` permet le filtrage contextuel des données
 
 **Point clé** — Le flux Authorization Code avec PKCE (S256) est le standard pour les applications web modernes. Les **mappers** contrôlent finement le contenu des jetons : rôles de royaume (autorisation), attributs personnalisés (filtrage contextuel), audience (sécurité). L'**outil Evaluate** est indispensable pour vérifier la configuration avant de connecter une vraie application. L'**audience** (`aud`) est configurée via le mapper `audience resolve` combiné à un client role : tous les porteurs du rôle `sujet` obtiennent automatiquement `reserve-valdoria` dans leur `aud`.
@@ -206,9 +211,9 @@ Les administrateurs ont construit le Comptoir des voyageurs et sa Réserve. Les 
 4. Observer que le refresh token n'est pas décodable (opaque côté app)
 5. Tester les endpoints (`/info`, `/inventaire`, `/villes/valdoria-centre/artefacts`, `/villes/nordheim/artefacts`) avec Alaric → tout accessible (gouverneur)
 6. Se reconnecter avec `brunhild` (marchande, villeOrigine=Nordheim) : tester les mêmes endpoints
-   - `/inventaire` ✅ (rôle `marchand`)
-   - `/villes/nordheim/artefacts` ✅ (rôle + villeOrigine correspondante)
-   - `/villes/sudbourg/artefacts` ❌ (rôle OK, mais villeOrigine ≠ sudbourg → ABAC bloque)
+  - `/inventaire` ✅ (rôle `marchand`)
+  - `/villes/nordheim/artefacts` ✅ (rôle + villeOrigine correspondante)
+  - `/villes/sudbourg/artefacts` ❌ (rôle OK, mais villeOrigine ≠ sudbourg → ABAC bloque)
 7. Lire le code correspondant dans `auth.ts`, `rbac.ts`, `abac.ts` et les routes pour relier chaque comportement à sa ligne de code
 
 **Point clé** — Le token JWT est le passeport de l'utilisateur : l'API n'appelle jamais Keycloak lors des requêtes, elle fait confiance à la signature. Le RBAC (rôles) contrôle l'accès à une fonctionnalité, l'ABAC (attributs) contrôle l'accès à une donnée spécifique. Brunhild illustre parfaitement cette complémentarité : elle a le rôle mais pas la ville.
@@ -352,6 +357,7 @@ La Confédération d'Ostmark (`Ostmark`), empire marchand de l'est, signe un tra
 5. Tester la connexion de Ragnar via le Comptoir des voyageurs → vérifier `marchand` dans le token et accès à l'inventaire
 
 **Lexique :**
+
 - `Ostmark` = La Confédération d'Ostmark
 - `ragnar` = marchand ostmarkien (mot de passe : `ostmark123`)
 - `tradesman` = titre ostmarkien → mappé vers `marchand` (valdorien)
@@ -388,10 +394,12 @@ L'empire est fonctionnel, mais vulnérable. Les administrateurs renforcent les d
 
 ## Synthèse du parcours
 
-| Jour | Module | Exercices | Thème narratif |
-| ---- | ------ | --------- | -------------- |
-| J1 matin | Module 1 — Fondations | Ex. 1 à 3 | Fonder l'empire, attribuer les titres impériaux |
-| J1 après-midi | Module 2 — Clients | Ex. 4 à 6 | Ouvrir le Comptoir et la Réserve, sécuriser les accès |
-| J2 matin | Module 3 — Identités | Ex. 7 à 9 | Organiser les guildes, enrichir les laissez-passer |
-| J2 après-midi | Module 4 — Intégrations | Ex. 10 à 12 | Alliances, diplomatie et fortification |
+
+| Jour          | Module                  | Exercices   | Thème narratif                                        |
+| ------------- | ----------------------- | ----------- | ----------------------------------------------------- |
+| J1 matin      | Module 1 — Fondations   | Ex. 1 à 3   | Fonder l'empire, attribuer les titres impériaux       |
+| J1 après-midi | Module 2 — Clients      | Ex. 4 à 6   | Ouvrir le Comptoir et la Réserve, sécuriser les accès |
+| J2 matin      | Module 3 — Identités    | Ex. 7 à 9   | Organiser les guildes, enrichir les laissez-passer    |
+| J2 après-midi | Module 4 — Intégrations | Ex. 10 à 12 | Alliances, diplomatie et fortification                |
+
 
