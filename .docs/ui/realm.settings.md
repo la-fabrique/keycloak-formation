@@ -227,3 +227,44 @@ Les paramètres disponibles varient selon le mode sélectionné :
 | Failure reset time | Délai (en heures) après lequel le compteur d'échecs est remis à zéro si aucune nouvelle tentative échouée n'est survenue. |
 | Quick login check milliseconds | Seuil (en millisecondes) en dessous duquel deux tentatives consécutives sont considérées comme suspectes (trop rapides pour être humaines). Déclenche immédiatement un temps d'attente minimal. |
 | Minimum quick login wait | Durée minimale d'attente (en minutes) imposée lorsqu'une tentative est détectée comme trop rapide. |
+
+## Sessions
+
+### SSO Session Settings
+
+Durées de vie des sessions SSO Keycloak. Une session SSO représente la connexion d'un utilisateur au realm, indépendamment des clients accédés.
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| SSO Session Idle | Durée d'inactivité maximale (en minutes) avant expiration de la session SSO. La session est prolongée à chaque interaction de l'utilisateur avec Keycloak. |
+| SSO Session Max | Durée de vie absolue maximale (en heures) d'une session SSO, quelle que soit l'activité. Une fois ce délai atteint, l'utilisateur doit se reconnecter. |
+| SSO Session Idle Remember Me | Durée d'inactivité maximale (en minutes) pour les sessions créées avec l'option « Rester connecté ». Remplace `SSO Session Idle` lorsque l'utilisateur a coché « Remember me ». Si à zéro, la valeur de `SSO Session Idle` s'applique. |
+| SSO Session Max Remember Me | Durée de vie absolue maximale (en minutes) pour les sessions « Rester connecté ». Remplace `SSO Session Max`. Si à zéro, la valeur de `SSO Session Max` s'applique. |
+
+### Client Session Settings
+
+Durées de vie des sessions côté client, indépendantes des sessions SSO. Permettent de restreindre la durée de validité des tokens pour un client spécifique en deçà des limites SSO.
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Client Session Idle | Durée d'inactivité maximale (en minutes) d'une session client avant expiration. Si à zéro, la valeur de `SSO Session Idle` s'applique. |
+| Client Session Max | Durée de vie absolue maximale (en minutes) d'une session client. Si à zéro, la valeur de `SSO Session Max` s'applique. |
+
+### Offline Session Settings
+
+Les sessions hors-ligne permettent à un client d'obtenir un refresh token à longue durée de vie, utilisable même lorsque l'utilisateur n'est pas connecté (ex. synchronisation en arrière-plan).
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Offline Session Idle | Durée d'inactivité maximale (en jours) d'une session hors-ligne. Si le refresh token hors-ligne n'est pas utilisé pendant ce délai, la session expire. |
+| Client Offline Session Idle | Durée d'inactivité maximale (en minutes) d'une session hors-ligne côté client. Remplace `Offline Session Idle` si défini. Si à zéro, `Offline Session Idle` s'applique. |
+| Offline Session Max Limited | Si activé, une durée de vie absolue maximale est également appliquée aux sessions hors-ligne (en plus de l'idle). Désactivé par défaut : les sessions hors-ligne expirent uniquement par inactivité. |
+
+### Login Settings
+
+Durées de vie applicables aux flux d'authentification en cours (actions temporaires, formulaires de login).
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Login timeout | Durée maximale (en minutes) accordée à un utilisateur pour terminer le flux de connexion depuis l'affichage de la page de login. Au-delà, la session de login expire et l'utilisateur doit recommencer. |
+| Login action timeout | Durée maximale (en minutes) accordée à un utilisateur pour compléter une action dans le flux d'authentification (ex. saisie d'un code OTP, validation d'un e-mail). Chaque action démarre un nouveau compteur. |
