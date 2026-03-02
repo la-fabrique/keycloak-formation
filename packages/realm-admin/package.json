@@ -1,0 +1,17 @@
+{
+  "name": "realm-admin",
+  "version": "1.0.0",
+  "description": "Régisseur de la Réserve — délégation d'administration via l'API REST Keycloak",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "typescript": "^5.9.3",
+    "tsx": "^4.21.0"
+  }
+}
