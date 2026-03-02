@@ -4,6 +4,8 @@ const KEYCLOAK_URL = process.env.KEYCLOAK_URL ?? "http://localhost:8080";
 const KEYCLOAK_REALM = process.env.KEYCLOAK_REALM ?? "valdoria";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "roderick";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "";
+const RESERVE_CLIENT_ID = process.env.RESERVE_CLIENT_ID ?? "";
+const COMPTOIR_CLIENT_ID = process.env.COMPTOIR_CLIENT_ID ?? "";
 
 const TOKEN_ENDPOINT = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`;
 const ADMIN_API = `${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}`;
@@ -88,21 +90,38 @@ if (realmMgmtRoles.length === 0) {
 
 console.log(`\n[2] Lister les rôles du client "reserve-valdoria"...`);
 
-// Récupérer l'ID interne du client reserve-valdoria
-const clientsRes = await adminFetch(access_token, `/clients?clientId=reserve-valdoria`);
+let reserveClient: { id: string; clientId: string };
+let comptoirClient: { id: string; clientId: string };
 
-if (clientsRes.status !== 200) {
-  fail("Impossible de lister les clients", clientsRes.status, JSON.stringify(clientsRes.body));
-  process.exit(1);
-}
+if (RESERVE_CLIENT_ID && COMPTOIR_CLIENT_ID) {
+  // Roderick n'a pas la permission de lister les clients (fine-grained) — utiliser les IDs fournis
+  reserveClient = { id: RESERVE_CLIENT_ID, clientId: "reserve-valdoria" };
+  comptoirClient = { id: COMPTOIR_CLIENT_ID, clientId: "comptoir-des-voyageurs" };
+} else {
+  const clientsRes = await adminFetch(access_token, `/clients?clientId=reserve-valdoria`);
 
-const clients = clientsRes.body as Array<{ id: string; clientId: string }>;
-const reserveClient = clients.find((c) => c.clientId === "reserve-valdoria");
-const comptoirClient = clients.find((c) => c.clientId === "comptoir-des-voyageurs");
+  if (clientsRes.status !== 200) {
+    if (clientsRes.status === 403) {
+      console.error(
+        "  Roderick n'a pas la permission de lister les clients (fine-grained).",
+        "Ajoutez RESERVE_CLIENT_ID et COMPTOIR_CLIENT_ID dans .env (voir README exercice 4.1)."
+      );
+    } else {
+      fail("Impossible de lister les clients", clientsRes.status, JSON.stringify(clientsRes.body));
+    }
+    process.exit(1);
+  }
 
-if (!reserveClient || !comptoirClient) {
-  console.error("  Clients introuvables. Vérifiez que l'exercice 4 est complété.");
-  process.exit(1);
+  const clients = clientsRes.body as Array<{ id: string; clientId: string }>;
+  const foundReserve = clients.find((c) => c.clientId === "reserve-valdoria");
+  const foundComptoir = clients.find((c) => c.clientId === "comptoir-des-voyageurs");
+
+  if (!foundReserve || !foundComptoir) {
+    console.error("  Clients introuvables. Vérifiez que l'exercice 4 est complété.");
+    process.exit(1);
+  }
+  reserveClient = foundReserve;
+  comptoirClient = foundComptoir;
 }
 
 const rolesRes = await adminFetch(access_token, `/clients/${reserveClient.id}/roles`);

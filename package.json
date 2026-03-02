@@ -6,6 +6,8 @@
   "scripts": {
     "frontend:install": "cd packages/front && npm install",
     "docker:up": "cd infrastructure && docker compose up --build -d",
-    "docker:down": "cd infrastructure && docker compose down"
+    "docker:down": "cd infrastructure && docker compose down",
+    "realm-admin:install": "cd packages/realm-admin && npm install",
+    "realm-admin": "cd packages/realm-admin && npm start"
   }
 }
