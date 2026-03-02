@@ -4,37 +4,20 @@ Documentation exhaustive des paramètres de configuration d'un realm dans l'inte
 
 ## General
 
-| Paramètre | Explications détaillées |
-| :--- | :--- |
-| Realm name | Identifiant technique unique du realm dans l'instance Keycloak. Utilisé dans toutes les URLs (ex. `/realms/{realm-name}/`). Ne peut pas être modifié facilement une fois le realm en production sans casser les intégrations. |
-| Display name | Nom lisible affiché dans la console d'administration et, selon la configuration du thème, sur les pages Keycloak (login, consentement). N'a pas d'impact technique sur les URLs ou protocoles. |
-| HTML Display name | Variante du nom d'affichage acceptant du balisage HTML. Permet de personnaliser la mise en forme (gras, couleur, logo intégré en `<img>`) sur les pages Keycloak qui le supportent. À utiliser avec précaution pour éviter les injections. |
-| Frontend URL | URL publique du realm, utilisée par Keycloak pour construire les liens envoyés aux utilisateurs (ex. e-mails de vérification, redirections). Utile lorsque Keycloak est derrière un reverse proxy et que l'URL interne diffère de l'URL publique. Si vide, Keycloak déduit l'URL depuis la requête entrante. |
-| Require SSL | Détermine quelles connexions doivent utiliser HTTPS. `External requests` (recommandé en production) : HTTPS requis pour les IP publiques, HTTP toléré en réseau privé. `All requests` : HTTPS obligatoire pour toutes les connexions. `None` : HTTP autorisé partout (à réserver au développement local uniquement). |
 
-## Authentication
-
-| Paramètre | Explications détaillées |
-| :--- | :--- |
+| Paramètre         | Explications détaillées                                                                                                                                                                                                                                                                                              |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Realm name        | Identifiant technique unique du realm dans l'instance Keycloak. Utilisé dans toutes les URLs (ex. `/realms/{realm-name}/`). Ne peut pas être modifié facilement une fois le realm en production sans casser les intégrations.                                                                                        |
+| Display name      | Nom lisible affiché dans la console d'administration et, selon la configuration du thème, sur les pages Keycloak (login, consentement). N'a pas d'impact technique sur les URLs ou protocoles.                                                                                                                       |
+| HTML Display name | Variante du nom d'affichage acceptant du balisage HTML. Permet de personnaliser la mise en forme (gras, couleur, logo intégré en `<img>`) sur les pages Keycloak qui le supportent. À utiliser avec précaution pour éviter les injections.                                                                           |
+| Frontend URL      | URL publique du realm, utilisée par Keycloak pour construire les liens envoyés aux utilisateurs (ex. e-mails de vérification, redirections). Utile lorsque Keycloak est derrière un reverse proxy et que l'URL interne diffère de l'URL publique. Si vide, Keycloak déduit l'URL depuis la requête entrante.         |
+| Require SSL       | Détermine quelles connexions doivent utiliser HTTPS. **`External requests`** (recommandé en production) : HTTPS requis pour les IP publiques, HTTP toléré en réseau privé. **`All requests`** : HTTPS obligatoire pour toutes les connexions. **`None`** : HTTP autorisé partout (à réserver au développement local uniquement). |
 | ACR to LoA Mapping | Associe des valeurs ACR (*Authentication Context Class Reference*, ex. `urn:mace:incommon:iap:silver`) à des niveaux d'authentification (LoA, niveaux entiers). Permet à un client de demander un niveau de sécurité minimal via le paramètre `acr_values` ou `claims` OIDC, et à Keycloak de vérifier que le niveau atteint est suffisant. Aucun mapping par défaut ; à définir selon la politique de sécurité du realm. |
-
-## Advanced
-
-| Paramètre | Explications détaillées |
-| :--- | :--- |
-| User-managed access | Active le protocole UMA 2.0 (*User-Managed Access*). Permet aux utilisateurs de gérer eux-mêmes les permissions sur leurs ressources (accorder ou révoquer l'accès à d'autres utilisateurs ou clients). À activer uniquement si l'application s'appuie sur ce mécanisme de délégation ; désactivé par défaut. |
-| Organizations | Active la fonctionnalité multi-organisations dans le realm. Permet de regrouper des utilisateurs et des identités au sein d'entités organisationnelles, chacune pouvant avoir ses propres fournisseurs d'identité et membres. Utile pour les scénarios multi-tenant. Désactivé par défaut. |
-| Admin Permissions | Active les permissions d'administration granulaires (*fine-grained admin permissions*). Permet de déléguer des droits d'administration précis à des utilisateurs ou des clients (ex. gérer uniquement les utilisateurs d'un groupe, sans accès global). Désactivé par défaut. |
+| User-managed access  | Active le protocole UMA 2.0 (*User-Managed Access*). Permet aux utilisateurs de gérer eux-mêmes les permissions sur leurs ressources (accorder ou révoquer l'accès à d'autres utilisateurs ou clients). À activer uniquement si l'application s'appuie sur ce mécanisme de délégation ; désactivé par défaut.                                 |
+| Organizations        | Active la fonctionnalité multi-organisations dans le realm. Permet de regrouper des utilisateurs et des identités au sein d'entités organisationnelles, chacune pouvant avoir ses propres fournisseurs d'identité et membres. Utile pour les scénarios multi-tenant. Désactivé par défaut.                                                    |
+| Admin Permissions    | Active les permissions d'administration granulaires (*fine-grained admin permissions*). Permet de déléguer des droits d'administration précis à des utilisateurs ou des clients (ex. gérer uniquement les utilisateurs d'un groupe, sans accès global). Désactivé par défaut.                                                                 |
 | Unmanaged Attributes | Contrôle la gestion des attributs utilisateur non déclarés dans le profil du realm. `Disabled` : seuls les attributs définis dans le profil sont acceptés. `Enabled` (ou variantes selon la version) : les attributs supplémentaires sont stockés sans validation de schéma. À restreindre en production pour maîtriser les données stockées. |
-
-## SAML
-
-| Paramètre | Explications détaillées |
-| :--- | :--- |
 | Signature algorithm SAML IdP metadata | Algorithme cryptographique utilisé pour signer les métadonnées SAML exposées par Keycloak en tant qu'IdP (ex. `RSA_SHA256`, `RSA_SHA512`). Ce paramètre affecte uniquement la signature du document de métadonnées SAML, pas celle des assertions SAML elles-mêmes (configurée au niveau du client). À choisir selon les exigences du fournisseur de services SAML. |
-
-## Endpoints
-
-| Paramètre | Explications détaillées |
-| :--- | :--- |
 | Endpoints | Liens vers les documents de découverte des protocoles supportés par le realm. **OpenID Endpoint Configuration** : document JSON (`/.well-known/openid-configuration`) listant toutes les URLs OIDC/OAuth2 du realm (authorization, token, userinfo, JWKS, logout, etc.). **SAML 2.0 Identity Provider Metadata** : document XML décrivant l'IdP SAML du realm (certificate, SSO URL, SLO URL). Ces documents sont destinés aux clients et outils qui ont besoin de s'auto-configurer. |
+
+
