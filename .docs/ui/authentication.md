@@ -12,10 +12,21 @@ Définit les règles de composition et de gestion des mots de passe pour tous le
 
 | Paramètre | Explications détaillées |
 | :--- | :--- |
+| Hash Algorithm | Algorithme de hachage utilisé pour stocker les mots de passe. `argon2` est la valeur par défaut (hors FIPS) : plus sécurisé et moins gourmand en CPU que PBKDF2. `pbkdf2-sha512` est la valeur par défaut en mode FIPS. `pbkdf2-sha256` et `pbkdf2` (SHA1, déprécié) sont également disponibles. Le hachage des mots de passe existants ne change qu'à la prochaine connexion de l'utilisateur. |
+| Hashing iterations | Nombre de fois que Keycloak hache le mot de passe avant stockage ou vérification. La valeur `-1` applique le nombre d'itérations par défaut de l'algorithme sélectionné (`argon2` : 5 ; `pbkdf2-sha512` : 210 000 ; `pbkdf2-sha256` : 600 000 ; `pbkdf2` : 1 300 000). Une valeur trop basse réduit la sécurité ; une valeur trop haute augmente la charge CPU. |
 | Minimum Length | Longueur minimale (en caractères) acceptée pour un mot de passe. Tout mot de passe plus court est refusé lors de la création ou de la modification. |
+| Lowercase Characters | Nombre minimal de lettres minuscules (a–z) requis dans le mot de passe. |
 | Uppercase Characters | Nombre minimal de lettres majuscules (A–Z) requis dans le mot de passe. |
 | Digits | Nombre minimal de chiffres (0–9) requis dans le mot de passe. |
 | Special Characters | Nombre minimal de caractères spéciaux (ex. `!`, `@`, `#`) requis dans le mot de passe. |
+| Not Username | Le mot de passe ne peut pas être identique au nom d'utilisateur. |
+| Not Email | Le mot de passe ne peut pas être identique à l'adresse e-mail de l'utilisateur. |
+| Regular Expression | Le mot de passe doit correspondre à une ou plusieurs expressions régulières Java définies. Permet d'imposer des règles de composition personnalisées non couvertes par les autres politiques. |
+| Expire Password | Nombre de jours de validité du mot de passe. À l'expiration, l'utilisateur est contraint de définir un nouveau mot de passe à sa prochaine connexion. |
+| Not Recently Used | Le mot de passe ne peut pas avoir déjà été utilisé par l'utilisateur. Le nombre de mots de passe conservés en historique est configurable. |
+| Not Recently Used (In Days) | Le mot de passe ne peut pas être réutilisé si le mot de passe précédent a été défini dans la période configurée (en jours). |
+| Password Blacklist | Le mot de passe ne doit pas figurer dans un fichier de liste noire (fichier texte UTF-8, un mot de passe par ligne, comparaison insensible à la casse). La valeur du paramètre est le nom du fichier (ex. `100k_passwords.txt`), résolu par défaut dans `${kc.home.dir}/data/password-blacklists/`. Utilise un filtre de Bloom pour les vérifications, avec une probabilité de faux positifs configurable (défaut : 0,01 %). |
+| Maximum Authentication Age | Durée maximale (en secondes) depuis la dernière authentification de l'utilisateur pour qu'un changement de mot de passe soit autorisé sans ré-authentification. Au-delà, une ré-authentification est exigée. |
 
 ### OTP Policy
 
