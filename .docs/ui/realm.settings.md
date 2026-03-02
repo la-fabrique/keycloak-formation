@@ -175,3 +175,34 @@ Permet de surcharger des traductions pour l'ensemble du realm, indépendamment d
 ### Effective message bundles
 
 Vue en lecture seule qui affiche l'ensemble résultant des traductions pour une combinaison donnée de langue, thème et type de thème (login, account, admin, email). Le résultat intègre les traductions du thème et les éventuelles surcharges du realm. Permet de vérifier quelle valeur finale sera affichée pour une clé de message donnée, en tenant compte de toute la chaîne de priorité.
+
+## Security defenses
+
+### Headers
+
+En-têtes HTTP de sécurité ajoutés automatiquement par Keycloak aux réponses des pages qu'il sert. Ces valeurs sont modifiables mais les valeurs par défaut couvrent les cas d'usage courants.
+
+| En-tête | Valeur par défaut | Explications détaillées |
+| :--- | :--- | :--- |
+| X-Frame-Options | `SAMEORIGIN` | Empêche l'intégration des pages Keycloak dans une `<iframe>` depuis une origine tierce. Protège contre le clickjacking. `SAMEORIGIN` autorise uniquement les iframes depuis le même domaine. |
+| Content-Security-Policy | `frame-src 'self'; frame-ancestors 'self'; object-src 'none';` | Politique de sécurité du contenu. `frame-ancestors 'self'` renforce la protection contre le clickjacking (complément moderne de `X-Frame-Options`). `object-src 'none'` bloque les plugins (Flash, etc.). |
+| Content-Security-Policy-Report-Only | _(vide)_ | Variante de CSP en mode rapport uniquement : les violations sont signalées (vers l'URL `report-uri` si définie) sans être bloquées. Utile pour tester une nouvelle politique CSP avant de l'appliquer. |
+| X-Content-Type-Options | `nosniff` | Interdit au navigateur de déduire le type MIME d'une réponse autrement que depuis l'en-tête `Content-Type`. Protège contre les attaques de sniffing de type MIME. |
+| X-Robots-Tag | `none` | Indique aux robots d'indexation (moteurs de recherche) de ne pas indexer les pages Keycloak. Évite que les pages de login apparaissent dans les résultats de recherche. |
+| HTTP Strict Transport Security (HSTS) | `max-age=31536000; includeSubDomains` | Indique au navigateur de n'accéder au domaine qu'en HTTPS pendant la durée `max-age` (en secondes). `includeSubDomains` étend cette règle à tous les sous-domaines. Nécessite que HTTPS soit opérationnel avant activation. |
+| Referrer Policy | _(vide)_ | Contrôle les informations d'origine transmises dans l'en-tête `Referer` lors des navigations depuis les pages Keycloak. Si vide, la politique par défaut du navigateur s'applique. |
+
+### Brute force detection
+
+Protection contre les attaques par force brute sur les comptes utilisateurs. Keycloak surveille les échecs de connexion et peut verrouiller temporairement un compte après un nombre d'échecs configurable.
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Brute Force Mode | Mode de protection activé. `Lockout temporarily` : le compte est verrouillé pour une durée croissante après trop d'échecs, puis déverrouillé automatiquement. D'autres modes peuvent être disponibles selon la version (ex. verrouillage permanent nécessitant une action admin). |
+| Max login failures | Nombre maximal d'échecs de connexion consécutifs autorisés avant déclenchement du verrouillage. |
+| Strategy to increase wait time | Stratégie d'augmentation du temps d'attente entre les tentatives. `Multiple` : le temps d'attente est multiplié à chaque nouvel échec après verrouillage. |
+| Wait increment | Durée (en minutes) ajoutée au temps d'attente à chaque cycle d'échecs supplémentaires. |
+| Max wait | Durée maximale (en minutes) du verrouillage, quel que soit le nombre d'échecs accumulés. Plafond de la progression du temps d'attente. |
+| Failure reset time | Délai (en heures) après lequel le compteur d'échecs est remis à zéro si aucune nouvelle tentative échouée n'est survenue. |
+| Quick login check milliseconds | Seuil de temps (en millisecondes) en dessous duquel deux tentatives de connexion consécutives sont considérées comme suspectes (trop rapides pour être humaines). Déclenche un temps d'attente minimal. |
+| Minimum quick login wait | Durée minimale d'attente (en minutes) imposée lorsqu'une tentative de connexion est détectée comme trop rapide. |
