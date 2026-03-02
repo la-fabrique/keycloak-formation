@@ -131,3 +131,28 @@ Chaque provider peut être configuré via les paramètres suivants :
 | Enabled | Si désactivé, les clés générées par ce provider ne sont plus proposées. Les tokens déjà signés avec ces clés restent vérifiables tant que le provider n'est pas supprimé. |
 | Active | Si désactivé, les clés du provider ne sont plus utilisées pour signer ou chiffrer de nouveaux tokens, mais restent disponibles pour vérifier les tokens existants. Permet une rotation progressive. |
 | AES Key size | Taille en octets de la clé AES générée (`16` = 128 bits, `32` = 256 bits). Paramètre spécifique au provider `aes-generated`. |
+
+## Events
+
+### Event listeners
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Event listeners | Liste des listeners qui reçoivent les événements du realm (utilisateur et admin). Chaque listener peut traiter les événements à sa manière : journalisation, envoi vers un système externe, etc. Le listener `jboss-logging` (actif par défaut) écrit les événements dans les logs du serveur Keycloak. D'autres listeners peuvent être ajoutés via des extensions SPI. |
+
+### User events settings
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Save events | Si activé, les événements utilisateur sont persistés en base de données et consultables dans la liste des événements de l'admin console. Si désactivé, les événements sont transmis aux listeners mais non stockés. Désactivé par défaut. |
+| Expiration | Durée de rétention des événements utilisateur stockés. Passé ce délai, les événements sont supprimés automatiquement. Visible uniquement lorsque `Save events` est activé. |
+| Event saved type | Liste des types d'événements à persister (ex. `LOGIN`, `LOGOUT`, `REGISTER`, `LOGIN_ERROR`, `UPDATE_PASSWORD`, etc.). Permet de filtrer les événements stockés pour ne conserver que ceux utiles à l'audit. 93 types d'événements sont disponibles. |
+| Clear user events | Action permettant de supprimer immédiatement tous les événements utilisateur stockés pour le realm. Irréversible. |
+
+### Admin events settings
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Save events | Si activé, les actions effectuées via la console d'administration (création, modification, suppression de ressources) sont persistées et consultables dans la liste des événements admin. Désactivé par défaut. |
+| Include representation | Si activé, le corps JSON de la ressource créée ou modifiée est inclus dans l'événement admin stocké. Utile pour l'audit détaillé mais augmente la taille des données stockées. Désactivé par défaut. |
+| Clear admin events | Action permettant de supprimer immédiatement tous les événements admin stockés pour le realm. Irréversible. |
