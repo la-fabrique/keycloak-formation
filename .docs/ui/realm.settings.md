@@ -81,3 +81,53 @@ Documentation exhaustive des paramètres de configuration d'un realm dans l'inte
 | Account theme | Thème appliqué à la console de compte utilisateur (`/realms/{realm}/account`). Permet aux utilisateurs de gérer leur profil, leurs appareils, leurs sessions et leurs credentials. |
 | Admin theme | Thème appliqué à la console d'administration Keycloak. Permet de personnaliser l'apparence de l'interface admin pour tout le realm. |
 | Email theme | Thème utilisé pour les templates des e-mails envoyés par Keycloak (vérification d'adresse, réinitialisation de mot de passe, etc.). Permet de personnaliser la mise en forme HTML et les textes des e-mails. |
+
+## Keys
+
+La gestion des clés cryptographiques du realm est répartie en deux vues : la liste des clés actives et la liste des providers qui les génèrent.
+
+### Keys list — clés actives
+
+Affiche toutes les clés cryptographiques actuellement actives dans le realm. Chaque entrée correspond à une clé utilisable pour signer ou chiffrer des tokens.
+
+| Colonne | Explications détaillées |
+| :--- | :--- |
+| Algorithm | Algorithme cryptographique associé à la clé (ex. `RS256`, `RSA-OAEP`, `AES`, `HS512`). Détermine l'usage de la clé : signature de tokens JWT, chiffrement de contenu, etc. |
+| Type | Format de la clé : `RSA` (paire de clés asymétrique), `OCT` (clé symétrique octet). |
+| Kid | *Key ID* — identifiant unique de la clé, inclus dans l'en-tête `kid` des tokens JWT. Permet aux clients de sélectionner la bonne clé publique lors de la vérification d'un token. |
+| Use | Usage de la clé : `SIG` (signature) ou `ENC` (chiffrement). |
+| Provider | Nom du provider qui a généré la clé (ex. `rsa-generated`, `aes-generated`, `hmac-generated-hs512`). |
+| Valid to | Date d'expiration de la clé. Un tiret (`-`) indique que la clé n'a pas de date d'expiration (clés symétriques générées automatiquement). |
+| Public keys | Pour les clés asymétriques (RSA), bouton permettant d'afficher la clé publique au format PEM ou le certificat X.509. Les clés symétriques (OCT) n'ont pas de clé publique exposée. |
+
+Les clés actives par défaut dans un realm fraîchement créé sont :
+
+| Algorithm | Type | Use | Provider |
+| :--- | :--- | :--- | :--- |
+| RS256 | RSA | SIG | rsa-generated |
+| RSA-OAEP | RSA | ENC | rsa-enc-generated |
+| AES | OCT | ENC | aes-generated |
+| HS512 | OCT | SIG | hmac-generated-hs512 |
+
+### Providers
+
+Liste des providers de clés configurés dans le realm. Un provider est responsable de la génération et du cycle de vie d'une ou plusieurs clés.
+
+| Colonne | Explications détaillées |
+| :--- | :--- |
+| Name | Nom donné au provider lors de sa création. |
+| Provider | Type de provider (ex. `rsa-generated`, `aes-generated`, `hmac-generated`, `java-keystore`). Détermine l'algorithme et le mode de génération de la clé. |
+| Provider description | Description textuelle du type de provider. |
+
+#### Édition d'un provider
+
+Chaque provider peut être configuré via les paramètres suivants :
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Provider ID | Identifiant technique du type de provider (ex. `aes-generated`). Non modifiable. |
+| Name | Nom libre attribué à cette instance de provider, affiché dans la liste des providers. |
+| Priority | Ordre de priorité entier. En cas de plusieurs providers produisant des clés pour le même algorithme, celui avec la priorité la plus élevée fournit la clé active utilisée pour les nouvelles signatures ou chiffrements. |
+| Enabled | Si désactivé, les clés générées par ce provider ne sont plus proposées. Les tokens déjà signés avec ces clés restent vérifiables tant que le provider n'est pas supprimé. |
+| Active | Si désactivé, les clés du provider ne sont plus utilisées pour signer ou chiffrer de nouveaux tokens, mais restent disponibles pour vérifier les tokens existants. Permet une rotation progressive. |
+| AES Key size | Taille en octets de la clé AES générée (`16` = 128 bits, `32` = 256 bits). Paramètre spécifique au provider `aes-generated`. |
