@@ -71,3 +71,13 @@ Documentation exhaustive des paramètres de configuration d'un realm dans l'inte
 | Socket read timeout | Durée maximale (en millisecondes) d'attente d'une réponse du serveur SMTP après envoi d'une commande. Protège contre les serveurs lents ou bloqués pendant la transaction. |
 | Socket write timeout | Durée maximale (en millisecondes) pour écrire des données vers le serveur SMTP. Protège contre les connexions lentes ou dégradées lors de l'envoi du corps du message. |
 | Enable Debug SMTP | Si activé, les échanges SMTP détaillés (commandes et réponses) sont écrits dans les logs du serveur Keycloak. Utile pour diagnostiquer les problèmes de livraison. À désactiver en production (logs verbeux, données potentiellement sensibles). |
+
+## Themes
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Dark mode | Si activé, la console d'administration Keycloak bascule en thème sombre. Ce paramètre n'affecte que l'interface d'administration, pas les pages Keycloak exposées aux utilisateurs (login, compte). Activé par défaut. |
+| Login theme | Thème appliqué aux pages du flux d'authentification : connexion, inscription, réinitialisation de mot de passe, MFA, etc. Si non défini, le thème par défaut de Keycloak est utilisé. Peut être surchargé au niveau d'un client individuel. |
+| Account theme | Thème appliqué à la console de compte utilisateur (`/realms/{realm}/account`). Permet aux utilisateurs de gérer leur profil, leurs appareils, leurs sessions et leurs credentials. |
+| Admin theme | Thème appliqué à la console d'administration Keycloak. Permet de personnaliser l'apparence de l'interface admin pour tout le realm. |
+| Email theme | Thème utilisé pour les templates des e-mails envoyés par Keycloak (vérification d'adresse, réinitialisation de mot de passe, etc.). Permet de personnaliser la mise en forme HTML et les textes des e-mails. |
