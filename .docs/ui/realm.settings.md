@@ -403,3 +403,32 @@ Permet de regrouper des attributs sous une même étiquette pour organiser leur 
 ### JSON editor
 
 Vue et édition directe de la configuration du profil utilisateur au format JSON. Permet d'importer ou d'exporter la configuration complète (attributs, groupes, validateurs, annotations) en une seule opération. Utile pour l'automatisation ou la réplication de configuration entre realms.
+
+## User Registration
+
+### Default roles
+
+Liste des rôles attribués automatiquement à tout nouvel utilisateur créé ou importé dans le realm. Ces rôles sont assignés à la création du compte, quelle que soit la méthode d'inscription (formulaire, import, identity brokering).
+
+| Colonne | Explications détaillées |
+| :--- | :--- |
+| Name | Nom du rôle, préfixé par le client propriétaire le cas échéant (ex. `account\view-profile` désigne le rôle `view-profile` du client `account`). Les rôles sans préfixe sont des rôles du realm. |
+| Inherited | Indique si le rôle est hérité d'un rôle composite. `False` : le rôle est assigné directement, pas via un rôle parent. |
+| Description | Description textuelle du rôle. |
+
+Les rôles par défaut dans un realm fraîchement créé sont :
+
+| Rôle | Description |
+| :--- | :--- |
+| `account\view-profile` | Permet à l'utilisateur de consulter son propre profil dans la console de compte. |
+| `account\manage-account` | Permet à l'utilisateur de gérer son compte (modifier ses informations, ses credentials, ses sessions) dans la console de compte. |
+| `offline_access` | Permet à l'utilisateur d'obtenir des refresh tokens hors-ligne (longue durée de vie) auprès des clients qui le demandent. |
+| `uma_authorization` | Permet à l'utilisateur d'utiliser le point d'entrée UMA pour gérer ses autorisations de ressources (*User-Managed Access*). |
+
+Des rôles supplémentaires peuvent être assignés par défaut via le bouton **Assign role**. L'option **Hide inherited roles** masque les rôles obtenus par héritage de rôles composites pour n'afficher que les assignations directes.
+
+### Default groups
+
+Groupes assignés automatiquement à tout nouvel utilisateur créé ou importé dans le realm, y compris via l'identity brokering. Permet de pré-affecter des utilisateurs à des groupes sans intervention manuelle.
+
+Par défaut, aucun groupe n'est défini. Les groupes par défaut s'ajoutent depuis cette page et s'appliquent immédiatement aux futurs utilisateurs (les utilisateurs existants ne sont pas affectés rétroactivement).
