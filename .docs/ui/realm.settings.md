@@ -44,3 +44,30 @@ Documentation exhaustive des paramètres de configuration d'un realm dans l'inte
 | Paramètre | Explications détaillées |
 | :--- | :--- |
 | Edit username | Si activé, les utilisateurs peuvent modifier leur propre nom d'utilisateur depuis la console de compte (*account console*). Si désactivé, seul un administrateur peut le changer. À désactiver si le nom d'utilisateur est utilisé comme identifiant stable dans d'autres systèmes. Désactivé par défaut. |
+
+## Email
+
+### Template
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| From | Adresse e-mail expéditrice utilisée dans le champ `From` des e-mails envoyés par Keycloak (vérification, réinitialisation de mot de passe, etc.). Obligatoire pour l'envoi d'e-mails. Doit être une adresse valide acceptée par le serveur SMTP configuré. |
+| From display name | Nom affiché comme expéditeur dans les clients e-mail (ex. `Keycloak – Mon Realm`). Si vide, seule l'adresse e-mail brute est affichée. |
+| Reply to | Adresse e-mail de réponse (`Reply-To`). Lorsque l'utilisateur répond à un e-mail de Keycloak, la réponse est adressée à cette adresse plutôt qu'à l'adresse `From`. Utile pour diriger les réponses vers une boîte de support distincte. |
+| Reply to display name | Nom affiché associé à l'adresse `Reply-To`. Fonctionne comme `From display name` mais pour le destinataire de réponse. |
+| Envelope from | Adresse technique utilisée comme expéditeur SMTP (`MAIL FROM` au niveau du protocole, aussi appelée *bounce address*). Différente du `From` visible : sert à recevoir les notifications d'échec de livraison (bounces). Si vide, l'adresse `From` est utilisée. |
+
+### Connection & Authentication
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Host | Nom d'hôte ou adresse IP du serveur SMTP. Obligatoire pour l'envoi d'e-mails. |
+| Port | Port TCP du serveur SMTP. Valeurs courantes : `25` (SMTP non chiffré), `465` (SMTPS/SSL), `587` (STARTTLS). |
+| Enable SSL | Active une connexion SMTP chiffrée dès le début (SMTPS, port 465). À utiliser avec les serveurs qui n'acceptent pas de connexion non chiffrée. Incompatible avec `Enable StartTLS`. |
+| Enable StartTLS | Active STARTTLS : la connexion démarre en clair puis est mise à niveau en TLS via la commande SMTP `STARTTLS`. Méthode standard pour le port 587. Incompatible avec `Enable SSL`. |
+| Authentication | Si activé, Keycloak s'authentifie auprès du serveur SMTP avec un nom d'utilisateur et un mot de passe. Requis par la plupart des serveurs SMTP modernes. Désactivé par défaut. |
+| Allow UTF-8 | Si activé, autorise les caractères UTF-8 dans les en-têtes et le corps des e-mails (RFC 6532). À activer si les adresses e-mail ou les noms d'affichage contiennent des caractères non-ASCII. Désactivé par défaut. |
+| Connection timeout | Durée maximale (en millisecondes) pour établir la connexion TCP avec le serveur SMTP. Au-delà, la tentative échoue. Permet d'éviter des blocages indéfinis en cas de serveur inaccessible. |
+| Socket read timeout | Durée maximale (en millisecondes) d'attente d'une réponse du serveur SMTP après envoi d'une commande. Protège contre les serveurs lents ou bloqués pendant la transaction. |
+| Socket write timeout | Durée maximale (en millisecondes) pour écrire des données vers le serveur SMTP. Protège contre les connexions lentes ou dégradées lors de l'envoi du corps du message. |
+| Enable Debug SMTP | Si activé, les échanges SMTP détaillés (commandes et réponses) sont écrits dans les logs du serveur Keycloak. Utile pour diagnostiquer les problèmes de livraison. À désactiver en production (logs verbeux, données potentiellement sensibles). |
