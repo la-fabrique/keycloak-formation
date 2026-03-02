@@ -314,3 +314,36 @@ Permet de surcharger la durée de validité par défaut pour chaque type d'actio
 | IdP account email verification | Durée de validité (en minutes) du lien de vérification e-mail dans le cadre d'une liaison de compte via un fournisseur d'identité externe. |
 | Forgot password | Durée de validité (en minutes) du lien de réinitialisation de mot de passe envoyé à l'utilisateur. |
 | Execute actions | Durée de validité (en minutes) des liens d'actions requises envoyés par un administrateur (ex. mise à jour du profil, configuration OTP). |
+
+## Client Policies
+
+Les *Client Policies* permettent d'appliquer automatiquement des règles de sécurité à des groupes de clients, selon des conditions définies. Elles s'appuient sur des *Profiles* qui regroupent des executors (validateurs de configuration).
+
+La configuration est accessible via deux modes : **Form view** (interface graphique) ou **JSON editor** (édition directe du JSON de configuration).
+
+### Profiles
+
+Un profil regroupe un ensemble d'*executors* qui vérifient ou appliquent des contraintes sur les clients (ex. algorithme de signature obligatoire, PKCE requis, mTLS). Keycloak fournit des profils globaux prédéfinis correspondant aux principales spécifications de sécurité.
+
+Profils globaux disponibles par défaut :
+
+| Nom | Description |
+| :--- | :--- |
+| fapi-1-baseline | Impose la conformité à la spécification *Financial-grade API Security Profile 1.0 — Part 1: Baseline*. |
+| fapi-1-advanced | Impose la conformité à *FAPI 1.0 — Part 2: Advanced*. Niveau de sécurité supérieur à `fapi-1-baseline`. |
+| fapi-ciba | Impose la conformité à *FAPI: Client Initiated Backchannel Authentication Profile*. Doit être combiné avec `fapi-1-advanced` pour satisfaire FAPI-CIBA complètement. |
+| fapi-2-security-profile | Impose la conformité à *FAPI 2.0 Security Profile Final*. |
+| fapi-2-message-signing | Impose la conformité à *FAPI 2.0 Message Signing Final* (signature des requêtes et réponses). |
+| oauth-2-1-for-confidential-client | Impose la conformité à *OAuth 2.1* pour les clients confidentiels. |
+| oauth-2-1-for-public-client | Impose la conformité à *OAuth 2.1* pour les clients publics (PKCE obligatoire, implicit flow interdit, etc.). |
+| fapi-2-dpop-security-profile | Variante de `fapi-2-security-profile` utilisant *DPoP* (Demonstrating Proof of Possession) pour lier les tokens à un client. |
+| fapi-2-dpop-message-signing | Variante de `fapi-2-message-signing` avec DPoP. |
+| saml-security-profile | Impose des contraintes de sécurité aux clients SAML (signature des requêtes, algorithmes autorisés, etc.). |
+
+Les profils globaux ne sont pas modifiables. Il est possible de créer des profils personnalisés pour le realm.
+
+### Policies
+
+Une politique (*policy*) relie des **conditions** (ex. type de client, présence d'un scope, protocole utilisé) à un ou plusieurs **profils**. Lorsque les conditions sont remplies, les executors des profils associés sont appliqués au client.
+
+Par défaut, aucune politique n'est définie dans le realm. Les politiques sont entièrement personnalisées et créées selon les besoins.
