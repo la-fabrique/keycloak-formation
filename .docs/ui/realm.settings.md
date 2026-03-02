@@ -347,3 +347,50 @@ Les profils globaux ne sont pas modifiables. Il est possible de créer des profi
 Une politique (*policy*) relie des **conditions** (ex. type de client, présence d'un scope, protocole utilisé) à un ou plusieurs **profils**. Lorsque les conditions sont remplies, les executors des profils associés sont appliqués au client.
 
 Par défaut, aucune politique n'est définie dans le realm. Les politiques sont entièrement personnalisées et créées selon les besoins.
+
+## User Profile
+
+Permet de définir le schéma du profil utilisateur du realm : quels attributs existent, comment ils sont validés, qui peut les lire ou les modifier. La configuration est accessible via trois onglets : **Attributes**, **Attributes Group** et **JSON editor**.
+
+### Attributes
+
+Liste des attributs du profil utilisateur. Chaque ligne affiche le nom technique de l'attribut, son nom d'affichage et le groupe auquel il appartient.
+
+#### Formulaire de création / édition d'un attribut
+
+##### General settings
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Attribute Name | Nom technique de l'attribut, utilisé comme clé dans les données utilisateur et dans les tokens (si mappé). Doit être unique dans le realm. |
+| Display name | Libellé affiché à l'utilisateur sur les formulaires (inscription, console de compte). Peut contenir une clé i18n entre `${}` pour la traduction. |
+| Multivalued | Si activé, l'attribut peut contenir plusieurs valeurs (liste). Si désactivé, une seule valeur est acceptée. |
+| Default value | Valeur pré-remplie lors de la création d'un utilisateur si aucune valeur n'est fournie. |
+| Attribute group | Groupe d'attributs auquel appartient cet attribut. Les groupes permettent d'organiser les attributs et de contrôler leur affichage sur les formulaires. |
+| Enabled when | Condition d'activation de l'attribut. `Always` : l'attribut est toujours actif. `Scopes are requested` : l'attribut n'est activé (visible, requis, validé) que lorsque certains scopes OAuth2 sont demandés par le client. |
+| Required field | Si activé, l'attribut est obligatoire. Il est possible de conditionner l'obligation selon le rôle (utilisateur ou admin) et le contexte (inscription, mise à jour de profil). |
+
+##### Permission
+
+Contrôle qui peut lire et modifier cet attribut. Les permissions sont définies séparément pour l'utilisateur et l'administrateur.
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Who can edit? | Détermine si l'**utilisateur** et/ou l'**admin** peuvent modifier la valeur de cet attribut. Si l'utilisateur n'a pas la permission d'édition, le champ est en lecture seule dans la console de compte. |
+| Who can view? | Détermine si l'**utilisateur** et/ou l'**admin** peuvent voir cet attribut. Un attribut invisible pour l'utilisateur n'apparaît pas dans la console de compte ni dans les réponses userinfo si non mappé explicitement. |
+
+##### Validations
+
+Liste des validateurs appliqués à la valeur de l'attribut lors de la soumission d'un formulaire. Aucun validateur n'est défini par défaut. Des validateurs standard sont disponibles (longueur, format e-mail, expression régulière, liste de valeurs autorisées, etc.) et des validateurs personnalisés peuvent être ajoutés via SPI.
+
+##### Annotations
+
+Métadonnées clé/valeur libres attachées à l'attribut. Utilisées principalement pour transmettre des informations aux thèmes (ex. type de champ HTML à utiliser, ordre d'affichage, icône) ou à des extensions tierces. N'ont pas d'effet fonctionnel dans Keycloak lui-même.
+
+### Attributes Group
+
+Permet de regrouper des attributs sous une même étiquette pour organiser leur affichage sur les formulaires utilisateur. Un groupe peut avoir un nom d'affichage et des annotations (ex. pour contrôler l'ordre ou l'apparence dans le thème).
+
+### JSON editor
+
+Vue et édition directe de la configuration du profil utilisateur au format JSON. Permet d'importer ou d'exporter la configuration complète (attributs, groupes, validateurs, annotations) en une seule opération. Utile pour l'automatisation ou la réplication de configuration entre realms.
