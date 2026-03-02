@@ -389,7 +389,16 @@ Métadonnées clé/valeur libres attachées à l'attribut. Utilisées principale
 
 ### Attributes Group
 
-Permet de regrouper des attributs sous une même étiquette pour organiser leur affichage sur les formulaires utilisateur. Un groupe peut avoir un nom d'affichage et des annotations (ex. pour contrôler l'ordre ou l'apparence dans le thème).
+Permet de regrouper des attributs sous une même étiquette pour organiser leur affichage sur les formulaires utilisateur.
+
+#### Formulaire de création / édition d'un groupe
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Name | Identifiant technique du groupe, référencé dans les attributs via le champ `Attribute group`. Doit être unique dans le realm. |
+| Display name | Libellé affiché comme titre de section sur les formulaires utilisateur (inscription, console de compte). Peut contenir une clé i18n entre `${}`. |
+| Display description | Texte descriptif affiché sous le titre du groupe sur les formulaires. Permet d'ajouter une explication ou une instruction pour l'utilisateur. |
+| Annotations | Métadonnées clé/valeur libres attachées au groupe. Utilisées par les thèmes ou des extensions pour contrôler l'apparence ou le comportement du groupe (ex. ordre d'affichage, icône). N'ont pas d'effet fonctionnel dans Keycloak lui-même. |
 
 ### JSON editor
 
