@@ -154,5 +154,24 @@ Chaque provider peut être configuré via les paramètres suivants :
 | Paramètre | Explications détaillées |
 | :--- | :--- |
 | Save events | Si activé, les actions effectuées via la console d'administration (création, modification, suppression de ressources) sont persistées et consultables dans la liste des événements admin. Désactivé par défaut. |
+| Expiration | Durée de rétention des événements administrateur stockés. Passé ce délai, les événements sont supprimés automatiquement. Visible uniquement lorsque `Save events` est activé. |
 | Include representation | Si activé, le corps JSON de la ressource créée ou modifiée est inclus dans l'événement admin stocké. Utile pour l'audit détaillé mais augmente la taille des données stockées. Désactivé par défaut. |
 | Clear admin events | Action permettant de supprimer immédiatement tous les événements admin stockés pour le realm. Irréversible. |
+
+## Localization
+
+### Locales
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Internationalization | Si activé, Keycloak adapte la langue des pages (login, compte, e-mails) selon les préférences de l'utilisateur ou du navigateur. Si désactivé, toutes les pages s'affichent dans la langue par défaut du thème. |
+| Supported locales | Liste des langues proposées aux utilisateurs. Keycloak sélectionne la langue en fonction des préférences du navigateur parmi les locales supportées. |
+| Default locale | Langue utilisée en repli lorsqu'aucune locale supportée ne correspond aux préférences de l'utilisateur. Également la langue affichée lorsque l'internationalisation est désactivée. |
+
+### Realm overrides
+
+Permet de surcharger des traductions pour l'ensemble du realm, indépendamment du thème. Les traductions définies ici prennent le dessus sur celles fournies par le thème, pour toutes les pages et tous les clients du realm. La surcharge est organisée par langue (ex. `English`) et par clé de message.
+
+### Effective message bundles
+
+Vue en lecture seule qui affiche l'ensemble résultant des traductions pour une combinaison donnée de langue, thème et type de thème (login, account, admin, email). Le résultat intègre les traductions du thème et les éventuelles surcharges du realm. Permet de vérifier quelle valeur finale sera affichée pour une clé de message donnée, en tenant compte de toute la chaîne de priorité.
