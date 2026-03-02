@@ -194,15 +194,36 @@ En-têtes HTTP de sécurité ajoutés automatiquement par Keycloak aux réponses
 
 ### Brute force detection
 
-Protection contre les attaques par force brute sur les comptes utilisateurs. Keycloak surveille les échecs de connexion et peut verrouiller temporairement un compte après un nombre d'échecs configurable.
+Protection contre les attaques par force brute sur les comptes utilisateurs. Keycloak surveille les échecs de connexion et verrouille les comptes selon le mode choisi.
+
+Le paramètre **Brute Force Mode** détermine le comportement global et les champs disponibles :
+
+| Mode | Comportement |
+| :--- | :--- |
+| `Lockout temporarily` | Le compte est verrouillé pour une durée croissante après trop d'échecs, puis déverrouillé automatiquement. |
+| `Lockout permanently` | Le compte est verrouillé définitivement après trop d'échecs. Seul un administrateur peut le déverrouiller manuellement. |
+| `Lockout permanently after temporary lockout` | Combine les deux : le compte subit d'abord des verrouillages temporaires progressifs, puis est verrouillé définitivement après un nombre maximal de verrouillages temporaires atteint. |
+
+Les paramètres disponibles varient selon le mode sélectionné :
+
+| Paramètre | Lockout temporarily | Lockout permanently | Lockout permanently after temporary lockout |
+| :--- | :---: | :---: | :---: |
+| Max login failures | ✓ | ✓ | ✓ |
+| Maximum temporary lockouts | | | ✓ |
+| Strategy to increase wait time | ✓ | | ✓ |
+| Wait increment | ✓ | | ✓ |
+| Max wait | ✓ | | ✓ |
+| Failure reset time | ✓ | | ✓ |
+| Quick login check milliseconds | ✓ | ✓ | ✓ |
+| Minimum quick login wait | ✓ | ✓ | ✓ |
 
 | Paramètre | Explications détaillées |
 | :--- | :--- |
-| Brute Force Mode | Mode de protection activé. `Lockout temporarily` : le compte est verrouillé pour une durée croissante après trop d'échecs, puis déverrouillé automatiquement. D'autres modes peuvent être disponibles selon la version (ex. verrouillage permanent nécessitant une action admin). |
 | Max login failures | Nombre maximal d'échecs de connexion consécutifs autorisés avant déclenchement du verrouillage. |
-| Strategy to increase wait time | Stratégie d'augmentation du temps d'attente entre les tentatives. `Multiple` : le temps d'attente est multiplié à chaque nouvel échec après verrouillage. |
-| Wait increment | Durée (en minutes) ajoutée au temps d'attente à chaque cycle d'échecs supplémentaires. |
-| Max wait | Durée maximale (en minutes) du verrouillage, quel que soit le nombre d'échecs accumulés. Plafond de la progression du temps d'attente. |
+| Maximum temporary lockouts | Nombre maximal de verrouillages temporaires avant bascule en verrouillage permanent. Spécifique au mode `Lockout permanently after temporary lockout`. |
+| Strategy to increase wait time | Stratégie d'augmentation du temps d'attente entre les cycles d'échecs. `Multiple` : le temps d'attente est multiplié à chaque nouveau verrouillage. |
+| Wait increment | Durée de base (en minutes) ajoutée au temps d'attente à chaque cycle d'échecs supplémentaires. |
+| Max wait | Durée maximale (en minutes) d'un verrouillage temporaire, quel que soit le nombre d'échecs accumulés. Plafond de la progression. |
 | Failure reset time | Délai (en heures) après lequel le compteur d'échecs est remis à zéro si aucune nouvelle tentative échouée n'est survenue. |
-| Quick login check milliseconds | Seuil de temps (en millisecondes) en dessous duquel deux tentatives de connexion consécutives sont considérées comme suspectes (trop rapides pour être humaines). Déclenche un temps d'attente minimal. |
-| Minimum quick login wait | Durée minimale d'attente (en minutes) imposée lorsqu'une tentative de connexion est détectée comme trop rapide. |
+| Quick login check milliseconds | Seuil (en millisecondes) en dessous duquel deux tentatives consécutives sont considérées comme suspectes (trop rapides pour être humaines). Déclenche immédiatement un temps d'attente minimal. |
+| Minimum quick login wait | Durée minimale d'attente (en minutes) imposée lorsqu'une tentative est détectée comme trop rapide. |
