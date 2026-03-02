@@ -268,3 +268,49 @@ Durées de vie applicables aux flux d'authentification en cours (actions tempora
 | :--- | :--- |
 | Login timeout | Durée maximale (en minutes) accordée à un utilisateur pour terminer le flux de connexion depuis l'affichage de la page de login. Au-delà, la session de login expire et l'utilisateur doit recommencer. |
 | Login action timeout | Durée maximale (en minutes) accordée à un utilisateur pour compléter une action dans le flux d'authentification (ex. saisie d'un code OTP, validation d'un e-mail). Chaque action démarre un nouveau compteur. |
+
+## Tokens
+
+### General
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Default Signature Algorithm | Algorithme de signature utilisé par défaut pour les tokens JWT du realm (ex. `RS256`). Peut être surchargé au niveau d'un client individuel. |
+| OAuth 2.0 Device Code Lifespan | Durée de validité (en minutes) du code appareil dans le flux *Device Authorization Grant*. Au-delà, l'utilisateur doit relancer la procédure sur son appareil. |
+| OAuth 2.0 Device Polling Interval | Intervalle minimal (en secondes) entre deux tentatives de polling du token par l'appareil dans le flux *Device Authorization Grant*. Évite les requêtes trop fréquentes vers le serveur. |
+| Short verification\_uri in Device Authorization flow | Si activé, Keycloak utilise une URI de vérification courte dans le flux Device Authorization (ex. `https://example.com/activate` au lieu d'une URL avec code pré-rempli). Utile pour les affichages à faible résolution (TV, CLI). |
+| Lifetime of the Request URI for Pushed Authorization Request | Durée de validité (en minutes) de l'URI de requête générée lors d'un *Pushed Authorization Request* (PAR, RFC 9126). Passé ce délai, l'URI expire et le client doit soumettre une nouvelle requête. |
+
+### Refresh tokens
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Revoke Refresh Token | Si activé, chaque refresh token ne peut être utilisé qu'une seule fois. Après usage, un nouveau refresh token est émis. Protège contre la réutilisation d'un refresh token intercepté (*refresh token rotation*). Désactivé par défaut. |
+
+### Access tokens
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Access Token Lifespan | Durée de validité (en minutes) des access tokens. Une valeur courte réduit la fenêtre d'exploitation d'un token compromis. Il est recommandé de rester en dessous de la valeur `SSO Session Idle` (par défaut 30 minutes). |
+| Access Token Lifespan For Implicit Flow | Durée de validité (en minutes) des access tokens émis via le flux *Implicit* (déprécié). Ce flux ne dispose pas de refresh token, d'où une durée potentiellement plus longue. |
+| Client Login Timeout | Durée maximale (en minutes) accordée à un client pour terminer un échange de code dans le flux *Authorization Code*. Au-delà, le code d'autorisation expire. |
+
+### Action tokens
+
+Les action tokens sont des tokens à usage unique générés par Keycloak pour des actions sensibles déclenchées par e-mail (vérification, reset de mot de passe, etc.).
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| User-Initiated Action Lifespan | Durée de validité (en minutes) des action tokens déclenchés par l'utilisateur lui-même (ex. mise à jour de l'e-mail depuis la console de compte). |
+| Default Admin-Initiated Action Lifespan | Durée de validité par défaut (en heures) des action tokens déclenchés par un administrateur (ex. envoi d'un e-mail de vérification ou d'un lien de reset depuis la console admin). |
+
+### Override Action Tokens
+
+Permet de surcharger la durée de validité par défaut pour chaque type d'action token spécifique. Si laissé vide, la valeur de `Default Admin-Initiated Action Lifespan` s'applique.
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Email Verification | Durée de validité (en minutes) du lien envoyé pour vérifier l'adresse e-mail d'un utilisateur. |
+| IdP account email verification | Durée de validité (en minutes) du lien de vérification e-mail dans le cadre d'une liaison de compte via un fournisseur d'identité externe. |
+| Forgot password | Durée de validité (en minutes) du lien de réinitialisation de mot de passe envoyé à l'utilisateur. |
+| Execute actions | Durée de validité (en minutes) des liens d'actions requises envoyés par un administrateur (ex. mise à jour du profil, configuration OTP). |
