@@ -20,4 +20,27 @@ Documentation exhaustive des paramètres de configuration d'un realm dans l'inte
 | Signature algorithm SAML IdP metadata | Algorithme cryptographique utilisé pour signer les métadonnées SAML exposées par Keycloak en tant qu'IdP (ex. `RSA_SHA256`, `RSA_SHA512`). Ce paramètre affecte uniquement la signature du document de métadonnées SAML, pas celle des assertions SAML elles-mêmes (configurée au niveau du client). À choisir selon les exigences du fournisseur de services SAML. |
 | Endpoints | Liens vers les documents de découverte des protocoles supportés par le realm. **OpenID Endpoint Configuration** : document JSON (`/.well-known/openid-configuration`) listant toutes les URLs OIDC/OAuth2 du realm (authorization, token, userinfo, JWKS, logout, etc.). **SAML 2.0 Identity Provider Metadata** : document XML décrivant l'IdP SAML du realm (certificate, SSO URL, SLO URL). Ces documents sont destinés aux clients et outils qui ont besoin de s'auto-configurer. |
 
+## Login settings
 
+### Login screen customization
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| User registration | Si activé, un lien « Créer un compte » est affiché sur la page de connexion, permettant aux nouveaux utilisateurs de s'inscrire eux-mêmes. Si désactivé, seuls les administrateurs peuvent créer des comptes. Désactivé par défaut. |
+| Forgot password | Si activé, un lien « Mot de passe oublié ? » est affiché sur la page de connexion. Keycloak envoie alors un e-mail de réinitialisation à l'utilisateur. Nécessite qu'un serveur SMTP soit configuré dans les paramètres e-mail du realm. Désactivé par défaut. |
+| Remember me | Si activé, une case « Rester connecté » est proposée sur la page de connexion. Lorsque l'utilisateur la coche, sa session Keycloak persiste au-delà de la fermeture du navigateur (durée configurable via les paramètres de session du realm). Désactivé par défaut. |
+
+### Email settings
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Email as username | Si activé, l'adresse e-mail sert d'identifiant de connexion à la place d'un nom d'utilisateur distinct. Simplifie l'expérience utilisateur mais impose que chaque e-mail soit unique dans le realm. Désactivé par défaut. |
+| Login with email | Si activé, les utilisateurs peuvent se connecter en saisissant leur adresse e-mail (en plus ou à la place du nom d'utilisateur, selon la configuration). Activé par défaut. |
+| Duplicate emails | Si activé, plusieurs comptes peuvent partager la même adresse e-mail dans le realm. Désactivé par défaut car cela peut créer des ambiguïtés lors de la récupération de compte ou du login par e-mail. |
+| Verify email | Si activé, Keycloak demande à chaque nouvel utilisateur de confirmer son adresse e-mail avant de pouvoir accéder aux applications. Un e-mail de vérification est envoyé lors de l'inscription ou de la première connexion. Nécessite qu'un SMTP soit configuré. Désactivé par défaut. |
+
+### User info settings
+
+| Paramètre | Explications détaillées |
+| :--- | :--- |
+| Edit username | Si activé, les utilisateurs peuvent modifier leur propre nom d'utilisateur depuis la console de compte (*account console*). Si désactivé, seul un administrateur peut le changer. À désactiver si le nom d'utilisateur est utilisé comme identifiant stable dans d'autres systèmes. Désactivé par défaut. |
