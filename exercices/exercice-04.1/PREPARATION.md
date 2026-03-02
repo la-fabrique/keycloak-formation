@@ -55,29 +55,33 @@ Les participants viennent de créer les clients. La question naturelle est : *qu
 
 Keycloak modélise la délégation d'administration avec trois objets :
 
-| Objet | Rôle | Exemple |
-|---|---|---|
-| **Resource** | Ce sur quoi on accorde des droits | Le client `reserve-valdoria` |
-| **Scope** | Le niveau d'accès accordé | `manage` (créer/modifier/supprimer les rôles, mappers, etc.) |
-| **Policy** | Qui bénéficie des droits | L'utilisateur `roderick` |
-| **Permission** | Lien entre Resource + Scope + Policy | "roderick peut `manage` `reserve-valdoria`" |
+
+| Objet          | Rôle                                 | Exemple                                                      |
+| -------------- | ------------------------------------ | ------------------------------------------------------------ |
+| **Resource**   | Ce sur quoi on accorde des droits    | Le client `reserve-valdoria`                                 |
+| **Scope**      | Le niveau d'accès accordé            | `manage` (créer/modifier/supprimer les rôles, mappers, etc.) |
+| **Policy**     | Qui bénéficie des droits             | L'utilisateur `roderick`                                     |
+| **Permission** | Lien entre Resource + Scope + Policy | "roderick peut `manage` `reserve-valdoria`"                  |
+
 
 ### Le client `realm-management`
 
-Les fine-grained admin permissions de Keycloak reposent sur un client interne du realm : **`realm-management`**. Ce client expose des ressources (les clients du realm, les utilisateurs, les groupes, etc.) et des scopes d'administration. Quand on active les permissions fines, Keycloak crée automatiquement une ressource pour chaque client, et on peut y associer des policies.
+Les fine-grained admin permissions de Keycloak reposent sur un client interne du realm : `**realm-management`**. Ce client expose des ressources (les clients du realm, les utilisateurs, les groupes, etc.) et des scopes d'administration. Quand on active les permissions fines, Keycloak crée automatiquement une ressource pour chaque client, et on peut y associer des policies.
 
 ### Les scopes disponibles sur un client
 
 Quand on active les permissions fines sur un client, les scopes suivants sont disponibles :
 
-| Scope | Ce que ça permet |
-|---|---|
-| `view` | Lire la configuration du client |
-| `manage` | Modifier la configuration, créer/supprimer des rôles, des mappers, etc. |
-| `configure` | Modifier les paramètres avancés |
-| `map-roles` | Mapper des rôles du client à des utilisateurs |
-| `map-roles-composite` | Inclure les rôles du client dans des rôles composites |
-| `map-roles-client-scope` | Inclure les rôles du client dans des client scopes |
+
+| Scope                    | Ce que ça permet                                                        |
+| ------------------------ | ----------------------------------------------------------------------- |
+| `view`                   | Lire la configuration du client                                         |
+| `manage`                 | Modifier la configuration, créer/supprimer des rôles, des mappers, etc. |
+| `configure`              | Modifier les paramètres avancés                                         |
+| `map-roles`              | Mapper des rôles du client à des utilisateurs                           |
+| `map-roles-composite`    | Inclure les rôles du client dans des rôles composites                   |
+| `map-roles-client-scope` | Inclure les rôles du client dans des client scopes                      |
+
 
 **Pour cet exercice, on utilise `manage`** — c'est le scope le plus large qui couvre la création de rôles et la gestion des mappers.
 
@@ -143,10 +147,10 @@ Après cet exercice, le realm `valdoria` doit contenir :
 Via la console d'administration (super-admin) :
 
 1. Créer l'utilisateur `roderick` dans le realm `valdoria`
-   - Username : `roderick`
-   - Email : `roderick@valdoria.empire`
-   - First name : `Roderick`
-   - Last name : `le Régisseur`
+  - Username : `roderick`
+  - Email : `roderick@valdoria.empire`
+  - First name : `Roderick`
+  - Last name : `le Régisseur`
 2. Définir son mot de passe : `valdoria123` (Temporary : OFF)
 
 > Roderick n'a **aucun rôle** pour l'instant. C'est intentionnel.
@@ -181,8 +185,8 @@ Via la console d'administration (super-admin) :
 
 1. Dans le client `realm-management` → **Authorization** → **Policies**
 2. Créer une nouvelle policy de type **User**
-   - Name : `policy-roderick`
-   - Users : sélectionner `roderick`
+  - Name : `policy-roderick`
+  - Users : sélectionner `roderick`
 3. Sauvegarder
 
 ---
@@ -190,7 +194,7 @@ Via la console d'administration (super-admin) :
 ### Étape 5 — Associer la permission `manage` à la policy
 
 1. Retourner dans **Clients** → `reserve-valdoria` → onglet **Permissions**
-2. Cliquer sur la permission **`manage`**
+2. Cliquer sur la permission `**manage`**
 3. Dans **Policies**, ajouter `policy-roderick`
 4. Sauvegarder
 
@@ -215,6 +219,7 @@ npm start
 ```
 
 Le script effectue dans l'ordre :
+
 1. Obtenir un token pour `roderick` (Resource Owner Password Credentials — utilisable en formation)
 2. Lister les rôles de `reserve-valdoria` → doit fonctionner ✅
 3. Créer un rôle client `gardien` sur `reserve-valdoria` → doit fonctionner ✅
@@ -245,3 +250,4 @@ Le script utilise le flux **Resource Owner Password Credentials** (ROPC) : roder
 - La UI pour les permissions a changé entre les versions de Keycloak. Se référer à la section **Permissions** de l'onglet client (pas le menu Authorization global).
 - Si les participants ne voient pas l'onglet **Permissions** sur un client, vérifier que les admin permissions sont bien activées au niveau du realm (étape 2).
 - Le client `realm-management` est un client **interne** de Keycloak — ne pas le supprimer ni le modifier hors du cadre des policies/permissions.
+
