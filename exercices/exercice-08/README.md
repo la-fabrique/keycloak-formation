@@ -133,8 +133,10 @@ Dans cet exercice, vous avez impersonné Brunhild en tant que super admin. Mais 
 4. Cliquez **Create**
 5. Ouvrez le groupe, allez dans l'onglet **Role mapping**
 6. Cliquez **Assign role**, puis activez le filtre **Filter by clients**
-7. Recherchez `realm-management`, sélectionnez le rôle `impersonation`
+7. Recherchez `realm-management`, sélectionnez les rôles `impersonation` et `view-users`
 8. Cliquez **Assign**
+
+> `view-users` permet d'accéder à la liste des utilisateurs dans la console d'administration. Sans ce rôle, le bouton **Impersonate** n'est pas accessible.
 
 ### 2. Créer l'utilisateur `Hub l'espion` et l'ajouter au groupe
 
