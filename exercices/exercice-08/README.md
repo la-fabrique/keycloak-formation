@@ -63,7 +63,7 @@ La session créée est une vraie session Keycloak : le token contient l'identit�
 
 ### Droit d'impersonation
 
-Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Pour déléguer ce droit à un utilisateur spécifique, il faut lui attribuer le rôle **`impersonation`** du client `realm-management`.
+Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Pour déléguer ce droit à un utilisateur spécifique, il faut lui attribuer le rôle `**impersonation**` du client `realm-management`.
 
 ---
 
@@ -71,16 +71,16 @@ Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Po
 
 ### Étape 1 — Créer l'utilisateur `support-imperial`
 
-1. Connectez-vous à la console Keycloak : **http://localhost:8080**
+1. Connectez-vous à la console Keycloak : **[http://localhost:8080](http://localhost:8080)**
 2. Sélectionnez le realm **valdoria**
 3. Dans le menu de gauche, allez dans **Users**
 4. Cliquez **Create new user**
 5. Renseignez :
-   - **Username :** `support-imperial`
-   - **Email :** `support@valdoria.empire`
-   - **First name :** Support
-   - **Last name :** Impérial
-   - **Email verified :** ON
+  - **Username :** `support-imperial`
+  - **Email :** `support@valdoria.empire`
+  - **First name :** Support
+  - **Last name :** Impérial
+  - **Email verified :** ON
 6. Cliquez **Create**
 7. Allez dans l'onglet **Credentials**
 8. Cliquez **Set password**, définissez `valdoria123`, désactivez **Temporary**
@@ -92,9 +92,9 @@ Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Po
 
 1. Toujours sur la fiche de `support-imperial`, allez dans l'onglet **Role mapping**
 2. Cliquez **Assign role**
-4. Recherchez `realm-management` dans la liste
-5. Sélectionnez le rôle **`impersonation`**
-6. Cliquez **Assign**
+3. Recherchez `realm-management` dans la liste
+4. Sélectionnez le rôle `**impersonation`**
+5. Cliquez **Assign**
 
 **Point d'observation :** `support-imperial` peut désormais impersonner n'importe quel utilisateur du realm `valdoria`, sans pour autant avoir accès à la console d'administration.
 
@@ -103,14 +103,14 @@ Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Po
 ### Étape 3 — Impersonner Brunhild depuis la console
 
 1. Dans le menu de gauche, allez dans **Users**
-2. Cliquez sur l'utilisateur **`brunhild`**
+2. Cliquez sur l'utilisateur `**brunhild`**
 3. En haut à droite de la fiche utilisateur, cliquez sur le menu **⋮** (trois points) ou le bouton **Action**
 4. Sélectionnez **Impersonate**
 5. Confirmez l'action si une fenêtre de confirmation apparaît
 
-Keycloak ouvre automatiquement une nouvelle session dans votre navigateur **au nom de Brunhild** et affiche la **console Account** : **http://localhost:8080/realms/valdoria/account**.
+Keycloak ouvre automatiquement une nouvelle session dans votre navigateur **au nom de Brunhild** et affiche la **console Account** : **[http://localhost:8080/realms/valdoria/account](http://localhost:8080/realms/valdoria/account)**.
 
-Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retournez sur **http://localhost:5173/** et actualisez la page.
+Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retournez sur **[http://localhost:5173/](http://localhost:5173/)** et actualisez la page.
 
 ---
 
@@ -119,9 +119,9 @@ Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retour
 1. Vous êtes maintenant connecté au Comptoir des voyageurs en tant que **Brunhild**
 2. Allez dans la page **Debug** du Comptoir
 3. Dans l'access token, vérifiez :
-   - **`preferred_username`** : `brunhild` ✅
-   - **`realm_access.roles`** : contient `marchand` ✅
-   - **`villeOrigine`** : `Nordheim` ✅
+  - `**preferred_username`** : `brunhild` ✅
+  - `**realm_access.roles**` : contient `marchand` ✅
+  - `**villeOrigine**` : `Nordheim` ✅
 4. Naviguez vers la page **Inventaire**
 5. Constatez que Brunhild y accède ✅
 
@@ -131,7 +131,7 @@ Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retour
 
 ### Étape 5 — Vérifier les sessions dans la console d'administration
 
-1. Revenez à la console d'administration Keycloak (ouvrez un nouvel onglet : **http://localhost:8080/admin**)
+1. Revenez à la console d'administration Keycloak (ouvrez un nouvel onglet : **[http://localhost:8080/admin](http://localhost:8080/admin)**)
 2. Dans le realm **valdoria**, allez dans **Sessions** (menu de gauche)
 3. Observez : la session impersonnée de **brunhild** est bien présente.
 
@@ -153,7 +153,7 @@ Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retour
 
 ## Pour aller plus loin
 
-### Déléguer l'impersonation via un groupe
+## Déléguer l'impersonation via un groupe
 
 Plutôt que d'attribuer le rôle `impersonation` directement à `support-imperial`, vous pouvez créer un groupe dédié et y placer tous les agents de support :
 
@@ -167,9 +167,12 @@ Cette approche est plus maintenable : pour habiliter un nouvel agent de support,
 
 ## Dépannage
 
-| Problème | Cause probable | Solution |
-|----------|---------------|----------|
-| Le bouton **Impersonate** n'apparaît pas | Vous êtes dans le realm `master` | Assurez-vous d'être dans le realm `valdoria` |
-| Le Comptoir ne s'ouvre pas après l'impersonation | L'URL de redirection n'est pas configurée | Vérifiez que `http://localhost:5173` est dans les **Valid redirect URIs** du client `comptoir-des-voyageurs` |
-| Le rôle `marchand` est absent du token | Brunhild n'a pas le rôle `marchand` | Vérifiez le **Role mapping** de Brunhild (exercice 3) |
-| `villeOrigine` est absent du token | Le scope `attributs-valdorien` n'est pas assigné | Vérifiez la configuration du client `comptoir-des-voyageurs` (exercice 4) |
+
+| Problème                                         | Cause probable                                   | Solution                                                                                                     |
+| ------------------------------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Le bouton **Impersonate** n'apparaît pas         | Vous êtes dans le realm `master`                 | Assurez-vous d'être dans le realm `valdoria`                                                                 |
+| Le Comptoir ne s'ouvre pas après l'impersonation | L'URL de redirection n'est pas configurée        | Vérifiez que `http://localhost:5173` est dans les **Valid redirect URIs** du client `comptoir-des-voyageurs` |
+| Le rôle `marchand` est absent du token           | Brunhild n'a pas le rôle `marchand`              | Vérifiez le **Role mapping** de Brunhild (exercice 3)                                                        |
+| `villeOrigine` est absent du token               | Le scope `attributs-valdorien` n'est pas assigné | Vérifiez la configuration du client `comptoir-des-voyageurs` (exercice 4)                                    |
+
+

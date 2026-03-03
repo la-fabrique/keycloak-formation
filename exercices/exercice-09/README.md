@@ -93,6 +93,12 @@ Le **Group Mapper** convertit l'appartenance à un groupe LDAP en appartenance �
      -D "cn=admin,dc=registre,dc=valdoria,dc=local" -w admin \
      < infrastructure/openldap/50-bootstrap.ldif
    ```
+  
+  
+   Sous windows 
+   ```bash
+   type infrastructure\openldap\50-bootstrap.ldif | docker exec -i autheria-openldap ldapadd -x -D "cn=admin,dc=registre,dc=valdoria,dc=local" -w admin 
+   ```
 
    Vous devez voir `adding new entry` pour chaque entrée (OU, utilisateurs, groupes).
 
@@ -183,7 +189,7 @@ Si le mapper existe, passez à l'étape suivante. Sinon, créez-le :
 **Vérification :**
 
 1. En haut à droite, cliquez sur **Action** puis **Sync all users** pour recharger le cache Keycloak avec les nouveaux attributs
-2. Dans le menu de gauche, allez dans **Users** et cliquez sur **alaric**
+2. Dans le menu de gauche, allez dans **Users** et cliquez sur **aldric**
 3. Vérifiez que l'attribut **villeOrigine** est bien renseigné dans ses détails
 
 **Point d'observation :** L'attribut `l` (locality) est un attribut standard LDAP. Le mapper le traduit en `villeOrigine` côté Keycloak, le même attribut utilisé par le Comptoir des voyageurs et la Réserve depuis l'exercice 4.
