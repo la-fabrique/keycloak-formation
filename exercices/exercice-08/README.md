@@ -8,7 +8,6 @@
 
 À l'issue de cet exercice, vous serez capable de :
 
-- Créer un utilisateur dédié au support avec les **droits d'impersonation**
 - Utiliser la fonction **Impersonate** depuis la console d'administration
 - Observer la session créée dans le Comptoir des voyageurs
 - **Diagnostiquer un problème de droits** en reproduisant exactement l'expérience de l'utilisateur
@@ -37,7 +36,7 @@
 >
 > Plutôt que de lui demander de partager son mot de passe, l'administrateur impérial dispose d'un outil puissant : l'**impersonation**. Il peut voir la province exactement à travers les yeux de Brunhild — sa session, ses droits, ses données — sans connaître ses identifiants.
 >
-> Votre mission : créer un compte de support habilité, impersonner Brunhild, et diagnostiquer si le problème vient réellement de ses droits.
+> Votre mission : impersonner Brunhild depuis la console d'administration, et diagnostiquer si le problème vient réellement de ses droits.
 
 ---
 
@@ -69,38 +68,7 @@ Par défaut, seuls les administrateurs du realm `master` peuvent impersonner. Po
 
 ## Étapes
 
-### Étape 1 — Créer l'utilisateur `support-imperial`
-
-1. Connectez-vous à la console Keycloak : **[http://localhost:8080](http://localhost:8080)**
-2. Sélectionnez le realm **valdoria**
-3. Dans le menu de gauche, allez dans **Users**
-4. Cliquez **Create new user**
-5. Renseignez :
-  - **Username :** `support-imperial`
-  - **Email :** `support@valdoria.empire`
-  - **First name :** Support
-  - **Last name :** Impérial
-  - **Email verified :** ON
-6. Cliquez **Create**
-7. Allez dans l'onglet **Credentials**
-8. Cliquez **Set password**, définissez `valdoria123`, désactivez **Temporary**
-9. Cliquez **Save**
-
----
-
-### Étape 2 — Attribuer le droit d'impersonation
-
-1. Toujours sur la fiche de `support-imperial`, allez dans l'onglet **Role mapping**
-2. Cliquez **Assign role**
-3. Recherchez `realm-management` dans la liste
-4. Sélectionnez le rôle `**impersonation`**
-5. Cliquez **Assign**
-
-**Point d'observation :** `support-imperial` peut désormais impersonner n'importe quel utilisateur du realm `valdoria`, sans pour autant avoir accès à la console d'administration.
-
----
-
-### Étape 3 — Impersonner Brunhild depuis la console
+### Étape 1 — Impersonner Brunhild depuis la console
 
 1. Dans le menu de gauche, allez dans **Users**
 2. Cliquez sur l'utilisateur `**brunhild`**
@@ -114,7 +82,7 @@ Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retour
 
 ---
 
-### Étape 4 — Observer la session dans le Comptoir
+### Étape 2 — Observer la session dans le Comptoir
 
 1. Vous êtes maintenant connecté au Comptoir des voyageurs en tant que **Brunhild**
 2. Allez dans la page **Debug** du Comptoir
@@ -129,7 +97,7 @@ Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retour
 
 ---
 
-### Étape 5 — Vérifier les sessions dans la console d'administration
+### Étape 3 — Vérifier les sessions dans la console d'administration
 
 1. Revenez à la console d'administration Keycloak (ouvrez un nouvel onglet : **[http://localhost:8080/admin](http://localhost:8080/admin)**)
 2. Dans le realm **valdoria**, allez dans **Sessions** (menu de gauche)
@@ -153,9 +121,18 @@ Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retour
 
 ## Pour aller plus loin
 
-## Déléguer l'impersonation via un groupe
+## Déléguer l'impersonation à un utilisateur non-administrateur
 
-Plutôt que d'attribuer le rôle `impersonation` directement à `support-imperial`, vous pouvez créer un groupe dédié et y placer tous les agents de support :
+Dans cet exercice, vous avez impersonné Brunhild en tant que super admin. Mais il est possible de déléguer ce droit à un utilisateur ordinaire (par exemple un agent de support) sans lui donner accès à la console d'administration.
+
+Pour créer un utilisateur `support-imperial` habilité à impersonner :
+
+1. Créez l'utilisateur `support-imperial` dans le realm `valdoria`
+2. Dans l'onglet **Role mapping** de cet utilisateur, cliquez **Assign role**
+3. Sélectionnez le rôle `impersonation` du client `realm-management`
+4. Cliquez **Assign**
+
+Pour aller encore plus loin, vous pouvez gérer ces droits via un groupe dédié et y placer tous les agents de support :
 
 1. Créer le groupe `cellule-renseignement`
 2. Attribuer le rôle `realm-management/impersonation` au groupe (onglet **Role mapping** du groupe, **Filter by clients**)
