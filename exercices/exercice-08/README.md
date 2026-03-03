@@ -123,22 +123,34 @@ Pour constater que vous êtes authentifié sur le Comptoir des voyageurs, retour
 
 ## Déléguer l'impersonation à un utilisateur non-administrateur
 
-Dans cet exercice, vous avez impersonné Brunhild en tant que super admin. Mais il est possible de déléguer ce droit à un utilisateur ordinaire (par exemple un agent de support) sans lui donner accès à la console d'administration.
+Dans cet exercice, vous avez impersonné Brunhild en tant que super admin. Mais il est possible de déléguer ce droit à un utilisateur ordinaire sans lui donner accès à la console d'administration.
 
-Pour créer un utilisateur `support-imperial` habilité à impersonner :
+### 1. Créer le groupe `cellule-renseignement` avec le droit d'impersonation
 
-1. Créez l'utilisateur `support-imperial` dans le realm `valdoria`
-2. Dans l'onglet **Role mapping** de cet utilisateur, cliquez **Assign role**
-3. Sélectionnez le rôle `impersonation` du client `realm-management`
-4. Cliquez **Assign**
+1. Dans le menu de gauche, allez dans **Groups**
+2. Cliquez **Create group**
+3. Renseignez le nom : `cellule-renseignement`
+4. Cliquez **Create**
+5. Ouvrez le groupe, allez dans l'onglet **Role mapping**
+6. Cliquez **Assign role**, puis activez le filtre **Filter by clients**
+7. Recherchez `realm-management`, sélectionnez le rôle `impersonation`
+8. Cliquez **Assign**
 
-Pour aller encore plus loin, vous pouvez gérer ces droits via un groupe dédié et y placer tous les agents de support :
+### 2. Créer l'utilisateur `Hub l'espion` et l'ajouter au groupe
 
-1. Créer le groupe `cellule-renseignement`
-2. Attribuer le rôle `realm-management/impersonation` au groupe (onglet **Role mapping** du groupe, **Filter by clients**)
-3. Ajouter `support-imperial` dans ce groupe
+1. Dans le menu de gauche, allez dans **Users**
+2. Cliquez **Create new user**
+3. Renseignez :
+   - **Username :** `hub-lespion`
+   - **First name :** Hub
+   - **Last name :** L'espion
+   - **Email verified :** ON
+4. Cliquez **Create**
+5. Allez dans l'onglet **Credentials**, cliquez **Set password**, définissez `valdoria123`, désactivez **Temporary**, cliquez **Save**
+6. Allez dans l'onglet **Groups**, cliquez **Join Group**
+7. Sélectionnez `cellule-renseignement`, cliquez **Join**
 
-Cette approche est plus maintenable : pour habiliter un nouvel agent de support, il suffit de l'ajouter au groupe.
+`Hub l'espion` hérite désormais du droit d'impersonation via son groupe. Cette approche est plus maintenable : pour habiliter un nouvel agent de support, il suffit de l'ajouter au groupe.
 
 ---
 
