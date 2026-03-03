@@ -169,7 +169,8 @@ Valdoria doit s'enregistrer comme client auprès d'Ostmark pour pouvoir lui dél
    |-----------|--------|
    | **Root URL** | `` |
    | **Home URL** | `` |
-   | **Valid redirect URIs** | `http://localhost:8080/realms/valdoria/broker/ostmark/endpoint/logout_response` |
+   | **Valid redirect URIs** | `http://localhost:8080/realms/valdoria/broker/ostmark/endpoint` |
+   | **Valid post logout redirect URIs** | `http://localhost:8080/realms/valdoria/broker/ostmark/endpoint/logout_response` |
    | **Web origins** | `http://localhost:8080` |
 
 8. Cliquez **Save**
