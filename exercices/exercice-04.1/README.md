@@ -148,8 +148,6 @@ Une policy définit **qui** bénéficie de l’accès. Ici : l’utilisateur `ro
 
 Roderick doit gérer les deux clients. Créez une permission équivalente pour `comptoir-des-voyageurs`.
 
-**Keycloak 26+ :**
-
 1. Menu latéral → **« Permissions »** → **Create permission**
 2. Type de ressource : **Clients**
 3. Name : ex. `manage-comptoir-des-voyageurs`
@@ -187,7 +185,7 @@ RESERVE_CLIENT_ID=<UUID du client reserve-valdoria>
 COMPTOIR_CLIENT_ID=<UUID du client comptoir-des-voyageurs>
 ```
 
-**Récupérer les IDs des clients :** Roderick n'a pas la permission de lister les clients (fine-grained). Il faut donc renseigner les IDs internes (UUID) dans le `.env`. Connecté en tant qu'administrateur Keycloak : **Clients** → cliquer sur `reserve-valdoria` → onglet **Détails** (ou l'ID dans l'URL) → copier la valeur du champ **ID**. Répéter pour `comptoir-des-voyageurs`. Coller ces UUID dans `RESERVE_CLIENT_ID` et `COMPTOIR_CLIENT_ID`.
+**Récupérer les IDs des clients :** Roderick n'a pas la permission de lister les clients (fine-grained). Il faut donc renseigner les IDs internes (UUID) dans le `.env`. Connecté en tant qu'administrateur Keycloak : **Clients** → cliquer sur `reserve-valdoria` puis récupérer l'ID dans l'URL. Répéter pour `comptoir-des-voyageurs`. Coller ces UUID dans `RESERVE_CLIENT_ID` et `COMPTOIR_CLIENT_ID`.
 
 #### Installer et lancer
 
