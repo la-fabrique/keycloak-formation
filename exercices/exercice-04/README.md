@@ -33,6 +33,7 @@ A l'issue de cet exercice, vous serez capable de :
 - Avoir complété les exercices 1, 2 et 3
 - Comprendre la notion de rôles de royaume et rôles composites
 - Connaître la différence entre un client public et un client confidentiel
+
 ---
 
 ## Contexte narratif
@@ -58,46 +59,49 @@ Le Comptoir des voyageurs est l'application front-end qui permet aux sujets de s
 
 #### Configuration de base (Step 1: General settings)
 
-3. Remplissez les champs :
-   - **Client type :** `OpenID Connect`
-   - **Client ID :** `comptoir-des-voyageurs`
-   - **Name :** `Comptoir des voyageurs`
-   - **Description :** `Application front-end pour l'authentification des sujets de Valdoria afin d'accéder aux ressources de la réserve`
-4. Laissez les autres options par défaut
-5. Cliquez sur **« Next »**
+1. Remplissez les champs :
+  - **Client type :** `OpenID Connect`
+  - **Client ID :** `comptoir-des-voyageurs`
+  - **Name :** `Comptoir des voyageurs`
+  - **Description :** `Application front-end pour l'authentification des sujets de Valdoria afin d'accéder aux ressources de la réserve`
+2. Laissez les autres options par défaut
+3. Cliquez sur **« Next »**
 
 #### Configuration des capacités (Step 2: Capability config)
 
-6. **Observation :** Vous êtes sur l'étape « Capability config »
-7. Configurez les options suivantes :
-   - **Client authentication :** OFF (désactivé — client public sans secret)
-   - **Authorization :** OFF (désactivé — pas de gestion des permissions UMA)
-   - **Authentication flow :** Cochez **« Standard flow »** (Authorization Code Flow)
-   - **Authentication flow :** Décochez **« Direct access grants »**, **« Implicit flow »**, **« Service accounts roles »**, **« OAuth 2.0 Device Authorization Grant »**
-   - **PKCE Method :** `S256` (Proof Key for Code Exchange — recommandé pour les clients publics)
-8. Cliquez sur **« Next »**
+1. **Observation :** Vous êtes sur l'étape « Capability config »
+2. Configurez les options suivantes :
+  - **Client authentication :** OFF (désactivé — client public sans secret)
+  - **Authorization :** OFF (désactivé — pas de gestion des permissions UMA)
+  - **Authentication flow :** Cochez **« Standard flow »** (Authorization Code Flow)
+  - **Authentication flow :** Décochez **« Direct access grants »**, **« Implicit flow »**, **« Service accounts roles »**, **« OAuth 2.0 Device Authorization Grant »**
+  - **PKCE Method :** `S256` (Proof Key for Code Exchange — recommandé pour les clients publics)
+3. Cliquez sur **« Next »**
 
 **Point d'observation :**
+
 - **Client authentication OFF** signifie que ce client est **public** : il ne possède pas de secret (car le code JavaScript du navigateur est visible par tous). C'est adapté aux applications front-end (SPA).
 - **Standard flow** correspond au flux **Authorization Code**, le flux recommandé pour les applications web.
 - **PKCE** ajoute une couche de sécurité en générant un code challenge côté client avant la redirection vers Keycloak. Keycloak vérifie ensuite ce code lors de l'échange du code d'autorisation contre un jeton. Cela empêche un attaquant d'intercepter le code d'autorisation et de l'échanger contre un jeton. La méthode `S256` utilise un hash SHA-256 (plus sécurisé que `plain`).
 
-
 #### Configuration des URLs (Step 3: Login settings)
 
-9. Remplissez les champs suivants :
+1. Remplissez les champs suivants :
 
-| Champ | Valeur |
-| --- | --- |
-| **Root URL** | `http://localhost:5173` |
-| **Home URL** | *(laisser vide)* |
-| **Valid redirect URIs** | `http://localhost:5173/callback` |
-| **Valid post logout redirect URIs** | `http://localhost:5173/*` |
-| **Web origins** | `http://localhost:5173` |
 
-10. Cliquez sur **« Save »**
+| Champ                               | Valeur                           |
+| ----------------------------------- | -------------------------------- |
+| **Root URL**                        | `http://localhost:5173`          |
+| **Home URL**                        | *(laisser vide)*                 |
+| **Valid redirect URIs**             | `http://localhost:5173/callback` |
+| **Valid post logout redirect URIs** | `http://localhost:5173/*`        |
+| **Web origins**                     | `http://localhost:5173`          |
+
+
+1. Cliquez sur **« Save »**
 
 **Point d'observation :**
+
 - **Valid redirect URIs** : liste blanche des URLs vers lesquelles Keycloak peut rediriger après authentification. On cible précisément `/callback` plutôt qu'un wildcard `/*` pour limiter la surface d'attaque (bonne pratique OIDC).
 - **Valid post logout redirect URIs** : liste blanche des URLs vers lesquelles Keycloak peut rediriger l'utilisateur *après* déconnexion. Quand un sujet clique sur « Quitter » dans le Comptoir, l'application appelle l'endpoint de logout Keycloak ; Keycloak invalide la session SSO (Single Sign-Out) puis redirige le navigateur vers une de ces URIs. Sans cette configuration, la redirection post-logout serait refusée.
 - **Web origins** : autorise le front-end à appeler les endpoints Keycloak en AJAX (gestion CORS).
@@ -105,10 +109,10 @@ Le Comptoir des voyageurs est l'application front-end qui permet aux sujets de s
 > **Checkpoint :** Le client `comptoir-des-voyageurs` est créé. Vous êtes redirigé vers la page de détails du client.
 
 **Exposé — Déconnexion et Single Logout (pour le formateur)**  
+
 - **Objectif du logout fédéré :** une déconnexion depuis une application doit invalider la session côté Keycloak pour que tous les clients du même realm soient déconnectés (Single Sign-Out).  
 - **Front-channel :** Keycloak redirige le navigateur vers l'endpoint de logout puis vers les URLs de redirection post-logout des clients (ex. le Comptoir) ; c'est le mécanisme utilisé par les SPA.  
 - **Back-channel :** le serveur Keycloak appelle en HTTP les endpoints de logout des clients (pour les APIs ou applications serveur)
-
 
 **Optionnel — Tester la déconnexion :** Une fois le Comptoir accessible (après avoir terminé la configuration des clients et des mappers), vous pouvez vous connecter, cliquer sur « Quitter » dans l'en-tête, puis observer la redirection vers Keycloak puis le retour sur l'application. L'étape détaillée se trouve à l'exercice 5.
 
@@ -123,32 +127,33 @@ La Réserve est l'API qui expose les ressources protégées du royaume. C'est un
 
 #### Configuration de base (Step 1: General settings)
 
-3. Remplissez les champs :
-   - **Client type :** `OpenID Connect`
-   - **Client ID :** `reserve-valdoria`
-   - **Name :** `Réserve impériale de Valdoria`
-   - **Description :** `API protégée exposant les ressources de la provaince de Valdoria`
-4. Cliquez sur **« Next »**
+1. Remplissez les champs :
+  - **Client type :** `OpenID Connect`
+  - **Client ID :** `reserve-valdoria`
+  - **Name :** `Réserve impériale de Valdoria`
+  - **Description :** `API protégée exposant les ressources de la provaince de Valdoria`
+2. Cliquez sur **« Next »**
 
 #### Configuration des capacités (Step 2: Capability config)
 
-5. **Observation :** Vous êtes sur l'étape « Capability config »
-6. Configurez les options suivantes :
-   - **Client authentication :** ON (activé — client confidentiel)
-   - **Authorization :** OFF (désactivé)
-   - **Authentication flow :** Décochez **Standard flow**, **Direct access grants**, **Implicit flow**, **OAuth 2.0 Device Authorization Grant**
-   - **Authentication flow :** Cochez **« Service accounts roles »** (pour permettre l'introspection de jetons)
-7. Cliquez sur **« Next »**
+1. **Observation :** Vous êtes sur l'étape « Capability config »
+2. Configurez les options suivantes :
+  - **Client authentication :** ON (activé — client confidentiel)
+  - **Authorization :** OFF (désactivé)
+  - **Authentication flow :** Décochez **Standard flow**, **Direct access grants**, **Implicit flow**, **OAuth 2.0 Device Authorization Grant**
+  - **Authentication flow :** Cochez **« Service accounts roles »** (pour permettre l'introspection de jetons)
+3. Cliquez sur **« Next »**
 
 **Point d'observation :**
+
 - **Client authentication ON** avec **Service accounts roles** activé = configuration **Resource Server**. Ce client n'initie pas de flux d'authentification utilisateur, il se contente de valider les jetons.
 - Cette configuration est **standard pour les APIs REST** : elles reçoivent des jetons émis par d'autres clients (comme `comptoir-des-voyageurs`) et les valident.
 
 #### Configuration des URLs (Step 3: Login settings)
 
-8. **Observation :** Tous les champs sont optionnels (une API n'a pas d'URLs de redirection)
-9. Laissez tous les champs vides
-10. Cliquez sur **« Save »**
+1. **Observation :** Tous les champs sont optionnels (une API n'a pas d'URLs de redirection)
+2. Laissez tous les champs vides
+3. Cliquez sur **« Save »**
 
 > **Checkpoint :** Le client `reserve-valdoria` est créé en mode Resource Server. Il apparaît dans la liste des clients.
 
@@ -160,52 +165,51 @@ Par défaut, Keycloak configure automatiquement un **mapper** pour inclure les r
 
 #### Comprendre les Client Scopes par défaut
 
-1. Cliquez sur le client **`comptoir-des-voyageurs`**
+1. Cliquez sur le client `**comptoir-des-voyageurs`**
 2. Cliquez sur l'onglet **« Client scopes »**
 3. **Observation :** Vous voyez 2 onglets : **Setup** et **Evaluate**
 4. Restez sur l'onglet **« Setup »**
 5. **Observation :** Un tableau liste tous les scopes assignés au client avec 3 colonnes :
-   - **Assigned client scope** : nom du scope
-   - **Assigned type** : `Default` (inclus automatiquement dans tous les jetons), `Optional` (inclus uniquement si demandé explicitement), ou `None` (scope dédié au client)
-   - **Description** : description du scope
+  - **Assigned client scope** : nom du scope
+  - **Assigned type** : `Default` (inclus automatiquement dans tous les jetons), `Optional` (inclus uniquement si demandé explicitement), ou `None` (scope dédié au client)
+  - **Description** : description du scope
 
 **Point d'observation :** Les client scopes sont des ensembles de mappers réutilisables. Par défaut, Keycloak assigne des scopes standards (`profile`, `email`, `roles`, `web-origins`, etc.) qui incluent les informations de base de l'utilisateur. Le scope `comptoir-des-voyageurs-dedicated` (type `None`) est un scope propre à ce client.
 
 #### Vérifier le scope `roles` par défaut
 
-6. Dans le menu latéral gauche, cliquez sur **« Client scopes »**
-7. Cliquez sur le scope **`roles`**
-8. **Observation :** Vous êtes dans la configuration du scope `roles` (scope global partagé par tous les clients du realm)
-9. Cliquez sur l'onglet **« Mappers »**
-10. **Observation :** Vous voyez 3 mappers :
-   - `client roles` — mappe les rôles de client
-   - `audience resolve` — ajoute automatiquement l'audience
-   - `realm roles` — mappe les rôles de royaume
-
-11. Cliquez sur le mapper **`realm roles`**
-12. **Observation des paramètres importants :**
-   - **Mapper type :** `User Realm Role`
-   - **Token Claim Name :** `realm_access.roles`
-   - **Claim JSON Type :** `String`
-   - **Add to ID token :** OFF
-   - **Add to access token :** ON
-   - **Add to userinfo :** OFF
-   - **Multivalued :** ON
+1. Dans le menu latéral gauche, cliquez sur **« Client scopes »**
+2. Cliquez sur le scope `**roles`**
+3. **Observation :** Vous êtes dans la configuration du scope `roles` (scope global partagé par tous les clients du realm)
+4. Cliquez sur l'onglet **« Mappers »**
+5. **Observation :** Vous voyez 3 mappers :
+  - `client roles` — mappe les rôles de client
+  - `audience resolve` — ajoute automatiquement l'audience
+  - `realm roles` — mappe les rôles de royaume
+6. Cliquez sur le mapper `**realm roles`**
+7. **Observation des paramètres importants :**
+  - **Mapper type :** `User Realm Role`
+  - **Token Claim Name :** `realm_access.roles`
+  - **Claim JSON Type :** `String`
+  - **Add to ID token :** OFF
+  - **Add to access token :** ON
+  - **Add to userinfo :** OFF
+  - **Multivalued :** ON
 
 **Point d'observation :** Ce mapper est **déjà configuré par défaut** dans le scope `roles` ! Il injecte automatiquement les rôles de royaume dans le claim `realm_access.roles` de l'access token. Nous n'avons donc **rien à créer** pour les rôles de royaume — ils sont déjà mappés.
 
-13. Retournez au client `comptoir-des-voyageurs` (naviguez via le menu **« Clients »**)
+1. Retournez au client `comptoir-des-voyageurs` (naviguez via le menu **« Clients »**)
 
 > **Checkpoint :** Vous avez constaté que le mapper pour les rôles de royaume existe déjà dans le scope `roles`, qui est assigné par défaut au client `comptoir-des-voyageurs`.
 
 #### Vérifier les rôles dans le jeton avec Evaluate
 
-14. Dans le client `comptoir-des-voyageurs`, cliquez sur l'onglet **« Client scopes »**
-15. Cliquez sur l'onglet **« Evaluate »**
-16. Dans le champ **« Users »**, sélectionnez **`alaric`**
-17. Laissez le champ **« Audience target »** vide
-18. Cliquez sur **« Refresh »**
-19. À droite, cliquez sur **« Generated access token »**
+1. Dans le client `comptoir-des-voyageurs`, cliquez sur l'onglet **« Client scopes »**
+2. Cliquez sur l'onglet **« Evaluate »**
+3. Dans le champ **« Users »**, sélectionnez `**alaric`**
+4. Laissez le champ **« Audience target »** vide
+5. Cliquez sur **« Refresh »**
+6. À droite, cliquez sur **« Generated access token »**
 
 **Observation :** Dans le jeton généré, vous devez voir la section suivante :
 
@@ -239,32 +243,32 @@ Les attributs personnalisés (comme `villeOrigine`) ne sont **pas inclus par dé
 1. Dans le menu latéral gauche, cliquez sur **« Client scopes »**
 2. Cliquez sur **« Create client scope »**
 3. Remplissez les champs :
-   - **Name :** `attributs-valdorien`
-   - **Description :** `Informations spécifiques aux sujets de Valdoria, comme la ville d'origine`
-   - **Type :** `Default` (ou `Optional` si vous ne voulez pas que le scope soit toujours inclus)
-   - **Protocol :** `OpenID Connect`
-   - **Display on consent screen :** OFF (désactivé)
-   - **Include in token scope :** ON (activé)
+  - **Name :** `attributs-valdorien`
+  - **Description :** `Informations spécifiques aux sujets de Valdoria, comme la ville d'origine`
+  - **Type :** `Default` (ou `Optional` si vous ne voulez pas que le scope soit toujours inclus)
+  - **Protocol :** `OpenID Connect`
+  - **Display on consent screen :** OFF (désactivé)
+  - **Include in token scope :** ON (activé)
 4. Cliquez sur **« Save »**
 
 > **Checkpoint :** Le client scope `attributs-valdorien` est créé. Vous êtes redirigé vers sa page de détails.
 
 #### Créer le mapper pour `villeOrigine`
 
-5. Vous êtes dans la page de détails du client scope `attributs-valdorien`
-6. Cliquez sur l'onglet **« Mappers »**
-7. Cliquez sur **« Configure a new mapper »**
-8. Sélectionnez le type de mapper : **« User Attribute »**
-9. Remplissez les champs :
-   - **Name :** `ville-origine-mapper`
-   - **User Attribute :** `villeOrigine` (le nom de l'attribut que nous avons créé dans l'étape 1)
-   - **Token Claim Name :** `villeOrigine` (le nom du claim dans le jeton JWT)
-   - **Claim JSON Type :** `String`
-   - **Add to ID token :** OFF
-   - **Add to access token :** ON (coché)
-   - **Add to userinfo :** OFF
-   - **Multivalued :** OFF (décoché)
-10. Cliquez sur **« Save »**
+1. Vous êtes dans la page de détails du client scope `attributs-valdorien`
+2. Cliquez sur l'onglet **« Mappers »**
+3. Cliquez sur **« Configure a new mapper »**
+4. Sélectionnez le type de mapper : **« User Attribute »**
+5. Remplissez les champs :
+  - **Name :** `ville-origine-mapper`
+  - **User Attribute :** `villeOrigine` (le nom de l'attribut que nous avons créé dans l'étape 1)
+  - **Token Claim Name :** `villeOrigine` (le nom du claim dans le jeton JWT)
+  - **Claim JSON Type :** `String`
+  - **Add to ID token :** OFF
+  - **Add to access token :** ON (coché)
+  - **Add to userinfo :** OFF
+  - **Multivalued :** OFF (décoché)
+6. Cliquez sur **« Save »**
 
 **Point d'observation :** Ce mapper lit la valeur de l'attribut utilisateur `villeOrigine` et l'injecte dans le claim `villeOrigine` de l'access token. L'API pourra ensuite lire cette information pour filtrer les ressources (par exemple, ne montrer que les artefacts de la ville d'origine de l'utilisateur).
 
@@ -277,24 +281,24 @@ Les attributs personnalisés (comme `villeOrigine`) ne sont **pas inclus par dé
 Maintenant que le scope `attributs-valdorien` est créé, nous devons l'assigner au client `comptoir-des-voyageurs`.
 
 1. Dans le menu latéral gauche, cliquez sur **« Clients »**
-2. Cliquez sur le client **`comptoir-des-voyageurs`**
+2. Cliquez sur le client `**comptoir-des-voyageurs`**
 3. Cliquez sur l'onglet **« Client scopes »**
 4. Cliquez sur **« Add client scope »**
-5. Dans la liste qui apparaît, **cochez** le scope **`attributs-valdorien`**
+5. Dans la liste qui apparaît, **cochez** le scope `**attributs-valdorien`**
 6. Sélectionnez le type : **« Default »** (pour que le scope soit inclus automatiquement dans tous les jetons)
 7. Cliquez sur **« Add »**
 
-**Observation :** Le scope `attributs-valdorien` apparaît maintenant dans le tableau avec le type **`Default`**.
+**Observation :** Le scope `attributs-valdorien` apparaît maintenant dans le tableau avec le type `**Default`**.
 
 > **Checkpoint :** Le client `comptoir-des-voyageurs` inclut désormais le scope `attributs-valdorien` par défaut, ce qui injectera l'attribut `villeOrigine` dans les jetons.
 
 #### Vérifier l'attribut dans le jeton avec Evaluate
 
-8. Cliquez sur l'onglet **« Evaluate »**
-9. Dans le champ **« Users »**, sélectionnez **`alaric`**
-10. Laissez le champ **« Audience target »** vide
-11. Cliquez sur **« Refresh »**
-12. À droite, cliquez sur **« Generated access token »**
+1. Cliquez sur l'onglet **« Evaluate »**
+2. Dans le champ **« Users »**, sélectionnez `**alaric`**
+3. Laissez le champ **« Audience target »** vide
+4. Cliquez sur **« Refresh »**
+5. À droite, cliquez sur **« Generated access token »**
 
 **Observation :** Dans le jeton généré, vous devez voir les éléments suivants :
 
@@ -313,32 +317,31 @@ Maintenant que le scope `attributs-valdorien` est créé, nous devons l'assigner
 
 ### Étape 6 — Configurer l'audience pour la Réserve
 
-Le jeton émis par le Comptoir doit indiquer qu'il est destiné à la Réserve. C'est le concept d'**audience** (`aud`). Pour cela, nous allons utiliser le mapper **`audience resolve`** déjà présent par défaut dans Keycloak.
+Le jeton émis par le Comptoir doit indiquer qu'il est destiné à la Réserve. C'est le concept d'**audience** (`aud`). Pour cela, nous allons utiliser le mapper `**audience resolve`** déjà présent par défaut dans Keycloak.
 
 #### Comprendre le mapper `audience resolve`
 
 1. Dans le menu latéral gauche, cliquez sur **« Client scopes »**
-2. Cliquez sur le scope **`roles`**
+2. Cliquez sur le scope `**roles`**
 3. Cliquez sur l'onglet **« Mappers »**
-4. **Observation :** Le mapper **`audience resolve`** est présent
-
-5. Cliquez sur le mapper **`audience resolve`**
+4. **Observation :** Le mapper `**audience resolve`** est présent
+5. Cliquez sur le mapper `**audience resolve**`
 6. **Observation des paramètres :**
-   - **Mapper type :** `Audience Resolve`
-   - Ce mapper ajoute **automatiquement** dans le claim `aud` tous les clients pour lesquels l'utilisateur possède des **rôles de client** (client roles).
+  - **Mapper type :** `Audience Resolve`
+  - Ce mapper ajoute **automatiquement** dans le claim `aud` tous les clients pour lesquels l'utilisateur possède des **rôles de client** (client roles).
 
 **Point d'observation :** Pour que `reserve-valdoria` apparaisse dans le claim `aud`, il suffit que les utilisateurs possèdent un **client role** sur le client `reserve-valdoria`. Le mapper `audience resolve` le détectera automatiquement.
 
 #### Créer un client role sur la Réserve
 
-7. Dans le menu latéral gauche, cliquez sur **« Clients »**
-8. Cliquez sur le client **`reserve-valdoria`**
-9. Cliquez sur l'onglet **« Roles »**
-10. Cliquez sur **« Create role »**
-11. Remplissez les champs :
-    - **Role name :** `access`
+1. Dans le menu latéral gauche, cliquez sur **« Clients »**
+2. Cliquez sur le client `**reserve-valdoria`**
+3. Cliquez sur l'onglet **« Roles »**
+4. Cliquez sur **« Create role »**
+5. Remplissez les champs :
+  - **Role name :** `access`
     - **Description :** `Autorise l'accès à la Réserve de Valdoria`
-12. Cliquez sur **« Save »**
+6. Cliquez sur **« Save »**
 
 > **Checkpoint :** Le client role `access` est créé sur le client `reserve-valdoria`.
 
@@ -346,11 +349,11 @@ Le jeton émis par le Comptoir doit indiquer qu'il est destiné à la Réserve. 
 
 Tous les sujets de Valdoria doivent pouvoir présenter leur laissez-passer à la Réserve. Nous allons inclure le client role `access` dans le rôle composite `sujet`.
 
-13. Dans le menu latéral gauche, cliquez sur **« Realm roles »**
-14. Cliquez sur le rôle **`sujet`**
-15. Cliquez sur l'onglet **« Associated roles »** puis **« Assign role »** / **« Client roles »** 
-16. Cherchez et cochez le rôle **`reserve-valdoria` > `access`**
-17. Cliquez sur **« Add »**
+1. Dans le menu latéral gauche, cliquez sur **« Realm roles »**
+2. Cliquez sur le rôle `**sujet`**
+3. Cliquez sur l'onglet **« Associated roles »** puis **« Assign role »** / **« Client roles »**
+4. Cherchez et cochez le rôle `**reserve-valdoria` > `access`**
+5. Cliquez sur **« Add »**
 
 **Point d'observation :** En incluant le client role `access` de `reserve-valdoria` dans le rôle composite `sujet`, tous les utilisateurs ayant le rôle `sujet` (directement ou par héritage) obtiendront automatiquement ce client role. Le mapper `audience resolve` détectera alors que l'utilisateur possède un rôle sur `reserve-valdoria` et ajoutera automatiquement `reserve-valdoria` dans le claim `aud` du jeton.
 
@@ -365,21 +368,21 @@ Maintenant que tous les mappers sont configurés, utilisons l'outil **Evaluate**
 #### Accéder à l'outil Evaluate
 
 1. Naviguez vers **« Clients »**
-2. Cliquez sur le client **`comptoir-des-voyageurs`**
+2. Cliquez sur le client `**comptoir-des-voyageurs`**
 3. Cliquez sur l'onglet **« Client scopes »**
 4. Cliquez sur l'onglet **« Evaluate »**
 
 #### Générer un jeton pour Brunhild (marchande)
 
-5. Dans le champ **« Users »**, commencez à taper `brunhild` puis sélectionnez **`brunhild`**
-6. **Important :** Laissez le champ **« Audience target »** vide pour l'instant (nous allons observer le comportement par défaut)
-7. Cliquez sur **« Generated access token »**
+1. Dans le champ **« Users »**, commencez à taper `brunhild` puis sélectionnez `**brunhild`**
+2. **Important :** Laissez le champ **« Audience target »** vide pour l'instant (nous allons observer le comportement par défaut)
+3. Cliquez sur **« Generated access token »**
 
 **Observation :** Un jeton JWT s'affiche, déjà décodé et lisible.
 
 #### Analyser le contenu du jeton
 
-8. Faites défiler le contenu du jeton et identifiez les sections suivantes :
+1. Faites défiler le contenu du jeton et identifiez les sections suivantes :
 
 **Section 1 : Informations d'identité**
 
@@ -427,18 +430,18 @@ Maintenant que tous les mappers sont configurés, utilisons l'outil **Evaluate**
 
 **Points d'observation importants :**
 
-- **`aud`** : audience — le jeton est destiné à `reserve-valdoria` ET `account` (le mapper a bien ajouté la Réserve)
-- **`azp`** : authorized party — le client qui a demandé le jeton (`comptoir-des-voyageurs`)
-- **`realm_access.roles`** : les rôles de royaume sont présents ! Brunhild a `marchand`, et hérite de `sujet`
-- **`villeOrigine`** : l'attribut personnalisé est bien présent avec la valeur `Nordheim`
+- `**aud`** : audience — le jeton est destiné à `reserve-valdoria` ET `account` (le mapper a bien ajouté la Réserve)
+- `**azp**` : authorized party — le client qui a demandé le jeton (`comptoir-des-voyageurs`)
+- `**realm_access.roles**` : les rôles de royaume sont présents ! Brunhild a `marchand`, et hérite de `sujet`
+- `**villeOrigine**` : l'attribut personnalisé est bien présent avec la valeur `Nordheim`
 
 > **Checkpoint :** Le jeton de Brunhild contient tous les éléments configurés : audience, rôles de royaume (avec héritage), et attribut `villeOrigine`.
 
 #### Comparer avec Cedric (sujet) et Alaric
 
-9. Changez l'utilisateur sélectionné pour **`cedric`**
-10. Cliquez à nouveau sur **« Generated access token »**
-11. Répétez l'opération pour  **`alaric`**
+1. Changez l'utilisateur sélectionné pour `**cedric`**
+2. Cliquez à nouveau sur **« Generated access token »**
+3. Répétez l'opération pour  `**alaric`**
 
 > **Checkpoint :** Vous avez vérifié que les jetons contiennent les rôles corrects pour chaque utilisateur, avec l'héritage via les rôles composites qui fonctionne correctement.
 
@@ -448,11 +451,13 @@ Maintenant que tous les mappers sont configurés, utilisons l'outil **Evaluate**
 
 La Réserve de Valdoria expose plusieurs endpoints avec des niveaux de sécurité différents :
 
-| Endpoint | Description | Autorisation requise |
-| --- | --- | --- |
-| `GET /infos` | Informations publiques du royaume | Utilisateur authentifié |
-| `GET /inventaire` | Inventaire des ressources | Rôle `marchand` requis |
-| `GET /villes/{id}/artefacts` | Artefacts d'une ville | Rôle `marchand` + filtrage par `villeOrigine` |
+
+| Endpoint                     | Description                       | Autorisation requise                          |
+| ---------------------------- | --------------------------------- | --------------------------------------------- |
+| `GET /infos`                 | Informations publiques du royaume | Utilisateur authentifié                       |
+| `GET /inventaire`            | Inventaire des ressources         | Rôle `marchand` requis                        |
+| `GET /villes/{id}/artefacts` | Artefacts d'une ville             | Rôle `marchand` + filtrage par `villeOrigine` |
+
 
 Utilisons l'outil Evaluate pour **simuler** ce que verrait l'API lorsqu'elle valide les jetons.
 
@@ -460,7 +465,7 @@ Utilisons l'outil Evaluate pour **simuler** ce que verrait l'API lorsqu'elle val
 
 **Question :** Brunhild (rôle `marchand`) peut-elle accéder à `GET /inventaire` qui requiert le rôle `marchand` ?
 
-1. Dans l'outil Evaluate, sélectionnez l'utilisateur **`brunhild`**
+1. Dans l'outil Evaluate, sélectionnez l'utilisateur `**brunhild`**
 2. Cliquez sur **« Generated access token »**
 3. Cherchez la section `realm_access.roles`
 4. **Observation :** Les rôles présents sont `marchand`, `sujet`
@@ -470,7 +475,7 @@ Utilisons l'outil Evaluate pour **simuler** ce que verrait l'API lorsqu'elle val
 
 **Question :** Alaric (rôle `gouverneur`) peut-il accéder à `GET /inventaire` ?
 
-1. Sélectionnez l'utilisateur **`alaric`**
+1. Sélectionnez l'utilisateur `**alaric`**
 2. Cliquez sur **« Generated access token »**
 3. Cherchez la section `realm_access.roles`
 4. **Observation :** Les rôles présents incluent `gouverneur`, `marchand`, et `sujet`
@@ -480,7 +485,7 @@ Utilisons l'outil Evaluate pour **simuler** ce que verrait l'API lorsqu'elle val
 
 **Question :** Cedric (rôle `sujet`) peut-il accéder à `GET /inventaire` ?
 
-1. Sélectionnez l'utilisateur **`cedric`**
+1. Sélectionnez l'utilisateur `**cedric`**
 2. Cliquez sur **« Generated access token »**
 3. Cherchez la section `realm_access.roles`
 4. **Observation :** Les rôles présents est `sujet`
@@ -496,27 +501,26 @@ Le claim `aud` (audience) est un mécanisme de sécurité important. Vérifions 
 
 #### Test avec audience explicite
 
-1. Dans l'outil Evaluate, sélectionnez l'utilisateur **`alaric`**
+1. Dans l'outil Evaluate, sélectionnez l'utilisateur `**alaric`**
 2. Dans le champ **« Audience target »**, saisissez : `reserve-valdoria`
 3. Cliquez sur **« Generated access token »**
 4. Cherchez le claim `aud`
-5. **Observation :** `"aud": ["reserve-valdoria"]` 
+5. **Observation :** `"aud": ["reserve-valdoria"]`
 
 **Point d'observation :** Lorsque nous spécifions explicitement l'audience, Keycloak génère un jeton destiné uniquement à cette API. L'API peut valider que le jeton lui est bien destiné en vérifiant que le claim `aud` contient son client ID.
 
 #### Test avec audience par défaut
 
-6. Laissez le champ **« Audience target »** vide
-7. Cliquez sur **« Generated access token »**
-8. Cherchez le claim `aud`
-9. **Observation :** `"aud": ["reserve-valdoria", "account"]`
+1. Laissez le champ **« Audience target »** vide
+2. Cliquez sur **« Generated access token »**
+3. Cherchez le claim `aud`
+4. **Observation :** `"aud": ["reserve-valdoria", "account"]`
 
 **Point d'observation :** Grâce au mapper `audience resolve` et au client role `access` inclus dans le rôle `sujet`, le claim `aud` contient automatiquement `reserve-valdoria`, même sans spécifier explicitement l'audience. C'est le comportement souhaité : le Comptoir demande toujours des jetons pour la Réserve.
 
 > **Checkpoint :** Vous comprenez le concept d'audience et avez vérifié que les jetons émis par le Comptoir sont bien destinés à la Réserve.
 
 ---
-
 
 ## Point clé
 
@@ -536,16 +540,18 @@ Le claim `aud` (audience) est un mécanisme de sécurité important. Vérifions 
 
 ## Dépannage
 
-| Problème | Cause probable | Solution |
-| --- | --- | --- |
-| Les rôles de royaume n'apparaissent pas dans le jeton | Le scope `roles` n'est pas assigné au client | Vérifiez dans Client scopes > Setup que `roles` est présent avec le type `Default` |
-| L'attribut `villeOrigine` n'apparaît pas | Le scope `attributs-valdorien` n'est pas assigné ou le mapper est mal configuré | Vérifiez que le scope est assigné et que le mapper cible bien l'attribut `villeOrigine` |
-| Le claim `aud` ne contient pas `reserve-valdoria` | Le client role `access` n'est pas assigné ou le rôle `sujet` ne l'inclut pas | Vérifiez que le client role `access` existe sur `reserve-valdoria` et qu'il est inclus dans le rôle composite `sujet` |
-| Le client `comptoir-des-voyageurs` demande un secret | Client authentication est activé | Désactivez « Client authentication » dans la configuration du client |
-| L'outil Evaluate ne génère rien | Aucun utilisateur sélectionné | Sélectionnez un utilisateur dans le champ « Users » |
-| Les rôles hérités ne s'affichent pas | C'est normal — ils sont tous listés au même niveau | Keycloak inclut tous les rôles (directs + hérités) dans le claim `realm_access.roles` sans distinction |
-| Le scope dédié n'est pas visible | Le tableau n'est pas filtré correctement | Cherchez `comptoir-des-voyageurs-dedicated` (type `None`) dans le tableau de l'onglet Setup |
-| PKCE n'est pas disponible dans les options | Mauvaise section consultée | Allez dans l'onglet « Advanced » du client, section « Proof Key for Code Exchange Code Challenge Method » |
+
+| Problème                                              | Cause probable                                                                  | Solution                                                                                                              |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Les rôles de royaume n'apparaissent pas dans le jeton | Le scope `roles` n'est pas assigné au client                                    | Vérifiez dans Client scopes > Setup que `roles` est présent avec le type `Default`                                    |
+| L'attribut `villeOrigine` n'apparaît pas              | Le scope `attributs-valdorien` n'est pas assigné ou le mapper est mal configuré | Vérifiez que le scope est assigné et que le mapper cible bien l'attribut `villeOrigine`                               |
+| Le claim `aud` ne contient pas `reserve-valdoria`     | Le client role `access` n'est pas assigné ou le rôle `sujet` ne l'inclut pas    | Vérifiez que le client role `access` existe sur `reserve-valdoria` et qu'il est inclus dans le rôle composite `sujet` |
+| Le client `comptoir-des-voyageurs` demande un secret  | Client authentication est activé                                                | Désactivez « Client authentication » dans la configuration du client                                                  |
+| L'outil Evaluate ne génère rien                       | Aucun utilisateur sélectionné                                                   | Sélectionnez un utilisateur dans le champ « Users »                                                                   |
+| Les rôles hérités ne s'affichent pas                  | C'est normal — ils sont tous listés au même niveau                              | Keycloak inclut tous les rôles (directs + hérités) dans le claim `realm_access.roles` sans distinction                |
+| Le scope dédié n'est pas visible                      | Le tableau n'est pas filtré correctement                                        | Cherchez `comptoir-des-voyageurs-dedicated` (type `None`) dans le tableau de l'onglet Setup                           |
+| PKCE n'est pas disponible dans les options            | Mauvaise section consultée                                                      | Allez dans l'onglet « Advanced » du client, section « Proof Key for Code Exchange Code Challenge Method »             |
+
 
 ---
 
@@ -567,10 +573,9 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 1. Naviguez vers **« Realm settings »**
 2. Cliquez sur l'onglet **« Keys »**
 3. **Observation :** Keycloak gère automatiquement plusieurs clés :
-   - **RS256** : signature des jetons JWT (clé publique/privée)
-   - **HS512** : signature HMAC (rarement utilisé)
-   - **AES** : chiffrement des tokens
-
+  - **RS256** : signature des jetons JWT (clé publique/privée)
+  - **HS512** : signature HMAC (rarement utilisé)
+  - **AES** : chiffrement des tokens
 4. Cliquez sur le bouton **« Public key »** de la clé RS256 active
 5. **Observation :** La clé publique s'affiche au format PEM
 6. **Note :** Les APIs peuvent télécharger cette clé publique via l'endpoint `http://localhost:8080/realms/valdoria/protocol/openid-connect/certs` (JWKS) pour valider localement les jetons sans appeler Keycloak
@@ -580,13 +585,13 @@ Si vous avez terminé en avance, explorez ces éléments supplémentaires :
 ### Tester l'endpoint de métadonnées OIDC
 
 1. Ouvrez un nouvel onglet de navigateur
-2. Accédez à : **http://localhost:8080/realms/valdoria/.well-known/openid-configuration**
+2. Accédez à : **[http://localhost:8080/realms/valdoria/.well-known/openid-configuration](http://localhost:8080/realms/valdoria/.well-known/openid-configuration)**
 3. **Observation :** Un document JSON décrit tous les endpoints et capacités du realm :
-   - `authorization_endpoint` : URL pour initier le flux Authorization Code
-   - `token_endpoint` : URL pour échanger le code contre un jeton
-   - `userinfo_endpoint` : URL pour récupérer les infos utilisateur
-   - `jwks_uri` : URL des clés publiques (JWKS)
-   - `introspection_endpoint` : URL pour valider un jeton
-   - `end_session_endpoint` : URL pour se déconnecter
+  - `authorization_endpoint` : URL pour initier le flux Authorization Code
+  - `token_endpoint` : URL pour échanger le code contre un jeton
+  - `userinfo_endpoint` : URL pour récupérer les infos utilisateur
+  - `jwks_uri` : URL des clés publiques (JWKS)
+  - `introspection_endpoint` : URL pour valider un jeton
+  - `end_session_endpoint` : URL pour se déconnecter
 
 **Point d'observation :** Ce document est le **point d'entrée standard** de tout serveur OIDC. Les librairies clientes (oidc-client-ts, Keycloak JS adapter, etc.) utilisent cette URL pour découvrir automatiquement tous les endpoints nécessaires.
