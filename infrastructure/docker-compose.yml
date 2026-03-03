@@ -111,6 +111,7 @@ services:
     networks:
       - autheria-network
 
+# TODO : nommer les volumes avec un nom absolu
 volumes:
   postgres_data:
   openldap_data:
